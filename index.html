@@ -131,9 +131,9 @@ const Q=[
  {t:"Not yet, but I plan to tell them",r:1,re:"The court will hold you to it."},
  {t:"No plan",r:2,re:"[the court reporter stops typing]"}]}
 ];
-const V={ok:{cls:"v-ok",stamp:"GRANTED",line:"Proceed, counsel, with safeguards. The court expects every citation to be verified.",plain:"Lower-risk use with safeguards."},
-part:{cls:"v-part",stamp:"GRANTED IN PART",line:"AI may assist with the lower-risk tasks. The legal judgment stays with you.",plain:"Limited use only."},
-no:{cls:"v-no",stamp:"DENIED WITHOUT PREJUDICE",line:"Not today, counsel. Fix the items below and you may refile.",plain:"Not recommended yet."}};
+const V={ok:{cls:"v-ok",stamp:"GRANTED",line:"Proceed, counsel, with safeguards. The court expects every citation to be verified.",plain:"Lower-risk - use with safeguards."},
+part:{cls:"v-part",stamp:"GRANTED IN PART",line:"AI may assist with these lower-risk tasks. However, the legal judgment stays with you.",plain:"Limited use only."},
+no:{cls:"v-no",stamp:"DENIED",line:"Not today, counsel. Fix the items below and you may refile.",plain:"Not recommended."}};
 const MAXR=Q.map(q=>Math.max(...q.o.map(o=>o.r)));
 let i=-1,ans=[];
 const $=s=>document.querySelector(s),view=$("#view"),app=$("#app");
