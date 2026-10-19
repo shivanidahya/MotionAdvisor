@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Motion to Use AI: Motion Advisor</title>
+<style>
+:root{--bg:#e9ecf1;--panel:#fff;--ink:#14213d;--mute:#4d5870;--line:#c5ccd9;--burg:#7a1f2b;--brass:#a97a1f;--ok:#1f6b45;--part:#8a5a00;--no:#7a1f2b;--btn:#14213d;--btnink:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1526;--panel:#16213a;--ink:#e8ebf2;--mute:#a4aec4;--line:#2c3a5a;--burg:#e08a96;--brass:#d9aa4f;--ok:#6fd0a0;--part:#e8b85a;--no:#f0959f;--btn:#d9aa4f;--btnink:#14213d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1526;--panel:#16213a;--ink:#e8ebf2;--mute:#a4aec4;--line:#2c3a5a;--burg:#e08a96;--brass:#d9aa4f;--ok:#6fd0a0;--part:#e8b85a;--no:#f0959f;--btn:#d9aa4f;--btnink:#14213d;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.serif,h1,h2,h3{font-family:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif}
+main{max-width:720px;margin:0 auto;padding:16px 16px 48px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:3px double var(--brass);padding-bottom:10px;margin-bottom:20px;font-size:14px;color:var(--mute)}
+.bar b{color:var(--ink)}
+.tog{display:flex;align-items:center;gap:8px;cursor:pointer}
+.tog input{width:18px;height:18px;accent-color:var(--burg)}
+h1{font-size:clamp(30px,7vw,46px);line-height:1.08;margin:8px 0 12px;letter-spacing:-.01em}
+h2{font-size:clamp(22px,5vw,28px);line-height:1.2;margin:0 0 10px}
+h3{font-size:18px;margin:22px 0 8px}
+p{margin:0 0 12px;max-width:68ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:22px 20px;margin-bottom:16px}
+.stage{font-style:italic;color:var(--mute)}
+button{font:inherit;cursor:pointer;border-radius:4px;min-height:44px}
+.go{background:var(--btn);color:var(--btnink);border:0;padding:10px 22px;font-weight:600}
+.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);padding:10px 18px}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+.opts{display:grid;gap:10px;margin:16px 0}
+.opt{text-align:left;background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:12px 14px}
+.opt:hover{border-color:var(--brass)}
+.opt[aria-pressed="true"]{border:2px solid var(--burg);background:var(--panel)}
+.prog{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 18px}
+.prog i{display:block;height:100%;background:var(--brass);transition:width .25s}
+.react{min-height:1.6em;margin:0 0 10px;color:var(--burg);font-style:italic}
+details{margin:10px 0}
+summary{cursor:pointer;color:var(--mute)}
+.nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.stamp{display:inline-block;border:4px solid currentColor;border-radius:6px;padding:6px 18px;font-family:"Palatino Linotype",Palatino,Georgia,serif;font-weight:700;font-size:clamp(26px,7vw,40px);letter-spacing:.04em;transform:rotate(-3deg);margin:6px 0 14px;animation:slam .35s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes slam{from{transform:rotate(-3deg) scale(2.2);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
+.v-ok{color:var(--ok)}.v-part{color:var(--part)}.v-no{color:var(--no)}
+.meter{height:12px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0}
+.meter i{display:block;height:100%}
+.pill{font-size:13px;color:var(--mute)}
+ul,ol{padding-left:22px;margin:0 0 12px}li{margin-bottom:6px;max-width:68ch}
+.fine{font-size:13px;color:var(--mute);border-top:1px solid var(--line);padding-top:12px;margin-top:20px}
+[data-serious="1"] .fun{display:none}
+[hidden]{display:none!important}
+.recon{border:1px solid var(--brass);border-radius:6px;padding:14px 16px;margin:18px 0}
+.recon label{display:flex;gap:10px;align-items:flex-start;margin:10px 0;cursor:pointer}
+.recon input{width:20px;height:20px;margin-top:2px;accent-color:var(--burg);flex:none}
+.tt{width:100%;border-collapse:collapse;margin:6px 0 12px}.tt td{padding:7px 4px;border-bottom:1px solid var(--line)}.tt td:last-child{text-align:right;font-weight:700;white-space:nowrap}
+.mini{font-size:24px;font-weight:700;font-family:"Palatino Linotype",Palatino,Georgia,serif}
+.tok{display:inline;min-height:0;font:inherit;line-height:1.9;color:inherit;background:var(--bg);border:1px dashed var(--brass);border-radius:3px;padding:0 4px}
+.tok[aria-pressed="true"]{background:#000;color:#000;border-color:#000}
+.tok.miss{outline:3px solid var(--no);outline-offset:1px}.tok.over{outline:3px solid var(--part);outline-offset:1px}
+.tabs{display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;border-radius:0;padding:8px 14px;color:var(--mute);font-weight:600;white-space:nowrap}
+.tabs button[aria-current="true"]{color:var(--ink);border-bottom-color:var(--brass)}
+.drop{border:2px dashed var(--brass);border-radius:6px;padding:16px;margin:14px 0}
+.drop textarea{width:100%;font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px;margin:8px 0}
+.prev{max-height:220px;overflow:auto;background:var(--bg);border:1px solid var(--line);padding:10px;font-size:14px;border-radius:4px;overflow-wrap:anywhere}
+mark{background:#e8c25a;color:#14213d;padding:0 2px;border-radius:2px}mark.m2{background:#e8a0a8}
+.cl{list-style:none;padding:0}.cl label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}.cl input{width:20px;height:20px;margin-top:2px;accent-color:var(--burg);flex:none}
+.mod{border:1px solid var(--line);border-radius:6px;padding:4px 14px 10px;margin:10px 0;background:var(--panel)}.mod.hot{border:2px solid var(--brass)}
+.mod summary{font-weight:600;color:var(--ink);min-height:44px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tag{font-size:12px;border:1px solid var(--brass);border-radius:10px;padding:0 8px;color:var(--ink)}
+.ta{width:100%;font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px;margin:8px 0}
+.lt{width:100%;border-collapse:collapse;font-size:14px}.lt td,.lt th{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:top}
+.row{display:grid;gap:10px;margin:10px 0}.row label{display:grid;gap:4px;font-size:14px}.row input,.row select{font:inherit;padding:8px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;min-height:40px}
+fieldset{border:1px solid var(--line);border-radius:6px;margin:10px 0}
+#pv{display:none}.pdoc{font-family:"Times New Roman",Georgia,serif;color:#000;line-height:1.5;font-size:12pt;white-space:pre-wrap}
+@media print{body.pm main>*:not(#pv){display:none!important}body.pm #pv{display:block!important}body.pm{background:#fff}}
+@media (prefers-reduced-motion:reduce){.stamp{animation:none}.prog i{transition:none}}
+@media print{body{background:#fff;color:#000}.bar,.nav,.noprint,.fun{display:none!important}.card{border:0;padding:0}.stamp{animation:none}:root{--ink:#000;--mute:#333;--panel:#fff}}
+</style>
+</head>
+<body>
+<main id="app" data-serious="0">
+  <div class="bar noprint">
+    <span><b>Motion Advisor Portal</b> &nbsp;Case No. AI-2026-001</span>
+    <label class="tog"><input type="checkbox" id="serious"> Serious mode</label>
+  </div>
+  <nav class="tabs noprint" id="tabs" aria-label="Portal sections"><button data-t="intake">Document intake</button><button data-t="hearing">Hearing</button><button data-t="drills">Drills</button><button data-t="training">Training</button><button data-t="toolkit">Toolkit</button></nav>
+  <div id="view" aria-live="polite"></div>
+  <div id="pv"></div>
+</main>
+<script>
+const Q=[
+{q:"What kind of motion is before the court?",w:1,why:"Higher stakes mean less room for a robot's creative interpretation of the law.",tip:"For substantive or dispositive motions, treat any AI output as a rough first pass and budget extra attorney review time.",o:[
+ {t:"Routine or procedural (extension, scheduling, etc.)",r:0,re:"The court appreciates a low-drama docket."},
+ {t:"Substantive, but not case-ending",r:1,re:"Noted. The gallery leans in."},
+ {t:"Dispositive or high-stakes",r:2,re:"The gallery goes very quiet."}]},
+{q:"What would the AI actually do?",w:2,why:"Formatting is low risk. Legal research and argument are where invented authority tends to appear.",tip:"Limit AI to the lower-risk tasks (formatting, outlining, summarizing material you supply). Keep legal argument and final text in your own hands.",o:[
+ {t:"Formatting, proofreading, or tightening my own writing",r:0,re:"Sustained. A sensible use of a robot."},
+ {t:"Summarizing public or anonymized material I provide",r:1,re:"Acceptable, with supervision."},
+ {t:"Legal research or finding cases",r:2,re:"Counsel is reminded that robots have been known to invent cases."},
+ {t:"Drafting the argument or final text",r:3,re:"The judge removes her glasses."}]},
+{q:"What information would go into the AI tool?",w:3,why:"Confidentiality duties (Model Rule 1.6) follow client information wherever you paste it. The robot is not bound by privilege.",tip:"Anonymize or remove client-identifying and privileged details before using any AI tool, or keep that material out of the tool entirely.",o:[
+ {t:"Nothing client-related, or fully anonymized",r:0,re:"Clean hands. The court is pleased."},
+ {t:"Some case details, but no names or privileged material",r:2,re:"Careful. Details have a way of identifying people."},
+ {t:"Confidential or privileged client information",r:3,re:"Objection! Very much objection!",stopIf:"conf"}]},
+{q:"Which kind of tool is it, and do you know its data terms?",w:2,why:"Enterprise and legal-specific tools usually come with contractual data protections. Free consumer tools often do not.",tip:"Read the tool's data-retention and training terms before use, and prefer an enterprise or legal-specific tool for anything sensitive.",o:[
+ {t:"Enterprise or legal-specific tool with data terms I've read",r:0,re:"A prepared attorney. Rare. Cherished."},
+ {t:"Consumer tool, with privacy settings reviewed",r:1,re:"Better than nothing. The court notes the effort."},
+ {t:"Consumer tool, default settings, or I'm not sure",r:3,re:"[murmuring in the gallery]",stopIf:"tool"}]},
+{q:"Does your court or judge have an AI rule?",w:2,why:"Some courts and judges require disclosure or certification of AI use. Rules vary and change.",tip:"Check the local rules, the judge's standing orders, and your bar's guidance, and add any required disclosure or certification.",o:[
+ {t:"Checked: no AI rule applies",r:0,re:"Diligence. The court approves."},
+ {t:"Checked: disclosure is required and I'll comply",r:1,re:"Compliance noted for the record."},
+ {t:"I haven't checked, or I'm not sure",r:2,re:"Counsel pleads the Fifth. Flagged."},
+ {t:"A rule applies and I'd rather not follow it",r:3,re:"The bailiff steps forward.",stop:"You would be ignoring a court's AI disclosure or certification requirement."}]},
+{q:"Will every citation and quotation be checked against a primary source?",w:3,why:"Unverified AI citations are the classic route to sanctions. Mata v. Avianca (S.D.N.Y. 2023) is the cautionary tale.",tip:"Pull and read every cited authority yourself in Westlaw, Lexis or the court's database, and confirm every quotation and holding before filing.",o:[
+ {t:"Every one, by me or someone I supervise",r:0,re:"Trust, but verify. The court nods slowly."},
+ {t:"I'll spot-check the important ones",r:2,re:"[gasp from the gallery]"},
+ {t:"I'll trust it if it looks right",r:3,re:"Mata v. Avianca would like a word.",stop:"You would file without verifying the AI's citations."}]},
+{q:"How well do you know this tool's limits?",w:1,why:"Competence (Model Rule 1.1) includes understanding the benefits and risks of the technology you use.",tip:"Spend time learning the tool's known limits, such as hallucinated authority and outdated law, before relying on it for filings.",o:[
+ {t:"Experienced or trained, and I know its failure modes",r:0,re:"A veteran of the robot wars."},
+ {t:"Some experience",r:1,re:"Learning on the job. The court is patient."},
+ {t:"New to this",r:2,re:"Welcome to court. Please keep your hands on the table."}]},
+{q:"How tight is the deadline?",w:1,why:"Deadline pressure is when verification gets skipped.",tip:"Build verification time into your schedule up front. If the deadline leaves no room for it, AI is the wrong shortcut.",o:[
+ {t:"Plenty of time",r:0,re:"The judge raises an eyebrow in disbelief."},
+ {t:"Tight, but workable",r:1,re:"A familiar story."},
+ {t:"Crushing. Due in hours.",r:2,re:"[sympathetic murmurs]"}]},
+{q:"Who else will use the AI on this?",w:1,why:"Supervision duties (Model Rules 5.1 and 5.3) apply to lawyers and non-lawyers who work under you.",tip:"Adopt a short written AI-use policy and make sure anyone assisting follows it and knows the verification steps.",o:[
+ {t:"Just me",r:0,re:"The buck stops here."},
+ {t:"Staff, under a written AI policy",r:0,re:"The court is impressed."},
+ {t:"Staff, with no written policy",r:2,re:"Counsel, who is supervising whom?"}]},
+{q:"Does your client know, and is billing sorted?",w:1,why:"Client communication (Model Rule 1.4) and reasonable fees (Rule 1.5) both come into play.",tip:"Consider telling the client how AI is used, and bill only for time actually spent, not for the time AI saved.",o:[
+ {t:"Yes, they know and billing is handled",r:0,re:"Transparency. A stunning plot twist."},
+ {t:"Not yet, but I plan to tell them",r:1,re:"The court will hold you to it."},
+ {t:"No plan",r:2,re:"[the court reporter stops typing]"}]}
+];
+const V={ok:{cls:"v-ok",stamp:"GRANTED",line:"Proceed, counsel, with safeguards. The court expects every citation to be verified.",plain:"Lower-risk use with safeguards."},
+part:{cls:"v-part",stamp:"GRANTED IN PART",line:"AI may assist with the lower-risk tasks. The legal judgment stays with you.",plain:"Limited use only."},
+no:{cls:"v-no",stamp:"DENIED WITHOUT PREJUDICE",line:"Not today, counsel. Fix the items below and you may refile.",plain:"Not recommended yet."}};
+const MAXR=Q.map(q=>Math.max(...q.o.map(o=>o.r)));
+let i=-1,ans=[];
+const $=s=>document.querySelector(s),view=$("#view"),app=$("#app");
+$("#serious").onchange=e=>{app.dataset.serious=e.target.checked?"1":"0"};
+function intro(){i=-1;ans=[];scan=null;pre={};tab("intake");view.innerHTML=`<div class="card"><p class="stage fun">[All rise. The Honorable Algorithm presiding.]</p>
+<h1>Motion to Use AI</h1>
+<p>Before you let a robot near your motion, this short hearing weighs the risks. Answer ${Q.length} questions about the motion, the tool and your safeguards. You get a ruling and a printable order with next steps.</p>
+<p class="fun">Today's docket: <i>You v. Your Deadline</i>.</p>
+<p class="pill">Nothing you answer is saved or sent anywhere. Don't type client details into any AI tool you haven't vetted.</p>
+<div class="drop noprint" id="drop"><p><b>Document intake.</b> Upload a draft motion or your case notes (.docx, .pdf or .txt), or paste text. The portal scans it for identifying details, confidentiality markers, citations and motion type, then pre-fills the hearing.</p><input type="file" id="file" accept=".docx,.pdf,.txt,.md" aria-label="Upload a document"><textarea id="paste" rows="4" placeholder="Or paste text here" aria-label="Paste text"></textarea><button class="go" id="scanbtn">Scan document</button><p class="pill" style="margin:10px 0 0">The scan runs in your browser. Nothing is uploaded, sent to an AI model, or stored.</p></div><div id="scanout"></div><div class="nav" style="justify-content:flex-start"><button class="ghost" id="start">Start without a document</button><button class="ghost" id="drill">Practice drills</button></div>
+<p class="fine">Decision support only. This is not legal advice and creates no attorney-client relationship. You remain counsel of record and responsible for every filing.</p></div>`;
+$("#start").onclick=()=>{i=0;ask()};$("#drill").onclick=drillMenu;wireIntake()}
+function ask(){tab("hearing");const q=Q[i],sel=ans[i];
+view.innerHTML=`<div class="card"><div class="pill">Question ${i+1} of ${Q.length}</div><div class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="${Q.length}" aria-valuenow="${i+1}"><i style="width:${(i+1)/Q.length*100}%"></i></div>
+<h2>${q.q}</h2>${pre[i]?'<p class="pill">Suggested from your document scan. Change it if it is wrong.</p>':""}
+<div class="opts">${q.o.map((o,k)=>`<button class="opt" aria-pressed="${sel===k}" data-k="${k}">${o.t}</button>`).join("")}</div>
+<p class="react fun" id="react">${sel!=null?q.o[sel].re:""}</p>
+<details><summary>Sidebar: why we ask</summary><p>${q.why}</p></details>
+<div class="nav"><button class="ghost" id="back">${i?"Back":"Home"}</button><button class="go" id="next" ${sel==null?"disabled":""}>${i==Q.length-1?"Hear the ruling":"Next question"}</button></div></div>`;
+view.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ans[i]=+b.dataset.k;delete pre[i];ask();$(".opt[aria-pressed=true]").focus()});
+$("#back").onclick=()=>i?(i--,ask()):intro();
+$("#next").onclick=()=>{if(ans[i]==null)return;if(i==Q.length-1)verdict();else{i++;ask()}}}
+function verdict(){tab("hearing");
+let score=0,max=0,rows=[],flags={},stops=[];
+Q.forEach((q,k)=>{const o=q.o[ans[k]],p=q.w*o.r;score+=p;max+=q.w*MAXR[k];rows.push({q,o,p});
+ if(o.stopIf)flags[o.stopIf]=1;if(o.stop)stops.push(o.stop)});
+if(flags.conf&&flags.tool)stops.push("Confidential client information would go into a tool with unknown or weak data protections.");
+const pct=Math.round(score/max*100);
+const key=stops.length||pct>=55?"no":pct>=28?"part":"ok",v=V[key];
+const drivers=rows.filter(r=>r.p>0).sort((a,b)=>b.p-a.p).slice(0,3);
+const steps=rows.filter(r=>r.p>0).sort((a,b)=>b.p-a.p).map(r=>r.q.tip);
+const col={ok:"var(--ok)",part:"var(--part)",no:"var(--no)"}[key];
+view.innerHTML=`<div class="card" id="order">
+<p class="stage fun">[The judge raises the gavel. Silence.]</p>
+<h2 class="serif">Order on Motion to Use AI</h2>
+<p class="pill">Case No. AI-2026-001 &middot; ${new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})}</p>
+<div class="stamp ${v.cls}" role="status">${v.stamp}</div>
+<p class="serif" style="font-size:19px">${v.line}</p>
+<p><b>Overall risk reading:</b> ${pct}% (${v.plain})</p>
+<div class="meter" aria-hidden="true"><i style="width:${Math.max(pct,4)}%;background:${col}"></i></div>
+${stops.length?`<h3>Hard stop${stops.length>1?"s":""}</h3><p>The court denies the motion regardless of score because:</p><ul>${stops.map(s=>`<li>${s}</li>`).join("")}</ul>`:""}
+<h3>Findings of fact</h3>
+${drivers.length?`<p>These answers weighed most heavily:</p><ul>${drivers.map(r=>`<li><b>${r.q.q}</b> You answered: ${r.o.t}.</li>`).join("")}</ul>`:"<p>No answers raised meaningful concern.</p>"}
+<h3>Conditions of the order</h3>
+<ul class="cl" id="cl">${[...(steps.length?steps:["Keep doing what you're doing, and keep a short log of how AI was used."]),"Read every line of the final draft yourself. AI does not replace legal review."].map(s=>`<li><label><input type="checkbox"><span>${s}</span></label></li>`).join("")}
+</ul><p class="pill noprint" id="clp">0 conditions met</p>
+<h3>Rules the court suggests you read</h3>
+<ul><li>ABA Formal Opinion 512 (2024) on generative AI</li><li>Model Rules 1.1, 1.4, 1.5, 1.6, 3.3, 5.1 and 5.3, and your state's version of them</li><li>Your court's local rules and the judge's standing orders</li></ul>
+<p class="fine">Decision support only, not legal advice, and no attorney-client relationship is created. Verify all rules directly, since they change often. <span class="fun">Any resemblance to an actual courtroom comedy is intentional.</span></p>
+${extras()}<div class="nav noprint"><button class="ghost" id="redo">Refile with a new motion</button><button class="ghost" id="totrain">Get trained on these gaps</button><button class="go" id="print">Print or save the order as PDF</button></div></div>`;
+$("#redo").onclick=intro;$("#print").onclick=()=>window.print();wire();window.scrollTo(0,0)}
+const TASKS=["Formatting or proofreading","Summarizing material I supply","Legal research","Drafting the argument or final text"];
+const SH={ok:["Granted","v-ok"],part:["Granted in part","v-part"],no:["Denied","v-no"]};
+function calc(a){let s=0,m=0,f={},st=0;Q.forEach((q,k)=>{const o=q.o[a[k]];s+=q.w*o.r;m+=q.w*MAXR[k];if(o.stopIf)f[o.stopIf]=1;if(o.stop)st++});if(f.conf&&f.tool)st++;const pct=Math.round(s/m*100);return{pct,st,key:st||pct>=55?"no":pct>=28?"part":"ok"}}
+function taskTable(a){return'<table class="tt">'+TASKS.map((t,x)=>{const b=a.slice();b[1]=x;const k=calc(b).key;return`<tr><td>${t}</td><td class="${SH[k][1]}">${SH[k][0]}</td></tr>`}).join("")+'</table>'}
+const best=k=>Q[k].o.findIndex(o=>o.r==0&&!o.stop&&!o.stopIf);
+function extras(){const ks=Q.map((_,k)=>k).filter(k=>k!=1&&Q[k].o[ans[k]].r>0&&best(k)>=0).sort((a,b)=>Q[b].w*Q[b].o[ans[b]].r-Q[a].w*Q[a].o[ans[a]].r);
+return(scan?`<h3>Document scan</h3><p>${sumScan()}</p>`:"")+`<h3>Verdict by task</h3><p>Same case, different job for the AI:</p>${taskTable(ans)}`+(ks.length?`<div class="recon noprint"><h3 style="margin-top:0">Motion for reconsideration</h3><p>Tick a change to see how the ruling would move. Only commit to what you would really do.</p>${ks.map(k=>`<label><input type="checkbox" data-k="${k}"><span>${Q[k].o[best(k)].t}<br><small class="pill">${Q[k].q}</small></span></label>`).join("")}<div id="live" aria-live="polite"></div></div>`:"")+(Q[2].o[ans[2]].r>0?`<p class="noprint"><button class="ghost" id="drill2">Practice: redaction drill</button></p>`:"")}
+function wire(){const cl=$("#cl");if(cl)cl.onchange=()=>{$("#clp").textContent=cl.querySelectorAll("input:checked").length+" of "+cl.querySelectorAll("input").length+" conditions met"};$("#totrain").onclick=training;const bx=[...document.querySelectorAll(".recon input")],L=$("#live"),d=$("#drill2");if(d)d.onclick=()=>drill(verdict);
+const run=()=>{const a=ans.slice();bx.forEach(b=>{if(b.checked)a[+b.dataset.k]=best(+b.dataset.k)});const c=calc(a),v=V[c.key];L.innerHTML=`<div class="mini ${v.cls}">${v.stamp}</div><p class="pill">Risk reading: ${c.pct}%${c.st?" (a hard stop still applies)":""}</p><div class="meter" aria-hidden="true"><i style="width:${Math.max(c.pct,4)}%;background:var(--${c.key})"></i></div>${taskTable(a)}`};
+if(L){bx.forEach(b=>b.onchange=run);run()}}
+const DR=[["On March 4, "],["Maria Delgado",1],[" ("],["DOB 07/19/1984",1],["), of "],["22 Birch Lane",1],[", told her attorney that her employer, "],["Brightline Freight",1],[", had "],["cut her hours",0],[" after she filed "],["Claim No. 24-CV-1187",1],[" before "],["Judge Okafor",1],[". Her sister, "],["Tessa Delgado",1],[", will testify. The claim seeks "],["back pay",0],[" of "],["$48,000",1],["."]];
+let red=[];
+function drill(back){tab("drills");red=[];view.innerHTML=`<div class="card"><p class="stage fun">[The clerk slides a manila folder across the bench.]</p><h2>Redaction drill</h2><p>Before this goes into any AI tool, black out everything that could identify the client or the case. Click a phrase to redact it. The facts are fictional and for practice only.</p><p class="serif" style="font-size:18px;line-height:2.1">${DR.map(([t,s],x)=>s===undefined?t:`<button class="tok" data-x="${x}" aria-pressed="false">${t}</button>`).join("")}</p><p id="res" aria-live="polite"></p><div class="nav"><button class="ghost" id="bk">Back</button><button class="go" id="chk">Check my redactions</button></div></div>`;
+document.querySelectorAll(".tok").forEach(b=>b.onclick=()=>{const x=+b.dataset.x;red[x]=!red[x];b.setAttribute("aria-pressed",!!red[x])});
+$("#bk").onclick=back;
+$("#chk").onclick=()=>{let c=0,mi=0,ov=0,n=0;DR.forEach(([t,s],x)=>{if(s===undefined)return;const b=document.querySelector('.tok[data-x="'+x+'"]');b.classList.remove("miss","over");if(s){n++;if(red[x])c++;else{mi++;b.classList.add("miss")}}else if(red[x]){ov++;b.classList.add("over")}});
+$("#res").innerHTML=`<b>${c} of ${n}</b> identifying details redacted. ${mi?`${mi} missed (outlined in red). `:""}${ov?`${ov} didn't need redacting (outlined in amber). `:""}${!mi&&!ov?"Clean work, counsel. ":""}<span class="fun">${mi?"Names, dates, addresses, employers and case numbers all point back to a real person.":""}</span>`}}
+let scan=null,pre={};
+const tab=n=>document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.t==n));
+const RX={ssn:/\b\d{3}-\d{2}-\d{4}\b/g,email:/\b[\w.+-]+@[\w-]+\.[\w.]+\b/g,phone:/\(?\b\d{3}\)?[-. ]\d{3}[-. ]\d{4}\b/g,dob:/\b(?:DOB|[Dd]ate of [Bb]irth)[:\s]+[\w\/ ,.-]{4,20}/g,addr:/\b\d{1,5}\s+[A-Z][a-z]+(?:\s[A-Z][a-z]+)?\s(?:Street|St|Avenue|Ave|Road|Rd|Lane|Ln|Drive|Dr|Boulevard|Blvd|Court|Ct)\b/g,caseno:/\b(?:No\.|Case|Docket)\s*(?:No\.)?\s*[\w:-]*\d[\w:-]*/g,money:/\$\d[\d,]*(?:\.\d\d)?/g,name:/\b(?:Mr|Ms|Mrs|Dr)\.\s+[A-Z][a-z]+(?:\s[A-Z][a-z]+)?/g};
+const RL={ssn:"Social Security numbers",email:"email addresses",phone:"phone numbers",dob:"dates of birth",addr:"street addresses",caseno:"case or docket numbers",money:"dollar amounts",name:"titled names (Mr., Ms., Dr.)"};
+const MK=/\b(?:privileged|attorney[- ]client|work[- ]product|confidential|under seal|protective order|HIPAA|medical records?|minor child|social security)\b/gi;
+const CIT=/\b\d{1,3}\s+(?:U\.S\.|S\.\s?Ct\.|F\.\s?(?:2d|3d|4th)|F\.\s?Supp\.(?:\s?[23]d)?|Mass\.(?:\sApp\.\sCt\.)?|N\.E\.(?:\s?[23]d)?|A\.\s?[23]d|P\.\s?[23]d|Cal\.(?:\s?App\.)?(?:\s?[2-5]th)?)\s+\d{1,4}\b/g;
+const AI=/as an ai (?:language )?model|chatgpt|generated by (?:ai|claude|gpt)|large language model/i;
+const MT=[[2,/summary judgment|motion to dismiss|judgment on the pleadings|directed verdict|preliminary injunction|dispositive/i,"dispositive or high-stakes"],[1,/motion to (?:compel|suppress|strike|reconsider|exclude)|in limine|sanctions|remand/i,"substantive"],[0,/extension of time|continuance|scheduling|pro hac vice|leave to|assented/i,"routine or procedural"]];
+const load=u=>new Promise((ok,no)=>{const s=document.createElement("script");s.src=u;s.onload=ok;s.onerror=()=>no(new Error("Couldn't load the reader for this file type. Paste the text instead."));document.head.appendChild(s)});
+async function readFile(f){const n=f.name.toLowerCase();
+if(/\.(txt|md)$/.test(n))return f.text();
+if(n.endsWith(".docx")){await load("https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js");return(await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value}
+if(n.endsWith(".pdf")){await load("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";const d=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;let s="";for(let p=1;p<=Math.min(d.numPages,60);p++)s+=(await(await d.getPage(p)).getTextContent()).items.map(x=>x.str).join(" ")+"\n";return s}
+throw new Error("Unsupported file type. Use .docx, .pdf or .txt, or paste the text.")}
+function wireIntake(){const run=async f=>{const o=$("#scanout");o.textContent="Scanning...";try{const t=f?await readFile(f):$("#paste").value;if(t.trim().length<40)throw new Error("Not enough text to scan. Upload a document or paste a few sentences. Scanned-image PDFs have no readable text.");showScan(t)}catch(e){o.textContent="";const p=document.createElement("p");p.className="react";p.style.fontStyle="normal";p.textContent=e.message;o.append(p)}};
+$("#file").onchange=e=>e.target.files[0]&&run(e.target.files[0]);$("#scanbtn").onclick=()=>run(null);
+const d=$("#drop");d.ondragover=e=>e.preventDefault();d.ondrop=e=>{e.preventDefault();e.dataTransfer.files[0]&&run(e.dataTransfer.files[0])}}
+function sumScan(){return`${scan.words} words reviewed. ${scan.ids} possible identifying details, ${scan.mk} confidentiality markers, and ${scan.ci} reporter citations to verify${scan.ai?"; some text reads like AI output":""}. Motion type: ${scan.mt||"not detected"}.`}
+function showScan(t){DOC=t;const c={};let ids=0;for(const k in RX){c[k]=(t.match(RX[k])||[]).length;ids+=c[k]}
+const mk=(t.match(MK)||[]).length,ci=(t.match(CIT)||[]).length,mt=MT.find(x=>x[1].test(t));
+scan={ids,mk,ci,ai:AI.test(t),mt:mt&&mt[2],words:t.split(/\s+/).length,c};
+pre={};ans=[];if(mt){ans[0]=mt[0];pre[0]=1}ans[2]=mk||c.ssn||c.dob?2:ids?1:0;pre[2]=1;
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;"),all=new RegExp(Object.values(RX).concat(CIT).map(r=>"(?:"+r.source+")").join("|"),"g");
+const html=esc(t.slice(0,2500)).replace(all,m=>`<mark>${m}</mark>`).replace(MK,m=>`<mark class="m2">${m}</mark>`).replace(/\n/g,"<br>");
+const found=Object.keys(RX).filter(k=>c[k]).map(k=>`${c[k]} ${RL[k]}`);
+$("#scanout").innerHTML=`<div class="recon"><h3 style="margin-top:0">Intake report</h3><p>${sumScan()}</p><p><b>Possible identifying details:</b> ${found.length?found.join(", "):"none matched"}.</p>${ci?`<p>${ci} reporter citation${ci>1?"s":""} found. Each one needs to be pulled and read before filing.</p>`:""}<details open><summary>Preview with flagged text highlighted (yellow: details and citations, pink: confidentiality markers)</summary><div class="prev">${html}</div></details><p class="pill">This is pattern matching. It can't catch every name or fact, and a clean scan is not clearance to paste the document into an AI tool.</p><button class="go" id="gohear">Start the hearing with these findings</button></div>`;
+$("#gohear").onclick=()=>{i=0;ask()}}
+function drillMenu(){tab("drills");view.innerHTML=`<div class="card"><h2>Practice drills</h2><p>Two short exercises with invented facts. Neither uses real cases or people.</p><div class="opts"><button class="opt" id="d1"><b>Redaction drill</b><br>Black out the details that identify a client before anything goes into an AI tool.</button><button class="opt" id="d2"><b>Spot the fake citation</b><br>Four citations from an AI-assisted draft. Which would you file?</button></div></div>`;$("#d1").onclick=()=>drill(drillMenu);$("#d2").onclick=cites}
+const CT=[{c:"Harlan v. Metrotech Logistics, 412 Ex. Cas. 3d 877 (1st Cir. 2005)",s:"Cited for: an employer's written hours policy bars any overtime claim.",bad:1,r:"No such case exists in the database. The AI invented it, complete with a plausible court and year."},
+{c:"Pruitt v. Commonwealth Insurance Co., 389 Ex. Cas. 214 (1983)",s:"Cited for: late notice never defeats coverage.",bad:1,r:"The case exists, but it holds the opposite: late notice can defeat coverage when the insurer is prejudiced. The AI misstated the holding."},
+{c:"Okonkwo v. Ridgeway Hospital, 455 Ex. Cas. 2d 31 (D. Mass. 2006)",s:"Cited for: a hospital owes a duty to warn of known hazards on its premises.",bad:0,r:"Verified. The case exists, says what the draft claims, and is still good law."},
+{c:"Delacroix v. Summit Builders, 301 Ex. Cas. 3d 120 (1st Cir. 2002)",s:"Cited for: a general contractor is never liable for a subcontractor's negligence.",bad:1,r:"The case exists and said that, but a later decision overruled it in 2011. It is no longer good law."}];
+function cites(){tab("drills");const g=[];const draw=()=>{const done=g.filter(x=>x!=null).length;view.innerHTML=`<div class="card"><p class="stage fun">[Exhibit A: a draft the AI was very confident about.]</p><h2>Spot the fake citation</h2><p>An AI-assisted draft cites these four cases. Judge each one, then see what a database lookup finds. All cases are invented for practice.</p>${CT.map((x,k)=>`<div class="recon"><b>${x.c}</b><br><span class="pill">${x.s}</span>${g[k]==null?`<div class="nav" style="justify-content:flex-start;margin-top:8px"><button class="ghost" data-k="${k}" data-v="0">Looks reliable</button><button class="ghost" data-k="${k}" data-v="1">Looks suspicious</button></div>`:`<p style="margin:8px 0 0"><b class="${x.bad?"v-no":"v-ok"}">${x.bad?"Not safe to file.":"Safe to file."}</b> You said it looked ${g[k]?"suspicious":"reliable"}. ${x.r}</p>`}</div>`).join("")}${done==4?`<p class="serif" style="font-size:18px">Three of the four were unsafe, and all four looked equally polished. Only looking each one up told the difference.</p>`:""}<div class="nav"><button class="ghost" id="bk">Back</button></div></div>`;view.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{g[+b.dataset.k]=+b.dataset.v;draw()});$("#bk").onclick=drillMenu};draw()}
+const tr={};
+const TM=[
+{id:"disc",t:"Find the disclosure rules in your jurisdiction",qs:[4],why:"Some courts and individual judges require disclosure or certification of AI use. Rules differ by court and change often, and the duty of candor to the tribunal (Model Rule 3.3) applies either way.",steps:["Read the local rules of the court where you are filing, including anything on AI, certifications and signature requirements.","Check the assigned judge's individual practices or standing orders. This is where many AI requirements appear.","Check the scheduling or case management order in your matter for AI-specific terms.","Search your state bar's website for ethics opinions or guidance on generative AI, and read ABA Formal Opinion 512 for the national baseline.","If anything is unclear, ask the clerk's office which document governs. They cannot give legal advice but can point you to the right source.","Record what you found, the source and the date you checked in your matter file, and recheck before each new filing."],done:"You can name the court, judge and bar sources you checked, the date, and whether disclosure is required."},
+{id:"comp",t:"Gain competence in the AI tool you want to use",qs:[6],why:"Competence (Model Rule 1.1) includes understanding the benefits and risks of the technology you use. ABA Formal Opinion 512 expects a reasonable understanding of a generative AI tool's capabilities and limits.",steps:["Read the tool's documentation and terms, especially its stated limitations.","Test it on non-confidential practice material. Ask about a topic you know well and check every answer.","Try to make it fail: ask for authority on a point of law, then look up each case yourself. Note what it invents or misstates.","Write a short list of tasks it does well and tasks you will not use it for.","Take a CLE or vendor training on generative AI. Many state bars and bar associations offer them.","Re-test after major updates and whenever you switch tools."],done:"You can explain in a few sentences what the tool does well, how it fails, and what you will never use it for."},
+{id:"bill",t:"Structure your billing protocols for AI use",qs:[9],why:"Client communication (Model Rule 1.4) and reasonable fees (Rule 1.5) both apply. ABA Formal Opinion 512 says hourly billing reflects actual time spent, not time the AI saved.",steps:["Decide how AI-assisted work will be billed: hourly, flat or hybrid.","For hourly work, bill the actual time you spent, including time reviewing and verifying AI output, not the time the AI saved.","For flat or fixed fees, make sure the fee stays reasonable given the efficiency AI provides.","Treat general AI subscriptions as overhead unless the client agreed in advance to a specific charge.","Add AI language to your engagement letter: whether you may use AI, for what kinds of tasks, and how it affects fees and costs.","Write honest time entries, for example 'Reviewed and revised draft motion; verified citations.'","Spot-check a few invoices each month to confirm entries match real time."],done:"Your engagement letter and your time entries both state how AI is used and how it is billed."},
+{id:"pol",t:"Implement an AI policy",qs:[8],why:"Supervision duties (Model Rules 5.1 and 5.3) cover lawyers and non-lawyers who work under you. A written policy is how a small office shows it took them seriously.",steps:["List the AI tools you approve and state that nothing else may be used for client work.","Sort tasks into allowed, allowed with review, and prohibited.","Set data rules: what may be entered, what may never be entered, and when to anonymize.","Require verification of every citation and quotation before anything is filed.","State who discloses AI use to courts or clients, and how.","Assign supervision: who reviews AI-assisted work and who trains staff.","Add an incident step for confidential data entered by mistake or a bad citation filed.","Date the policy, have everyone sign it, and review it at least twice a year."],done:"A short written policy exists, everyone who touches client work has read it, and it has a review date."},
+{id:"sec",t:"Set security parameters",qs:[2,3],why:"Model Rule 1.6(c) requires reasonable efforts to prevent unauthorized disclosure of client information. Where information is retained or used to train a tool, informed client consent may be required.",steps:["Use business or enterprise accounts, not free consumer accounts, for anything touching client work.","Read the vendor's terms: whether inputs are kept, used to train models, or seen by staff, and where they are stored.","Turn off training on your data and chat history wherever the tool allows it.","Ask for security documentation, such as SOC 2 or ISO 27001 reports, and a data processing agreement.","Require multi-factor authentication and individual logins. No shared accounts.","Anonymize inputs by default and keep client identifiers out of prompts.","Know how to delete data and how to report a breach, and check your state's breach notification duties.","Get informed client consent before entering confidential information into tools that retain or learn from inputs, where required."],done:"You can say which tool, which account type, what data it holds and how that data is protected."}];
+function mod(m,hot){return`<details class="mod${hot?" hot":""}"${hot?" open":""}><summary>${m.t}${hot?' <span class="tag">Start here</span>':""} <span class="pill" id="c-${m.id}"></span></summary><p>${m.why}</p>${hot?`<p><b>Why this came up:</b> ${m.qs.filter(k=>Q[k].o[ans[k]].r>0).map(k=>`&ldquo;${Q[k].o[ans[k]].t}&rdquo;`).join("; ")}.</p>`:""}<ul class="cl">${m.steps.map((s,k)=>`<li><label><input type="checkbox" data-s="${m.id+k}"${tr[m.id+k]?" checked":""}><span>${s}</span></label></li>`).join("")}</ul><p class="pill"><b>You're done when:</b> ${m.done}</p></details>`}
+function training(){tab("training");const full=Q.every((_,k)=>ans[k]!=null);const sc=m=>full?m.qs.reduce((s,k)=>s+Q[k].w*Q[k].o[ans[k]].r,0):0;const L=TM.map(m=>({m,s:sc(m)})).sort((a,b)=>b.s-a.s);
+view.innerHTML=`<div class="card"><h2>Training</h2><p>${full?"Five short courses, sorted by your hearing results. Courses marked Start here cover the gaps that raised your risk.":"Five short courses on the gaps that most often decide the ruling. Finish the hearing and they will sort themselves by your results."}</p><p class="pill" id="tp" aria-live="polite"></p>${L.map(({m,s})=>mod(m,s>0)).join("")}<p class="fine">General guidance, not legal advice. Rules differ by jurisdiction and change often, so confirm each point against your own sources.</p></div>`;
+const prog=()=>{let n=0,t=0;TM.forEach(m=>{const c=m.steps.filter((_,k)=>tr[m.id+k]).length;n+=c;t+=m.steps.length;$("#c-"+m.id).textContent=c+" of "+m.steps.length+" steps"});$("#tp").textContent=n+" of "+t+" steps done"};
+view.querySelectorAll(".mod input").forEach(b=>b.onchange=()=>{tr[b.dataset.s]=b.checked;prog()});prog()}
+let DOC="",KEY={};
+const E=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const cp=(id,b)=>{const t=$(id),ok=()=>b.textContent="Copied",no=()=>b.textContent="Selected: press Ctrl+C";t.select();navigator.clipboard?navigator.clipboard.writeText(t.value).then(ok,no):no()};
+const bkb=()=>`<div class="nav"><button class="ghost" id="bk">Back to toolkit</button></div>`;
+function toolkit(){tab("toolkit");view.innerHTML=`<div class="card"><h2>Toolkit</h2><p>Working tools that run in your browser. Nothing is uploaded.</p><div class="opts"><button class="opt" id="t1"><b>Auto-redact with a restore key</b><br>Swap identifying details for placeholders before using an AI tool, then restore them afterward.</button><button class="opt" id="t2"><b>Citation worklist</b><br>Pull every citation from a draft and track pulled, read and still-good-law checks.</button><button class="opt" id="t3"><b>Policy and engagement-letter generator</b><br>Draft an AI use policy and a client clause from your choices.</button><button class="opt" id="t4"><b>AI use log</b><br>Record each AI-assisted task and how it was verified.</button></div></div>`;$("#t1").onclick=redactor;$("#t2").onclick=worklist;$("#t3").onclick=gen;$("#t4").onclick=ulog}
+function redactor(){tab("toolkit");view.innerHTML=`<div class="card"><h2>Auto-redact</h2><p>Paste text, or use the document you scanned. Identifying details become placeholders such as [PERSON_1]. Add names the scanner can't recognize.</p><textarea class="ta" id="src" rows="6" aria-label="Text to redact">${E(DOC)}</textarea><label>Also redact these terms (comma-separated)<input class="ta" id="cust" placeholder="Client name, employer, town"></label><button class="go" id="rd">Redact</button><div id="rout"></div>${bkb()}</div>`;$("#bk").onclick=toolkit;
+$("#rd").onclick=()=>{let t=$("#src").value;KEY={};const n={},idm={};const sub=(re,ty)=>{t=t.replace(re,m=>{const q=ty+"|"+m.toLowerCase();if(!idm[q]){idm[q]="["+ty+"_"+(n[ty]=(n[ty]||0)+1)+"]";KEY[idm[q]]=m}return idm[q]})};
+$("#cust").value.split(/[,\n]/).map(s=>s.trim()).filter(Boolean).forEach(s=>sub(new RegExp(s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"gi"),"TERM"));
+[["ssn","SSN"],["email","EMAIL"],["phone","PHONE"],["dob","DOB"],["addr","ADDRESS"],["caseno","CASENO"],["money","AMOUNT"],["name","PERSON"]].forEach(([k,ty])=>sub(RX[k],ty));
+$("#rout").innerHTML=`<h3>Sanitized text</h3><textarea class="ta" id="clean" rows="6" readonly aria-label="Sanitized text">${E(t)}</textarea><button class="ghost" id="c1">Copy sanitized text</button><p class="pill">Pattern matching misses things. Read the result yourself before it goes anywhere.</p><h3>Restore key (private)</h3><p class="pill">Held in this page's memory only. Reloading clears it, and the key itself is sensitive.</p><textarea class="ta" id="keyt" rows="4" readonly aria-label="Restore key">${E(Object.entries(KEY).map(([a,b])=>a+" = "+b).join("\n"))}</textarea><h3>Restore</h3><p>Paste the AI's output that still contains placeholders.</p><textarea class="ta" id="ai" rows="4" aria-label="AI output"></textarea><button class="go" id="rs">Restore details</button><textarea class="ta" id="restored" rows="4" readonly hidden aria-label="Restored text"></textarea>`;
+$("#c1").onclick=e=>cp("#clean",e.target);$("#rs").onclick=()=>{const r=$("#restored");r.hidden=false;r.value=$("#ai").value.replace(/\[[A-Z]+_\d+\]/g,m=>KEY[m]||m)}}}
+function worklist(){tab("toolkit");view.innerHTML=`<div class="card"><h2>Citation worklist</h2><p>Paste a draft, or use the document you scanned. Each reporter citation becomes a row. A citation is cleared only when you pulled it, read it, and confirmed it is still good law.</p><textarea class="ta" id="src" rows="6" aria-label="Draft text">${E(DOC)}</textarea><button class="go" id="wl">Build worklist</button><div id="wout"></div>${bkb()}</div>`;$("#bk").onclick=toolkit;
+$("#wl").onclick=()=>{const t=$("#src").value,seen=new Set(),rows=[],re=new RegExp(CIT.source,"g");let m;while((m=re.exec(t))){const c=m[0].replace(/\s+/g," ");if(seen.has(c))continue;seen.add(c);let x=t.slice(Math.max(0,m.index-80),m.index).replace(/\s+/g," ");const b=Math.max(x.lastIndexOf(". "),x.lastIndexOf("; "));if(b>=0)x=x.slice(b+2);rows.push((x+c).trim())}
+if(!rows.length){$("#wout").textContent="No reporter citations found. That does not mean the draft has none. Check statutes, rules and case names by hand too.";return}
+$("#wout").innerHTML=`<p id="wp" class="pill" aria-live="polite"></p><div style="overflow-x:auto"><table class="lt"><tr><th>Citation</th><th>Pulled</th><th>Read</th><th>Good law</th></tr>${rows.map((r,k)=>`<tr><td>${E(r)}</td>${["Pulled","Read","Still good law"].map(l=>`<td><input type="checkbox" data-r="${k}" aria-label="${l}: ${E(r)}"></td>`).join("")}</tr>`).join("")}</table></div><p class="pill">Use Westlaw, Lexis or the court's own database. Also check statutes, rules and every quotation by hand.</p>`;
+const up=()=>{let c=0;rows.forEach((_,k)=>{if([...document.querySelectorAll('[data-r="'+k+'"]')].every(b=>b.checked))c++});$("#wp").textContent=c+" of "+rows.length+" citations cleared"};document.querySelectorAll("[data-r]").forEach(b=>b.onchange=up);up()}}
+function gen(){tab("toolkit");view.innerHTML=`<div class="card"><h2>Policy and engagement-letter generator</h2><p>Answer a few questions, edit the drafts, then check them against your own rules and judgment.</p><div class="row"><label>Firm name<input id="fn"></label><label>Attorney name<input id="fa"></label><label>Client name (stays in your browser)<input id="fcl"></label><label>Matter description<input id="fm" placeholder="e.g. a contract dispute"></label><label>Approved AI tools (comma-separated)<input id="ft"></label><label>Billing model<select id="fb"><option value="h">Hourly</option><option value="f">Flat fee</option></select></label><label>Policy review schedule<input id="fd" placeholder="e.g. every six months"></label></div><fieldset><legend>Allowed tasks</legend>${["Formatting and proofreading","Summarizing material I supply","Outlining and brainstorming","Research, with every result verified","First-draft sections, with full attorney review"].map((x,k)=>`<label style="display:flex;gap:8px;margin:6px 0"><input type="checkbox" class="tk" value="${x}"${k<3?" checked":""}> ${x}</label>`).join("")}</fieldset><label style="display:flex;gap:8px;margin:10px 0"><input type="checkbox" id="fc"> Our courts or judges require AI disclosure</label><button class="go" id="mk">Generate drafts</button><div id="gout"></div>${bkb()}</div>`;$("#bk").onclick=toolkit;
+$("#mk").onclick=()=>{const at=$("#fa").value.trim()||"[Attorney name]",cl=$("#fcl").value.trim()||"[Client name]",mt=$("#fm").value.trim()||"[describe the matter]",f=$("#fn").value.trim()||"[Firm name]",tl=$("#ft").value.trim()||"[list approved tools]",tk=[...document.querySelectorAll(".tk:checked")].map(x=>x.value),h=$("#fb").value=="h",dc=$("#fc").checked,rv=$("#fd").value.trim()||"every six months";
+const P=`${f.toUpperCase()}: GENERATIVE AI USE POLICY\n\n1. Approved tools. Only these tools may be used for client work: ${tl}. No other AI tool may be used.\n\n2. Allowed tasks. ${tk.length?tk.join("; "):"[none selected]"}. Everything else is prohibited without a supervising attorney's approval.\n\n3. Data. Never enter client names, privileged material or other confidential information unless the tool has contractual confidentiality protections and any required client consent is on file. Anonymize inputs by default.\n\n4. Verification. A lawyer must pull and read every citation and check every quotation against a primary source before anything is filed or sent.\n\n5. Disclosure. ${dc?"Check each court's rules and the assigned judge's standing orders and make any required disclosure or certification.":"Before each filing, check the court's rules and the judge's standing orders for any AI disclosure or certification requirement."}\n\n6. Supervision. The supervising attorney reviews all AI-assisted work and trains staff on this policy.\n\n7. Logging. Record each AI-assisted task and its verification in the AI use log.\n\n8. Incidents. If confidential information is entered by mistake or an unverified citation is filed, stop, tell the supervising attorney immediately, and follow the firm's incident steps.\n\n9. Review. This policy is reviewed ${rv}. Everyone who works on client matters must read and sign it.`;
+const C=`USE OF GENERATIVE AI\n\nWe may use generative artificial intelligence tools to assist with tasks such as ${tk.length?tk.join(", ").toLowerCase():"[tasks]"}. We will not enter your confidential information into an AI tool unless it provides contractual confidentiality protections and, where required, you have given informed consent. A lawyer will review all AI-assisted work and verify every legal citation before it is delivered or filed. ${dc?"If a court requires disclosure of AI use in a filing, we will make it. ":""}${h?"You will be billed only for the time we actually spend, including time spent reviewing and verifying AI-assisted work. You will not be billed for time that AI saves. General AI subscription costs are part of our overhead and will not be charged to you unless we agree in writing.":"Our flat fee reflects the reasonable value of the work, including any efficiency from our tools. General AI subscription costs are part of our overhead."} If you prefer that we not use AI on your matter, tell us in writing.`;
+const LT=`${f}\n\n[Date]\n\n${cl}\n\nRe: Engagement for ${mt}\n\nDear ${cl}:\n\nThank you for choosing ${f}. This letter sets out the terms of our representation.\n\n1. Scope. We will represent you in ${mt}. Anything outside this scope requires a separate written agreement.\n\n2. Fees and costs. ${h?"Our fees are billed hourly at [rate] per hour for attorneys and [rate] per hour for staff. [Retainer, if any.]":"Our fee for this matter is a flat fee of [amount]. [Payment schedule.]"} You will also be responsible for court costs and other expenses as described in our fee policy. [Add your standard fee, retainer and trust-account terms.]\n\n3. ${C}\n\n4. Communication. We will keep you informed of significant developments and respond to your questions promptly.\n\n5. Termination. You may end our representation at any time. We may withdraw as permitted by the rules of professional conduct.\n\nIf these terms are acceptable, please sign and return a copy of this letter.\n\nSincerely,\n\n\n______________________\n${at}\n${f}\n\nAGREED AND ACCEPTED:\n\n\n______________________\n${cl}          Date: ____________`;
+$("#gout").innerHTML=`<h3>AI use policy</h3><textarea class="ta" id="p1" rows="12" aria-label="Policy draft">${E(P)}</textarea><button class="ghost" id="b1">Copy policy</button> <button class="go" id="d1">Download PDF</button> <button class="ghost" id="w1">Download Word</button><h3>Engagement letter</h3><textarea class="ta" id="p2" rows="16" aria-label="Engagement letter draft">${E(LT)}</textarea><button class="ghost" id="b2">Copy letter</button> <button class="go" id="d2">Download PDF</button> <button class="ghost" id="w2">Download Word</button><p class="pill">Starting drafts only. Not legal advice. Edit the text first. The PDF and Word files use whatever is in the box, in 11-point Arial with the numbered headings in bold. Add your own standard terms to the letter.</p>`;
+$("#b1").onclick=e=>cp("#p1",e.target);$("#b2").onclick=e=>cp("#p2",e.target);const pr=id=>{$("#pv").innerHTML='<div class="pdoc">'+E($(id).value)+'</div>';document.body.classList.add("pm");window.print();setTimeout(()=>document.body.classList.remove("pm"),1000)};
+const SG=(l,k)=>{if(!l.trim())return[];if(k==0||/^(Re:|AGREED AND ACCEPTED:)/.test(l)||/^\d+\.\s[A-Z][A-Z ]+$/.test(l))return[[l,1]];const m=l.match(/^(\d+\.\s[^.]+\.)(.*)$/);return m?[[m[1],1],[m[2],0]]:[[l,0]]};
+const sv=async(data,name,btn)=>{try{const dls=window.claude&&await claude.use("downloads");if(dls){await dls.save({filename:name,data})}else{const a=document.createElement("a");a.href=URL.createObjectURL(data instanceof Blob?data:new Blob([data]));a.download=name;document.body.append(a);a.click();a.remove()}btn.textContent="Saved"}catch(e){btn.textContent=e&&e.code=="declined"?"Download cancelled":"Couldn't save the file."}};
+const dl=async(id,name,btn)=>{try{await load("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");const d=new jspdf.jsPDF({unit:"pt",format:"letter"});d.setFontSize(11);d.setFont("helvetica","normal");const sp=d.getTextWidth(" ");let y=72,x=72;
+$(id).value.split("\n").forEach((l,k)=>{const s=SG(l,k);x=72;if(!s.length){y+=15;return}s.forEach(([t,b])=>{d.setFont("helvetica",b?"bold":"normal");t.split(/\s+/).filter(Boolean).forEach(w=>{const ww=d.getTextWidth(w);if(x+ww>540){x=72;y+=15}if(y>720){d.addPage();y=72}d.text(w,x,y);x+=ww+sp})});y+=15});
+await sv(d.output("arraybuffer"),name,btn)}catch(e){btn.textContent="Couldn't create the PDF."}};
+const dw=async(id,name,btn)=>{try{await load("https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js");const D=window.docx,P=$(id).value.split("\n").map((l,k)=>new D.Paragraph({children:SG(l,k).map(([t,b])=>new D.TextRun({text:t,bold:!!b}))}));const doc=new D.Document({styles:{default:{document:{run:{font:"Arial",size:22}}}},sections:[{properties:{page:{size:{width:12240,height:15840},margin:{top:1440,right:1440,bottom:1440,left:1440}}},children:P}]});await sv(await D.Packer.toBlob(doc),name,btn)}catch(e){btn.textContent="Couldn't create the Word file."}};
+$("#d1").onclick=e=>dl("#p1","AI-use-policy.pdf",e.target);$("#w1").onclick=e=>dw("#p1","AI-use-policy.docx",e.target);$("#d2").onclick=e=>dl("#p2","Engagement-letter.pdf",e.target);$("#w2").onclick=e=>dw("#p2","Engagement-letter.docx",e.target)}}
+function ulog(){tab("toolkit");let L=[];try{L=JSON.parse(localStorage.getItem("mtu_log")||"[]")}catch(e){}
+const save=()=>{try{localStorage.setItem("mtu_log",JSON.stringify(L))}catch(e){}};
+const draw=()=>{const csv="date,matter,tool,task,minutes,checks,notes\n"+L.map(e=>[e.d,e.m,e.t,e.k,e.r,e.v.filter(Boolean).length,e.n].map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(",")).join("\n");
+view.innerHTML=`<div class="card"><h2>AI use log</h2><p>One row per AI-assisted task. Use a matter number, never a client name. The log stays in this browser only.</p><div class="row"><label>Date<input id="ld" type="date" value="${new Date().toISOString().slice(0,10)}"></label><label>Matter number<input id="lm"></label><label>Tool<input id="lt"></label><label>Task<select id="lk"><option>Formatting or proofreading</option><option>Summarizing</option><option>Research</option><option>Drafting</option><option>Other</option></select></label><label>Minutes spent reviewing<input id="lr" type="number" min="0"></label><label>Notes<input id="ln"></label></div>${["Citations verified","Read in full","Details anonymized"].map(x=>`<label style="display:flex;gap:8px;margin:6px 0"><input type="checkbox" class="lv"> ${x}</label>`).join("")}<button class="go" id="la">Add entry</button>${L.length?`<div style="overflow-x:auto;margin-top:14px"><table class="lt"><tr><th>Date</th><th>Matter</th><th>Tool</th><th>Task</th><th>Min</th><th>Checks</th><th>Notes</th></tr>${L.map(e=>`<tr><td>${E(e.d)}</td><td>${E(e.m)}</td><td>${E(e.t)}</td><td>${E(e.k)}</td><td>${E(e.r)}</td><td>${e.v.filter(Boolean).length}/3</td><td>${E(e.n)}</td></tr>`).join("")}</table></div><textarea class="ta" id="csv" rows="4" readonly aria-label="Log as CSV">${E(csv)}</textarea><button class="ghost" id="lc">Copy as CSV</button> <button class="ghost" id="lx">Clear log</button>`:"<p class='pill'>No entries yet.</p>"}${bkb()}</div>`;
+$("#bk").onclick=toolkit;$("#la").onclick=()=>{L.push({d:$("#ld").value,m:$("#lm").value,t:$("#lt").value,k:$("#lk").value,r:$("#lr").value,n:$("#ln").value,v:[...document.querySelectorAll(".lv")].map(c=>c.checked)});save();draw()};
+if(L.length){$("#lc").onclick=e=>cp("#csv",e.target);$("#lx").onclick=()=>{L=[];save();draw()}}};draw()}
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>({intake:intro,hearing:()=>{i=0;ask()},drills:drillMenu,training:training,toolkit:toolkit})[b.dataset.t]());
+intro();
+</script>
+</body>
+</html>
