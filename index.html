@@ -6,12 +6,12 @@
 <title>Motion Advisor | AI Use Risk Assessment</title>
 <style>
 :root{--bg:#e9ecf1;--panel:#fff;--ink:#14213d;--mute:#4d5870;--line:#c5ccd9;--burg:#7a1f2b;--brass:#a97a1f;--ok:#1f6b45;--part:#8a5a00;--no:#7a1f2b;--btn:#14213d;--btnink:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1526;--panel:#16213a;--ink:#e8ebf2;--mute:#a4aec4;--line:#2c3a5a;--burg:#e08a96;--brass:#d9aa4f;--ok:#6fd0a0;--part:#e8b85a;--no:#f0959f;--btn:#d9aa4f;--btnink:#14213d;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0d1526;--panel:#16213a;--ink:#e8ebf2;--mute:#a4aec4;--line:#2c3a5a;--burg:#e08a96;--brass:#d9aa4f;--ok:#6fd0a0;--part:#e8b85a;--no:#f0959f;--btn:#d9aa4f;--btnink:#14213d;color-scheme:dark}
+@media (prefers-color-scheme:light){:root:not([data-theme="light"]){--bg:#0d1526;--panel:#16213a;--ink:#e8ebf2;--mute:#a4aec4;--line:#2c3a5a;--burg:#e08a96;--brass:#d9aa4f;--ok:#6fd0a0;--part:#e8b85a;--no:#f0959f;--btn:#d9aa4f;--btnink:#14213d;color-scheme:dark}}
+:root[data-theme="light"]{--bg:#0d1526;--panel:#16213a;--ink:#e8ebf2;--mute:#a4aec4;--line:#2c3a5a;--burg:#e08a96;--brass:#d9aa4f;--ok:#6fd0a0;--part:#e8b85a;--no:#f0959f;--btn:#d9aa4f;--btnink:#14213d;color-scheme:light}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.serif,h1,h2,h3{font-family:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif}
+.serif,h1,h2,h3{font-family:"Helvetica Neue", Arial, sans-serif}
 main{max-width:720px;margin:0 auto;padding:16px 16px 48px}
 .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:3px double var(--brass);padding-bottom:10px;margin-bottom:20px;font-size:14px;color:var(--mute)}
 .bar b{color:var(--ink)}
@@ -253,9 +253,9 @@ const Q=[
  {t:"Not yet; I plan to address them",r:1},
  {t:"No plan to address them",r:2}]}
 ];
-const V={ok:{cls:"v-ok",stamp:"LOWER RISK",line:"The proposed use may proceed with appropriate safeguards and attorney oversight.",plain:"Proceed with safeguards."},
-part:{cls:"v-part",stamp:"LIMITED USE",line:"Limit AI use to lower-risk tasks and address the identified concerns before relying on its output.",plain:"Limited use recommended."},
-no:{cls:"v-no",stamp:"NOT RECOMMENDED",line:"Do not proceed as proposed. Resolve the identified hard stops and reassess the proposed use.",plain:"Resolve hard stops and reassess."}};
+const V={ok:{cls:"v-ok",stamp:"GRANTED",line:"Proceed, counsel, with safeguards. The court expects every citation to be verified.",plain:"Lower-risk - use with safeguards."},
+part:{cls:"v-part",stamp:"GRANTED IN PART",line:"AI may assist with these lower-risk tasks. However, the legal judgment stays with you.",plain:"Limited use only."},
+no:{cls:"v-no",stamp:"DENIED",line:"Not today, counsel. Fix the items below and you may refile.",plain:"Not recommended."}};
 const MAXR=Q.map(q=>Math.max(...q.o.map(o=>o.r)));
 let i=-1,ans=[];
 const $=s=>document.querySelector(s),view=$("#view");
