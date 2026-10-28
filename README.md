@@ -1,6 +1,6 @@
 # Motion to Use AI (Motion Advisor)
 
-A decision-support tool that helps attorneys and legal staff evaluate whether, and how, to use generative AI when drafting motions. It is framed as a courtroom comedy: the user "files a motion to use AI" and the tool rules on it. A **Serious mode** toggle removes the jokes.
+A professional decision-support tool that helps attorneys and legal staff assess whether, and how, to use generative AI when drafting motions. It provides a weighted risk assessment, practical safeguards, training, and browser-based tools.
 
 Built for a Decision Making and Choice Management course project.
 
@@ -8,11 +8,12 @@ Built for a Decision Making and Choice Management course project.
 
 ## Features
 
-- **Document intake:** upload (.docx, .pdf, .txt) or paste text. A browser-side scan flags possible identifying details, confidentiality markers, reporter citations and motion type, then pre-fills the hearing. Nothing is uploaded or stored.
-- **Hearing:** 10 weighted questions with "why we ask" notes, hard-stop rules, and a ruling (Granted, Granted in part, Denied without prejudice) with a risk meter.
-- **Verdict by task** and a **motion for reconsideration** (what-if mode) that recalculates the ruling live.
-- **Drills:** a redaction exercise and a spot-the-fake-citation exercise (all cases are invented).
-- **Training:** five courses sorted by the user's results: disclosure rules, tool competence, billing protocols, AI policy, security parameters.
+- **Portal workspace:** a responsive ClinicFlow-inspired sidebar keeps the overview, document intake, risk assessment, drills, training, and each toolkit function directly accessible. On small screens, navigation becomes a horizontally scrollable top bar.
+- **Document intake:** upload (.docx, .pdf, .txt) or paste text. A browser-side scan flags possible identifying details, confidentiality markers, reporter citations, and motion type, then pre-fills the risk assessment. Documents are processed in the browser and are not uploaded or stored.
+- **Risk assessment:** 10 weighted questions with explanations, hard-stop rules, a risk meter, and recommended safeguards.
+- **Task comparison** and a what-if analysis that recalculates the risk assessment as safeguards change.
+- **Drills:** ten redaction exercises with a question side panel and progress feedback, plus citation-verification scenarios (all examples are fictional).
+- **Training:** five courses prioritized using the user's assessment responses: disclosure rules, tool competence, billing protocols, AI policy, and security parameters.
 - **Toolkit:** auto-redact with a restore key, citation worklist, policy and engagement-letter generator (export to PDF or Word), and an AI use log.
 
 ## Run locally
@@ -42,15 +43,17 @@ index.html   The whole app: HTML, CSS and JavaScript
 README.md    This file
 ```
 
+The overview is the home screen. The sidebar links to Document intake, Risk assessment, Practice drills, Training, Toolkit overview, Auto-redact, Citation worklist, Policy & letter generator, and AI use log. All functions remain in the single `index.html` file.
+
 ## Where to edit things
 
 All in `index.html`, inside the `<script>` block:
 
 | What | Where |
 |---|---|
-| Hearing questions, answer options, risk scores, hard stops | the `Q` array |
-| Ruling thresholds (28% and 55%) and verdict text | `verdict()` and the `V` object |
-| Per-task verdicts | `TASKS` and `taskTable()` |
+| Risk-assessment questions, answer options, risk scores, hard stops | the `Q` array |
+| Risk thresholds (28% and 55%) and outcome text | `verdict()` and the `V` object |
+| Per-task risk categories | `TASKS` and `taskTable()` |
 | Training courses | the `TM` array |
 | Document scan patterns | the `RX`, `MK`, `CIT`, `AI` and `MT` constants |
 | Policy and engagement-letter text | `gen()` (the `P`, `C` and `LT` strings) |
@@ -58,13 +61,13 @@ All in `index.html`, inside the `<script>` block:
 
 ## Scoring logic
 
-Each answer has a risk score (`r`) and each question has a weight (`w`). Risk is the weighted sum as a percentage of the maximum. Hard stops force a denial regardless of score: skipping citation verification, ignoring a court's AI rule, or entering confidential data into a tool with unknown data protections.
+Each answer has a risk score (`r`) and each question has a weight (`w`). Risk is the weighted sum as a percentage of the maximum. Hard stops mark the proposed use as not recommended regardless of score: declining to verify citations, not following an applicable court AI rule, or entering confidential data into a tool with unknown data protections.
 
 | Risk | Result |
 |---|---|
-| under 28% | Granted (proceed with safeguards) |
-| 28% to 54% | Granted in part (limited use only) |
-| 55% or more, or any hard stop | Denied without prejudice |
+| under 28% | Lower risk (proceed with safeguards) |
+| 28% to 54% | Limited use recommended |
+| 55% or more, or any hard stop | Not recommended; resolve hard stops and reassess |
 
 ## Privacy
 
