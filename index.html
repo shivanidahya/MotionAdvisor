@@ -426,7 +426,7 @@ header.top::after,footer.site::before{background:url("data:image/svg+xml,%3Csvg 
     <div class="cta"><a class="btn sm" href="#advisor">Start assessment</a></div>
   </div>
 </header>
-<div class="disclaimer-band"><div class="wrap">Educational decision support only, not legal advice. The signing attorney remains responsible for every filing. Nothing you enter here is stored.</div></div>
+<div class="disclaimer-band"><div class="wrap">Educational decision support only, not legal advice. The signing attorney remains responsible for every filing. Nothing you enter leaves your browser; only your last assessment result is saved, on this device.</div></div>
 
 <main>
 <!-- ============ HOME ============ -->
@@ -447,21 +447,9 @@ header.top::after,footer.site::before{background:url("data:image/svg+xml,%3Csvg 
         <a class="btn" href="#citations">Check citations</a>
         <a class="btn ghost" href="#motions">Learn about motions</a>
       </div>
-      <div class="trust"><span>ABA Formal Op. 512</span><span>Mass. R. Prof. C. 1.1, 1.6, 3.3, 5.3</span><span>Fed. R. Civ. P. 11</span><span>No answers stored</span></div>
+      <div class="trust"><span>ABA Formal Op. 512</span><span>Mass. R. Prof. C. 1.1, 1.6, 3.3, 5.3</span><span>Fed. R. Civ. P. 11</span><span>Nothing leaves your browser</span></div>
     </div>
-    <aside class="arch-frame" aria-label="Sample assessment result"><div class="sample-report">
-      <div class="sr-head"><span class="eyebrow">Sample report</span><span class="mono muted" style="font-size:.78rem">Motion to compel · D. Mass.</span></div>
-      <div class="sr-body">
-        <div class="verdict-line"><strong>Use with limits</strong><span class="pill warn">Risk index 41 / 100</span></div>
-        <div class="factor-row"><span>Task</span><div class="meter"><i style="width:40%;background:var(--warn)"></i></div><span class="pill warn">Moderate</span></div>
-        <div class="factor-row"><span>Confidentiality</span><div class="meter"><i style="width:55%;background:var(--warn)"></i></div><span class="pill warn">Moderate</span></div>
-        <div class="factor-row"><span>Competence</span><div class="meter"><i style="width:20%;background:var(--ok)"></i></div><span class="pill ok">Low</span></div>
-        <div class="factor-row"><span>Verification</span><div class="meter"><i style="width:15%;background:var(--ok)"></i></div><span class="pill ok">Low</span></div>
-        <div class="factor-row"><span>Jurisdiction</span><div class="meter"><i style="width:60%;background:var(--warn)"></i></div><span class="pill warn">Moderate</span></div>
-        <div class="factor-row"><span>Client comms</span><div class="meter"><i style="width:30%;background:var(--ok)"></i></div><span class="pill ok">Low</span></div>
-      </div>
-      <div class="sr-foot">Each result lists key factors, a recommended workflow, a verification checklist and the rules to read.</div>
-    </div></aside>
+    <aside class="arch-frame" aria-label="Your last assessment result"><div class="sample-report" id="last-report" aria-live="polite"></div></aside>
   </div></div>
 
   <div class="band"><div class="wrap">
@@ -510,7 +498,7 @@ header.top::after,footer.site::before{background:url("data:image/svg+xml,%3Csvg 
 <!-- ============ ADVISOR ============ -->
 <section class="view" id="v-advisor" hidden>
   <div class="wrap">
-    <div class="page-head"><div><div class="eyebrow">AI Drafting Advisor</div><h1>Should AI help draft this motion?</h1><p>Answer for the specific motion in front of you. Your answers stay in this browser tab and disappear when you leave.</p></div></div>
+    <div class="page-head"><div><div class="eyebrow">AI Drafting Advisor</div><h1>Should AI help draft this motion?</h1><p>Answer for the specific motion in front of you. Your answers stay in this browser. Your latest result is saved on this device so it appears on the home page, and you can clear it there.</p></div></div>
     <div id="adv-root"></div>
   </div>
 </section>
@@ -765,7 +753,7 @@ function allComplete(){return SECTIONS.every((s,i)=>sectionComplete(i))}
 function renderAdvisor(){
   const root=$("#adv-root");
   if(adv.step===-1){root.innerHTML=introHTML();bindIntro();return}
-  if(adv.step===STEP_RESULT){root.innerHTML=resultHTML(compute());bindResult();return}
+  if(adv.step===STEP_RESULT){const r=compute();root.innerHTML=resultHTML(r);bindResult();if(!adv.at)saveLast(r);return}
   const pct=adv.step===STEP_REVIEW?100:Math.round(adv.step/SECTIONS.length*100);
   let rail=SECTIONS.map((s,i)=>{const cls=i===adv.step?"cur":(sectionComplete(i)?"done":"");const can=sectionComplete(i)||i<=firstIncomplete();return `<button class="rs ${cls}" data-go="${i}" ${can?"":"disabled"}><span class="n">${sectionComplete(i)&&i!==adv.step?"✓":i+1}</span><span class="lbl">${s.title}</span></button>`}).join("");
   rail+=`<button class="rs ${adv.step===STEP_REVIEW?"cur":""}" data-go="${STEP_REVIEW}" ${allComplete()?"":"disabled"}><span class="n">R</span><span class="lbl">Review answers</span></button>`;
@@ -801,7 +789,7 @@ function introHTML(){
     <div class="notice"><strong>Disclaimer.</strong> Motion Advisor is an educational decision-support tool. It is not legal advice and does not replace your professional judgment, supervisor review, or the rules and standing orders of your court. A low-risk result never means a filing can skip attorney review. Results rely on your own answers.</div>
     <h3 style="font-size:1.5rem;margin:22px 0 8px">What you’ll do</h3>
     <p class="muted">Thirteen multiple-choice questions in six sections, about four minutes. Each question has a “Why we ask this” note. You can go back and edit at any time, and you’ll review all answers before the result.</p>
-    <p class="muted" style="margin-top:10px">Answer for one specific motion. Don’t think about client names or facts; nothing here asks for them, and nothing is saved.</p>
+    <p class="muted" style="margin-top:10px">Answer for one specific motion. Don’t think about client names or facts; nothing here asks for them, and nothing leaves your browser.</p>
     <label class="check-line"><input type="checkbox" id="adv-ack" ${adv.ack?"checked":""}><span>I understand this is not legal advice and that I remain responsible for reviewing anything I file.</span></label>
     <div class="nav-btns"><span></span><button class="btn primary" id="adv-start" ${adv.ack?"":"disabled"}>Begin assessment →</button></div>
   </div><div class="card">
@@ -832,7 +820,7 @@ function bindSteps(){
     if(adv.fromReview&&allComplete()){adv.fromReview=false;adv.step=STEP_REVIEW}
     else adv.step=adv.step+1>=SECTIONS.length?STEP_REVIEW:adv.step+1;
     renderAdvisor();scrollTop()});
-  const see=$("#adv-see"); if(see)see.addEventListener("click",()=>{adv.step=STEP_RESULT;renderAdvisor();scrollTop()});
+  const see=$("#adv-see"); if(see)see.addEventListener("click",()=>{adv.at=null;adv.step=STEP_RESULT;renderAdvisor();scrollTop()});
 }
 
 function compute(){
@@ -857,7 +845,7 @@ function compute(){
   else if(index<=30){verdict="Recommended with safeguards";cls="ok";summary="Your setup supports using AI for this task. Keep the workflow and checklist below; a low result never removes the need for full attorney review."}
   else if(index<=55){verdict="Use with limits";cls="warn";summary="AI can help, but only on the narrower parts of this motion. Close the moderate- and high-risk gaps first."}
   else{verdict="Not recommended";cls="bad";summary="The combined risk is too high for this motion right now. Draft without AI, or fix the high-risk areas and reassess."}
-  return {index,verdict,cls,summary,overrides:ov,factors,date:new Date()};
+  return {index,verdict,cls,summary,overrides:ov,factors,date:adv.at?new Date(adv.at):new Date()};
 }
 function workflow(A){
   const steps=["Write down, in one sentence, what the AI will do on this motion and what it will not do (no legal research, no final language without review)."];
@@ -887,7 +875,7 @@ function rulesFor(j){
    state:[["Your state’s Rules of Professional Conduct and bar AI opinions","Many state bars have issued their own generative-AI guidance."],["State analog to Rule 11","Signature and certification rule for filings."],["Court-level AI orders","Check state and local court administrative orders."]]};
   return base.concat(m[j]||[]);
 }
-const FAQ=[["Does a low-risk result mean I can skip review?","No. Every result assumes the signing attorney reviews the full motion and verifies every citation. The score measures the risk of using AI, not whether review is needed."],["Why did I get “Not recommended” with a low score?","Some answers are stop conditions: no citation check, no final review, client information in a consumer tool, or a court order restricting AI. They override the score."],["Is anything I entered saved?","No. Answers live only in this browser tab and the PDF you choose to download."],["What should I do if my court has no AI rule?","Your existing duties still apply: competence, confidentiality, candor and Rule 11. Re-check standing orders before filing, because they change."]];
+const FAQ=[["Does a low-risk result mean I can skip review?","No. Every result assumes the signing attorney reviews the full motion and verifies every citation. The score measures the risk of using AI, not whether review is needed."],["Why did I get “Not recommended” with a low score?","Some answers are stop conditions: no citation check, no final review, client information in a consumer tool, or a court order restricting AI. They override the score."],["Is anything I entered saved?","Only on your own device. Your latest answers and result are saved in this browser so the home page can show your last report. Nothing is sent anywhere. Use Clear on the home page to remove it."],["What should I do if my court has no AI rule?","Your existing duties still apply: competence, confidentiality, candor and Rule 11. Re-check standing orders before filing, because they change."]];
 
 function resultHTML(r){
   const A=adv.answers;
@@ -909,7 +897,28 @@ function resultHTML(r){
 function bindResult(){
   $("#adv-pdf").addEventListener("click",()=>makePDF(compute()));
   $("#adv-edit").addEventListener("click",()=>{adv.step=STEP_REVIEW;renderAdvisor();scrollTop()});
-  $("#adv-restart").addEventListener("click",()=>{adv.answers={};adv.step=-1;adv.ack=false;renderAdvisor();scrollTop()});
+  $("#adv-restart").addEventListener("click",()=>{adv.answers={};adv.at=null;adv.step=-1;adv.ack=false;renderAdvisor();scrollTop()});
+}
+/* ---- Last run report on the home page (saved only in this browser) ---- */
+const LAST_KEY="motionAdvisor.lastReport";let lastMem=null;
+const JSHORT={ma:"Mass. state court",dmass:"D. Mass.",fed:"Federal court",state:"State court"};
+function saveLast(r){const rec={at:r.date.toISOString(),verdict:r.verdict,cls:r.cls,index:r.index,overrides:r.overrides.length,factors:r.factors.map(f=>({title:f.title,level:f.level,ratio:f.ratio})),answers:{...adv.answers}};lastMem=rec;try{localStorage.setItem(LAST_KEY,JSON.stringify(rec))}catch(e){}renderLastReport()}
+function loadLast(){try{const s=localStorage.getItem(LAST_KEY);if(s){const r=JSON.parse(s);if(r&&r.factors&&r.answers)return r}}catch(e){}return lastMem}
+function clearLast(){lastMem=null;try{localStorage.removeItem(LAST_KEY)}catch(e){}renderLastReport();toast("Last report cleared from this browser.")}
+function renderLastReport(){
+  const el=$("#last-report");if(!el)return;const r=loadLast();
+  if(!r){el.innerHTML=`<div class="sr-head"><span class="eyebrow">Your last report</span><span class="mono muted" style="font-size:.78rem">None yet</span></div><div class="sr-body"><div class="verdict-line"><strong>No report yet</strong></div><p class="muted" style="font-size:.92rem">Finish the AI Drafting Advisor and your latest result appears here: the verdict, the risk index and how each of the six areas scored.</p><div><a class="btn primary sm" href="#advisor">Start the assessment</a></div></div><div class="sr-foot">Saved only in this browser. Nothing is sent anywhere.</div>`;return}
+  const lv=l=>l==="Low"?"ok":l==="Moderate"?"warn":"bad";
+  const mo=optOf("motionType",r.answers.motionType),mt=mo?mo.label.split(" (")[0]:"Motion";
+  const d=new Date(r.at);
+  el.innerHTML=`<div class="sr-head"><span class="eyebrow">Your last report</span><span class="mono muted" style="font-size:.78rem">${esc(mt)} · ${esc(JSHORT[r.answers.jurisdiction]||"")}</span></div>
+  <div class="sr-body"><div class="verdict-line"><strong>${esc(r.verdict)}</strong><span class="pill ${r.cls}">Risk index ${r.index} / 100</span></div>
+  ${r.overrides?`<p style="font-size:.86rem;color:var(--bad);font-weight:600">${r.overrides} automatic stop condition${r.overrides>1?"s":""}</p>`:""}
+  ${r.factors.map(f=>`<div class="factor-row"><span>${esc(f.title==="Client communication"?"Client comms":f.title)}</span><div class="meter"><i style="width:${Math.max(4,Math.round(f.ratio*100))}%;background:var(--${lv(f.level)})"></i></div><span class="pill ${lv(f.level)}">${esc(f.level)}</span></div>`).join("")}
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary sm" id="last-open">Open full report</button><button class="btn ghost sm" id="last-clear">Clear</button></div></div>
+  <div class="sr-foot">Run ${d.toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"})} at ${d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}. Saved only in this browser.</div>`;
+  $("#last-open").addEventListener("click",()=>{adv.answers={...r.answers};adv.at=r.at;adv.ack=true;adv.step=STEP_RESULT;renderAdvisor();location.hash="#advisor"});
+  $("#last-clear").addEventListener("click",clearLast);
 }
 function makePDF(r){
   if(!window.jspdf){toast("The PDF library didn’t load. Check your connection and reload.");return}
@@ -1434,8 +1443,7 @@ function initSearch(){
 }
 
 /* ---------------- INIT ---------------- */
-renderAdvisor(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route();
+renderAdvisor(); renderLastReport(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route();
 })();
 </script>
-
 </body></html>

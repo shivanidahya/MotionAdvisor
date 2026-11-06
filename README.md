@@ -12,7 +12,7 @@ Motion Advisor is a standalone browser tool for deciding how artificial intellig
 
 ## Run locally
 
-No build step or package installation is required. Open [`Motion Advisor.html`](Motion%20Advisor.html) in a modern browser, or serve the folder with any static file server:
+No build step or package installation is required. Open [`index.html`](index.html) in a modern browser, or serve the folder with any static file server:
 
 ```bash
 python3 -m http.server 8000
@@ -30,7 +30,7 @@ Motion Advisor is an educational decision-support tool, not a lawyer, legal rese
 
 ```text
 MotionAdvisor/
-├── Motion Advisor.html   # Complete browser application
+├── index.html            # Complete browser application
 └── README.md             # Project documentation
 ```
 
