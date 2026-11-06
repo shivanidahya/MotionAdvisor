@@ -211,6 +211,10 @@ ol.flow{margin:0;padding-left:1.3em;display:grid;gap:9px;font-size:.93rem}
 .faq p{margin-top:6px;font-size:.9rem;color:var(--ink-2)}
 .res-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
 .export-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.disclaimer-row{display:flex;align-items:center;gap:12px}
+.disclaimer-row>span{flex:1;min-width:0}
+.disclaimer-x{flex-shrink:0;width:32px;height:32px;margin:-4px -6px -4px 0;display:grid;place-items:center;border:0;border-radius:6px;background:transparent;color:var(--muted);font-family:var(--f-ui);font-size:1.3rem;line-height:1;cursor:pointer}
+.disclaimer-x:hover{background:var(--line);color:var(--ink)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:.7em 1.1em;border-radius:8px;font-size:.9rem;z-index:80;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100vw - 32px)}
 @media (max-width:900px){.adv-shell{grid-template-columns:1fr}.adv-rail{position:static;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.adv-rail .rs .lbl{display:none}.adv-rail .rs{justify-content:center}.intro-grid,.res-grid{grid-template-columns:1fr}.verdict{grid-template-columns:1fr}}
 @media (max-width:520px){.card{padding:18px}.review-sec dl{grid-template-columns:1fr}.review-sec dd{margin-bottom:6px}}
@@ -426,7 +430,8 @@ header.top::after,footer.site::before{background:url("data:image/svg+xml,%3Csvg 
     <div class="cta"><a class="btn sm" href="#advisor">Start assessment</a></div>
   </div>
 </header>
-<div class="disclaimer-band"><div class="wrap">Educational decision support only, not legal advice. The signing attorney remains responsible for every filing. Nothing you enter leaves your browser; only your last assessment result is saved, on this device.</div></div>
+<div class="disclaimer-band" id="disclaimer"><div class="wrap disclaimer-row"><span>Educational decision support only, not legal advice. The signing attorney remains responsible for every filing. Nothing you enter leaves your browser; only your last assessment result is saved, on this device.</span><button type="button" class="disclaimer-x" id="disclaimer-x" aria-label="Dismiss disclaimer">×</button></div></div>
+<script>try{if(sessionStorage.getItem("motionAdvisor.disclaimerDismissed")==="1")document.getElementById("disclaimer").hidden=true}catch(e){}</script>
 
 <main>
 <!-- ============ HOME ============ -->
@@ -1443,6 +1448,7 @@ function initSearch(){
 }
 
 /* ---------------- INIT ---------------- */
+$("#disclaimer-x").addEventListener("click",()=>{$("#disclaimer").hidden=true;try{sessionStorage.setItem("motionAdvisor.disclaimerDismissed","1")}catch(e){}const b=$(".brand");if(b)b.focus()});
 renderAdvisor(); renderLastReport(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route();
 })();
 </script>
