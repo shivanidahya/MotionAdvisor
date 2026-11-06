@@ -533,6 +533,45 @@ header.top::after,footer.site::before{background:url("data:image/svg+xml,%3Csvg 
   .ap-progress{flex-wrap:wrap}
   .ap-panel{padding:10px 12px}
 }
+/* ---- Motions 101: decluttered layout ---- */
+#v-motions .m-sec{padding-block:72px;scroll-margin-top:100px}
+#v-motions .m-jump{margin:-4px 0 8px}
+#v-motions .m-jump+.m-sec{margin-top:24px}
+.m-sec-head{margin-bottom:26px}
+.m-sec-head h2{font-size:clamp(1.7rem,3.2vw,2.4rem);margin-top:8px}
+.m-sec-head p{color:var(--muted);max-width:62ch;margin-top:10px}
+.m-prose{max-width:68ch}
+.m-prose p{margin-bottom:12px}
+.m-lede{font-size:1.12rem}
+.m-more-btn{font-family:var(--f-ui);font-size:.92rem}
+#m-parts .ap-col{max-width:860px}
+/* part cards: header row = number, title + tag, Done; everything else in the panel */
+.anatomy .ap{grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:6px 12px;padding:14px 16px}
+.anatomy .ap .ic{padding-top:0}
+.anatomy .ap .ap-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0;min-height:36px}
+.ap-chev{flex-shrink:0;width:8px;height:8px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:translateY(-2px) rotate(45deg);transition:transform .15s}
+.ap.open .ap-chev{transform:translateY(2px) rotate(-135deg)}
+.anatomy .ap .ap-done{padding-top:0}
+.anatomy .ap .ap-panel{grid-column:2/-1;margin-top:4px}
+.ap-panel .ap-def{font-size:.92rem;color:var(--ink-2);margin-bottom:6px}
+.ap-panel .ap-meta{margin:0 0 10px}
+.ap-tip{margin:0 0 10px;padding:8px 12px;border-left:3px solid var(--copper);border-radius:6px;background:var(--sunk);font-size:.88rem;color:var(--ink-2)}
+.ap-sub{border-top:1px solid var(--line);padding:8px 0}
+.ap-sub:last-child{padding-bottom:0}
+.ap-sub>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer;font-family:var(--f-ui);font-size:.84rem;font-weight:600;color:var(--ink-2);padding:2px 0;scroll-margin-top:110px}
+.ap-sub>summary::-webkit-details-marker{display:none}
+.ap-sub>summary::before{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s;flex-shrink:0}
+.ap-sub[open]>summary{color:var(--accent-2)}
+.ap-sub[open]>summary::before{transform:rotate(45deg)}
+.ap-sub>summary~*{margin-top:8px}
+.ap-sub ul{margin:0;padding-left:1.15em;display:grid;gap:4px}
+.ap-sub{scroll-margin-top:110px}
+@media (max-width:520px){
+  #v-motions .m-sec{padding-block:52px}
+  .anatomy .ap{grid-template-columns:minmax(0,1fr) auto;gap:2px 10px}
+  .anatomy .ap .ic{grid-column:1/-1}
+  .anatomy .ap .ap-panel{grid-column:1/-1}
+}
 /* ---- Rule citation links ---- */
 .rule-link{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
 .rule-link:hover{text-decoration-thickness:2px}
@@ -700,22 +739,22 @@ header.top::after,footer.site::before{background:url("data:image/svg+xml,%3Csvg 
 <section class="view" id="v-motions" hidden>
   <div class="wrap">
     <div class="page-head"><div><div class="eyebrow">Motions 101</div><h1>What is a motion?</h1></div></div>
-    <div class="m-jump" role="navigation" aria-label="Jump to a section of Motions 101"><span class="m-jump-label">Jump to</span><button type="button" class="chip" data-jump="m-basics">The basics</button><button type="button" class="chip" data-jump="m-life">Life of a motion</button><button type="button" class="chip" data-jump="m-library">Motion library</button><button type="button" class="chip" data-jump="m-quiz-sec">Quiz</button></div>
-    <div class="m-intro" id="m-basics">
-      <div class="prose">
-        <p>A <b>motion</b> is a formal request asking a judge to make a specific ruling or order. It is how parties ask the court to act between the complaint and the final judgment, and sometimes after.</p>
-        <p>A motion names the relief wanted, gives the legal grounds for it and is supported by facts in the record, usually through affidavits, declarations or exhibits. The other side gets a chance to oppose it in writing, the moving party may reply, and the judge decides with or without a hearing.</p>
-        <p>Motions can be <b>dispositive</b>, ending all or part of the case (dismissal, summary judgment), or <b>non-dispositive</b>, shaping how the case proceeds (discovery, scheduling, evidence). In Massachusetts Superior Court, most civil motions follow <b>Superior Court Rule 9A</b>: you serve the motion on the other side first, they serve an opposition, and the moving party files the whole package. In federal court in Massachusetts, <b>Local Rule 7.1</b> requires you to confer with opposing counsel and certify that you did.</p>
-        <p>Because a motion is signed under <b>Rule 11</b>, every factual claim and legal citation in it is the signing attorney’s responsibility. That is where AI risk lands.</p>
-      </div>
-      <div class="ap-col">
-        <div class="anatomy" id="anatomy" role="group" aria-label="Parts of a motion"></div>
-        <p class="ap-closing"><a href="#motions" id="ap-real">See how these parts look in a real motion →</a></p>
-      </div>
-    </div>
+    <nav class="m-jump" aria-label="On this page"><span class="m-jump-label">On this page</span><button type="button" class="chip" data-jump="m-basics">The basics</button><button type="button" class="chip" data-jump="m-life">Life of a motion</button><button type="button" class="chip" data-jump="m-library">Motion library</button><button type="button" class="chip" data-jump="m-quiz-sec">Quiz</button><button type="button" class="chip" data-jump="m-parts">Parts of a motion</button></nav>
 
-    <div class="band" id="m-life" style="margin-top:40px;padding-bottom:24px">
-      <div class="band-head" style="margin-bottom:12px"><div><div class="eyebrow">Life of a motion</div><h2>From draft to order</h2></div></div>
+    <section class="band m-sec" id="m-basics" aria-labelledby="m-basics-h">
+      <div class="m-sec-head"><div class="eyebrow">The basics</div><h2 id="m-basics-h">Motions in brief</h2></div>
+      <div class="m-prose">
+        <p class="m-lede">A <b>motion</b> is a formal request asking a judge to make a specific ruling or order. It is how parties ask the court to act between the complaint and the final judgment, and sometimes after. Because a motion is signed under <b>Rule 11</b>, every factual claim and legal citation in it is the signing attorney’s responsibility, and that is where AI risk lands.</p>
+        <div class="m-more" id="m-more" hidden>
+          <p>A motion names the relief wanted, gives the legal grounds for it and is supported by facts in the record, usually through affidavits, declarations or exhibits. The other side gets a chance to oppose it in writing, the moving party may reply, and the judge decides with or without a hearing.</p>
+          <p>Motions can be <b>dispositive</b>, ending all or part of the case (dismissal, summary judgment), or <b>non-dispositive</b>, shaping how the case proceeds (discovery, scheduling, evidence). In Massachusetts Superior Court, most civil motions follow <b>Superior Court Rule 9A</b>: you serve the motion on the other side first, they serve an opposition, and the moving party files the whole package. In federal court in Massachusetts, <b>Local Rule 7.1</b> requires you to confer with opposing counsel and certify that you did.</p>
+        </div>
+        <button type="button" class="ap-link m-more-btn" id="m-more-btn" aria-expanded="false" aria-controls="m-more">Read more</button>
+      </div>
+    </section>
+
+    <section class="band m-sec" id="m-life" aria-labelledby="m-life-h">
+      <div class="m-sec-head"><div class="eyebrow">Life of a motion</div><h2 id="m-life-h">From draft to order</h2></div>
       <div class="lifecycle">
         <div><span class="k">1</span><b>Research &amp; draft</b><span>Identify the rule, standard and record support.</span></div>
         <div><span class="k">2</span><b>Confer</b><span>Try to narrow or resolve the dispute.</span></div>
@@ -725,20 +764,28 @@ header.top::after,footer.site::before{background:url("data:image/svg+xml,%3Csvg 
         <div><span class="k">6</span><b>Hearing</b><span>Argument, if requested or ordered.</span></div>
         <div><span class="k">7</span><b>Ruling</b><span>Allowed, denied, or allowed in part.</span></div>
       </div>
-    </div>
+    </section>
 
-    <div class="band" id="m-library">
-      <div class="band-head"><div><div class="eyebrow">Motion library</div><h2>Kinds of motions</h2></div><p>Each entry shows the governing rule, when it is filed, the standard the judge applies, and how much care AI use needs for that motion.</p></div>
+    <section class="band m-sec" id="m-library" aria-labelledby="m-library-h">
+      <div class="m-sec-head"><div class="eyebrow">Motion library</div><h2 id="m-library-h">Kinds of motions</h2><p>Each entry shows the governing rule, when it is filed, the standard the judge applies, and how much care AI use needs for that motion.</p></div>
       <div class="filters" id="m-filters"></div>
       <p class="m-count" id="m-count" aria-live="polite"></p>
       <div class="motion-grid" id="m-grid"></div>
       <p class="muted" id="m-empty" hidden>No motions match that search.</p>
-    </div>
+    </section>
 
-    <div class="band" id="m-quiz-sec">
-      <div class="band-head"><div><div class="eyebrow">Check yourself</div><h2>Which motion fits?</h2></div></div>
+    <section class="band m-sec" id="m-quiz-sec" aria-labelledby="m-quiz-h">
+      <div class="m-sec-head"><div class="eyebrow">Check yourself</div><h2 id="m-quiz-h">Which motion fits?</h2></div>
       <div class="quiz" id="m-quiz"></div>
-    </div>
+    </section>
+
+    <section class="band m-sec" id="m-parts" aria-labelledby="m-parts-h">
+      <div class="m-sec-head"><div class="eyebrow">Filing package</div><h2 id="m-parts-h">Parts of a motion</h2><p>Tap a part to open it. Tick Done as you finish each one.</p></div>
+      <div class="ap-col">
+        <div class="anatomy" id="anatomy" role="group" aria-labelledby="m-parts-h"></div>
+        <p class="ap-closing"><a href="#motions" id="ap-real">See how these parts look in a real motion →</a></p>
+      </div>
+    </section>
   </div>
 </section>
 <!-- ============ RULES & SOURCES ============ -->
@@ -819,7 +866,7 @@ function ruleLink(jur,num,text){const href=ruleUrl(jur,num);const label=text||((
   a.append(label);const i=document.createElement("span");i.className="xl";i.setAttribute("aria-hidden","true");i.textContent=" ↗";a.append(i);return a}
 const RULE_RE=/\b(Fed|Mass)\.\s?R\.\s?Civ\.\s?P\.\s?(\d+(?:\.\d+)?[A-Za-z]?)((?:\([A-Za-z0-9]+\))*(?:,\s?(?:\([A-Za-z0-9]+\))+)*)/g;
 /* Skip existing links and controls, the user's own draft text in the Citation Toolkit, and the Redaction Game documents. */
-const RULE_SKIP="a,button,textarea,input,select,option,script,style,.doc,#cite-hl,#cite-list,.search-results";
+const RULE_SKIP="a,button,textarea,input,select,option,script,style,.doc,#cite-hl,#cite-list,.search-results,.no-rule-links";
 function linkifyRules(root){if(!root)return;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>{if(!/R\.\s?Civ\.\s?P\./.test(n.nodeValue))return NodeFilter.FILTER_REJECT;const p=n.parentElement;return !p||p.closest(RULE_SKIP)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT}});
   const nodes=[];while(w.nextNode())nodes.push(w.currentNode);
@@ -1660,41 +1707,48 @@ try{partsDone=JSON.parse(sessionStorage.getItem(PKEY)||"{}")||{}}catch(e){partsD
 const savePartsDone=()=>{try{sessionStorage.setItem(PKEY,JSON.stringify(partsDone))}catch(e){}};
 function partsFor(m){const ids=["motion","memo"];if(/Dispositive|Emergency/.test(m.s)||/Compel|Protective|Sanctions|Suppress|Relief|New Trial/.test(m.n))ids.push("affidavits");if(m.s!=="Criminal")ids.push("conference");ids.push("order","service");
   return ids.map(id=>{const p=PARTS.find(x=>x.id===id);return `<button type="button" class="ap-jump" data-part-jump="${id}">${esc(p.short)}</button>`}).join("")}
-function setPart(id,open){const b=$("#ap-btn-"+id),pnl=$("#ap-panel-"+id);if(!b)return;b.setAttribute("aria-expanded",String(open));pnl.hidden=!open;$("#part-"+id).classList.toggle("open",open)}
+/* Accordion: only one part open at a time. */
+function setPart(id,open){
+  if(open)PARTS.forEach(p=>{if(p.id!==id)setPart(p.id,false)});
+  const b=$("#ap-btn-"+id),pnl=$("#ap-panel-"+id);if(!b)return;
+  b.setAttribute("aria-expanded",String(open));pnl.hidden=!open;$("#part-"+id).classList.toggle("open",open)}
 function openPart(id,what){setPart(id,true);let t=$("#part-"+id);
-  if(what==="template"){$("#ap-tpl-"+id).hidden=false;t=$("#ap-tplh-"+id)}else if(what==="sample")t=$("#ap-sample-"+id);
-  t.scrollIntoView({behavior:"smooth",block:"start"});if(what)t.focus({preventScroll:true})}
+  const sub=what==="template"?$("#ap-tpl-"+id):what==="sample"?$("#ap-sample-"+id):null;
+  if(sub){sub.open=true;t=sub}
+  t.scrollIntoView({behavior:"smooth",block:"start"});
+  const f=sub?sub.querySelector("summary"):$("#ap-btn-"+id);if(f)f.focus({preventScroll:true})}
 function updatePartsCount(){const n=PARTS.filter(p=>partsDone[p.id]).length;$("#ap-count").textContent=n+" of "+PARTS.length+" done";PARTS.forEach(p=>$("#part-"+p.id).classList.toggle("done",!!partsDone[p.id]))}
+const DEPENDS_TIP="Requirements vary. Check the local rules of the court where you’re filing.";
 function renderParts(){
   const box=$("#anatomy");
-  box.innerHTML=`<div class="ap-progress"><div><b class="ap-h">Parts of a motion</b><span id="ap-count" aria-live="polite"></span> <span class="ap-save">· saved for this session only</span></div><button type="button" class="btn ghost sm" id="ap-reset">Reset</button></div>`+PARTS.map(p=>`
-  <div class="ap" id="part-${p.id}">
+  const list=a=>`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+  box.innerHTML=`<div class="ap-progress"><div><b class="ap-h">Your progress</b><span id="ap-count" aria-live="polite"></span> <span class="ap-save">· saved for this session only</span></div><button type="button" class="btn ghost sm" id="ap-reset">Reset</button></div>`+PARTS.map(p=>{
+    const dep=p.status==="dep";
+    return `
+  <div class="ap${dep?" dep":""}" id="part-${p.id}">
     <span class="ic">Part ${p.n}</span>
-    <div class="ap-main">
-      <button type="button" class="ap-head" id="ap-btn-${p.id}" aria-expanded="false" aria-controls="ap-panel-${p.id}">
-        <span class="ap-title"><b>${esc(p.title)}</b><span class="st ${PART_ST[p.status][1]}">${PART_ST[p.status][0]}</span></span>
-        <span class="ap-def">${esc(p.def)}</span>
-        <span class="ap-more" aria-hidden="true"><span class="show">Open guide</span><span class="hide">Close guide</span></span>
-      </button>
-      <div class="ap-meta"><a class="ap-rule" href="${p.rule.url}" target="_blank" rel="noopener noreferrer" aria-label="Governing rule: ${esc(p.rule.cite)} (opens in a new tab)">${esc(p.rule.cite)} ↗</a><button type="button" class="ap-link" data-show="sample" data-part="${p.id}">View sample</button><button type="button" class="ap-link" data-show="template" data-part="${p.id}">Template</button></div>
-      <div class="ap-panel" id="ap-panel-${p.id}" role="region" aria-labelledby="ap-btn-${p.id}" hidden>
-        <h5>What to include</h5><ul>${p.include.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-        <h5 id="ap-sample-${p.id}" tabindex="-1">Annotated sample <span class="ph">Placeholder</span></h5>
-        <div class="ap-sample"><p>${p.sample.map(([t,n])=>`<span class="anno">${esc(t)}<sup>${n}</sup></span>`).join("")}</p><ol>${p.notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>
-        <h5>Common mistakes</h5><ul>${p.mistakes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-        <h5>Governing rule</h5><p>${esc(p.rule.note)}</p><p class="ap-rules"><a href="${p.rule.url}" target="_blank" rel="noopener noreferrer">${esc(p.rule.cite)} ↗</a>${p.rule.also?` <span class="muted">· See also ${esc(p.rule.also)}</span>`:""}</p>
-        <div class="ap-tpl" id="ap-tpl-${p.id}" hidden><h5 id="ap-tplh-${p.id}" tabindex="-1">Template <span class="ph">Placeholder</span></h5><textarea readonly rows="${Math.min(14,p.template.split("\n").length+1)}" aria-labelledby="ap-tplh-${p.id}">${esc(p.template)}</textarea><button type="button" class="btn sm" data-copy-tpl="${p.id}">Copy template</button></div>
-        <p class="ap-tpl-open"><button type="button" class="ap-link" data-show="template" data-part="${p.id}">Show the fill-in template</button></p>
-      </div>
-    </div>
+    <button type="button" class="ap-head" id="ap-btn-${p.id}" aria-expanded="false" aria-controls="ap-panel-${p.id}">
+      <span class="ap-title"><b>${esc(p.title)}</b><span class="st ${PART_ST[p.status][1]}">${PART_ST[p.status][0]}</span></span>
+      <span class="ap-chev" aria-hidden="true"></span>
+    </button>
     <label class="ap-done"><input type="checkbox" data-done="${p.id}" ${partsDone[p.id]?"checked":""} aria-label="Mark ${esc(p.title)} as done"><span aria-hidden="true">Done</span></label>
-  </div>`).join("");
+    <div class="ap-panel${dep?" no-rule-links":""}" id="ap-panel-${p.id}" role="region" aria-labelledby="ap-btn-${p.id}" hidden>
+      <p class="ap-def">${esc(p.def)}</p>
+      ${dep?`<p class="ap-tip"><b>Tip:</b> ${esc(DEPENDS_TIP)}</p>`:
+      `<div class="ap-meta"><a class="ap-rule" href="${p.rule.url}" target="_blank" rel="noopener noreferrer" aria-label="Governing rule: ${esc(p.rule.cite)} (opens in a new tab)">${esc(p.rule.cite)} ↗</a><button type="button" class="ap-link" data-show="sample" data-part="${p.id}">View sample</button><button type="button" class="ap-link" data-show="template" data-part="${p.id}">Template</button></div>`}
+      <details class="ap-sub"><summary>What to include</summary>${list(p.include)}</details>
+      ${dep?"":`<details class="ap-sub" id="ap-sample-${p.id}"><summary>Annotated sample <span class="ph">Placeholder</span></summary><div class="ap-sample"><p>${p.sample.map(([t,n])=>`<span class="anno">${esc(t)}<sup>${n}</sup></span>`).join("")}</p><ol>${p.notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div></details>`}
+      <details class="ap-sub"><summary>Common mistakes</summary>${list(p.mistakes)}</details>
+      ${dep?"":`<details class="ap-sub"><summary>Governing rule</summary><p>${esc(p.rule.note)}</p><p class="ap-rules"><a href="${p.rule.url}" target="_blank" rel="noopener noreferrer">${esc(p.rule.cite)} ↗</a>${p.rule.also?` <span class="muted">· See also ${esc(p.rule.also)}</span>`:""}</p></details>
+      <details class="ap-sub ap-tpl" id="ap-tpl-${p.id}"><summary>Fill-in template <span class="ph">Placeholder</span></summary><textarea readonly rows="${Math.min(14,p.template.split("\n").length+1)}" aria-label="${esc(p.title)} template">${esc(p.template)}</textarea><button type="button" class="btn sm" data-copy-tpl="${p.id}">Copy template</button></details>`}
+    </div>
+  </div>`}).join("");
   updatePartsCount();
   $$(".ap-head",box).forEach(b=>b.addEventListener("click",()=>{const id=b.id.slice(7);setPart(id,b.getAttribute("aria-expanded")!=="true")}));
   $$("[data-show]",box).forEach(b=>b.addEventListener("click",()=>openPart(b.dataset.part,b.dataset.show)));
   $$("[data-done]",box).forEach(c=>c.addEventListener("change",()=>{if(c.checked)partsDone[c.dataset.done]=true;else delete partsDone[c.dataset.done];savePartsDone();updatePartsCount()}));
   $("#ap-reset").addEventListener("click",()=>{partsDone={};savePartsDone();$$("[data-done]",box).forEach(c=>c.checked=false);updatePartsCount()});
-  $$("[data-copy-tpl]",box).forEach(b=>b.addEventListener("click",()=>{const ta=$("#ap-tpl-"+b.dataset.copyTpl+" textarea");const fail=()=>{ta.focus();ta.select();toast("Template selected. Copy it with Ctrl+C or ⌘C.")};try{navigator.clipboard?navigator.clipboard.writeText(ta.value).then(()=>toast("Template copied."),fail):fail()}catch(e){fail()}}));
+  $$("[data-copy-tpl]",box).forEach(b=>b.addEventListener("click",()=>{const ta=$("#ap-tpl-"+b.dataset.copyTpl+" textarea");if(!ta)return;const fail=()=>{ta.focus();ta.select();toast("Template selected. Copy it with Ctrl+C or ⌘C.")};try{navigator.clipboard?navigator.clipboard.writeText(ta.value).then(()=>toast("Template copied."),fail):fail()}catch(e){fail()}}));
 }
 
 /* ---------------- RULES & SOURCES ---------------- */
@@ -1782,6 +1836,7 @@ const setMenu=o=>{hdr.classList.toggle("nav-open",o);menuBtn.setAttribute("aria-
 menuBtn.addEventListener("click",()=>setMenu(!hdr.classList.contains("nav-open")));
 $$("nav.main a").forEach(a=>a.addEventListener("click",()=>setMenu(false)));
 $$("[data-jump]").forEach(b=>b.addEventListener("click",()=>{const el=$("#"+b.dataset.jump);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}));
+$("#m-more-btn").addEventListener("click",e=>{const b=e.currentTarget,o=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",String(o));$("#m-more").hidden=!o;b.textContent=o?"Show less":"Read more"});
 renderRules();
 renderParts();
 $("#ap-real").addEventListener("click",e=>{e.preventDefault();openMotion(MOTIONS.findIndex(m=>m.n==="Motion to Strike"))});
