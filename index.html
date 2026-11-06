@@ -292,8 +292,8 @@ textarea.brief{width:100%;min-height:340px;resize:vertical;padding:16px;border:1
 .anatomy .ap{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:12px 16px;border-top:1px solid var(--line)}
 .anatomy .ap:first-child{border-top:0}
 .anatomy .ap .ic{font-family:var(--f-mono);font-size:.74rem;color:var(--muted);padding-top:3px}
-.anatomy b{display:block;font-size:.95rem}
-.anatomy span{font-size:.86rem;color:var(--muted)}
+.anatomy .ap-title b{font-size:.95rem}
+.anatomy .ap-def{font-size:.86rem;color:var(--muted)}
 .lifecycle{display:flex;gap:0;margin-top:8px;overflow-x:auto;padding-bottom:6px}
 .lifecycle div{flex:1 0 128px;padding:12px 14px 12px 0;border-top:3px solid var(--accent-2);margin-right:6px}
 .lifecycle b{font-size:.92rem;display:block}
@@ -484,6 +484,55 @@ header.top::after,footer.site::before{background:url("data:image/svg+xml,%3Csvg 
   .m-jump,.rule-jump{margin:-4px 0 22px}
   .rule-card{padding:16px 18px}
 }
+/* ---- Parts of a motion ---- */
+.anatomy .ap{grid-template-columns:44px minmax(0,1fr) auto;align-items:start;scroll-margin-top:110px}
+.anatomy .ap.done{background:color-mix(in srgb,var(--ok) 7%,var(--surface))}
+.ap-progress{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 6px 0;padding:10px 12px;border-radius:6px 6px 0 0;background:var(--sunk);font-family:var(--f-ui);font-size:.82rem;color:var(--muted)}
+.ap-progress .ap-h{display:block;font-size:.95rem;color:var(--ink);margin-bottom:1px}
+.ap-progress+.ap{border-top:0}
+.ap-main{min-width:0}
+.ap-head{display:grid;gap:3px;width:100%;margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.ap-head:hover .ap-title b{color:var(--accent)}
+.ap-title{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.st{font-family:var(--f-ui);font-size:.68rem;font-weight:600;letter-spacing:.02em;line-height:1.5;padding:0 .55em;border-radius:99px;white-space:nowrap}
+.st-req{background:var(--accent);color:var(--accent-ink)}
+.st-usual{border:1px solid var(--accent);color:var(--accent)}
+.st-dep{border:1px dashed var(--muted);color:var(--ink-2)}
+.ap-more{font-family:var(--f-ui);font-size:.8rem;font-weight:600;color:var(--accent);display:inline-flex;align-items:center;gap:7px;margin-top:2px}
+.ap-more::after{content:"";width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .15s}
+.ap.open .ap-more::after{transform:translateY(2px) rotate(-135deg)}
+.ap .ap-more .hide,.ap.open .ap-more .show{display:none}
+.ap.open .ap-more .hide{display:inline}
+.ap-meta{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;margin-top:6px;font-family:var(--f-ui);font-size:.8rem}
+.ap-rule{font-family:var(--f-mono);font-size:.76rem;overflow-wrap:anywhere}
+.ap-link{margin:0;padding:0;border:0;background:none;color:var(--accent);font:inherit;font-weight:600;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.ap-panel{margin-top:10px;padding:12px 14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;font-size:.88rem}
+.ap-panel h5{font-family:var(--f-ui);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2);margin:14px 0 6px;scroll-margin-top:110px}
+.ap-panel h5:first-child{margin-top:0}
+.ap-panel ul,.ap-sample ol{margin:0;padding-left:1.15em;display:grid;gap:4px}
+.ap-panel p{margin-bottom:6px}
+.ap-sample{background:var(--surface);border-left:3px solid var(--mark);border-radius:6px;padding:10px 12px}
+.ap-sample p{font-family:var(--f-display);font-size:.98rem;line-height:1.65;margin-bottom:8px}
+.anno{background:color-mix(in srgb,var(--mark) 32%,transparent);border-radius:3px;padding:0 2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.anno sup{font-family:var(--f-ui);font-size:.64rem;font-weight:700;color:var(--accent-2);margin-left:2px}
+.ap-sample ol{font-size:.84rem;color:var(--ink-2)}
+.ph{display:inline-block;margin-left:6px;padding:0 .45em;border:1px dashed var(--short);border-radius:4px;background:var(--short-bg);color:var(--ink-2);font-size:.62rem;letter-spacing:.06em;vertical-align:1px}
+.ap-tpl textarea{display:block;width:100%;margin-bottom:8px;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-family:var(--f-mono);font-size:.76rem;line-height:1.5;resize:vertical}
+.ap-tpl:not([hidden])+.ap-tpl-open{display:none}
+.ap-tpl-open{margin:10px 0 0}
+.ap-done{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:44px;padding-top:2px;font-family:var(--f-ui);font-size:.7rem;color:var(--muted);cursor:pointer}
+.ap-done input{width:20px;height:20px;margin:0;accent-color:var(--ok);cursor:pointer}
+.ap.done .ap-done{color:var(--ok);font-weight:600}
+.ap-closing{margin-top:12px;font-family:var(--f-ui);font-weight:600}
+.ap-jumps{display:flex;flex-wrap:wrap;gap:6px}
+.ap-jump{padding:.2em .7em;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--ink);font-family:var(--f-ui);font-size:.8rem;cursor:pointer}
+.ap-jump:hover{border-color:var(--accent);color:var(--accent)}
+@media (max-width:520px){
+  .anatomy .ap{grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:12px 14px}
+  .anatomy .ap .ic{grid-column:1/-1;padding-top:0}
+  .ap-progress{flex-wrap:wrap}
+  .ap-panel{padding:10px 12px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -654,13 +703,9 @@ header.top::after,footer.site::before{background:url("data:image/svg+xml,%3Csvg 
         <p>Motions can be <b>dispositive</b>, ending all or part of the case (dismissal, summary judgment), or <b>non-dispositive</b>, shaping how the case proceeds (discovery, scheduling, evidence). In Massachusetts Superior Court, most civil motions follow <b>Superior Court Rule 9A</b>: you serve the motion on the other side first, they serve an opposition, and the moving party files the whole package. In federal court in Massachusetts, <b>Local Rule 7.1</b> requires you to confer with opposing counsel and certify that you did.</p>
         <p>Because a motion is signed under <b>Rule 11</b>, every factual claim and legal citation in it is the signing attorney’s responsibility. That is where AI risk lands.</p>
       </div>
-      <div class="anatomy" aria-label="Parts of a motion">
-        <div class="ap"><span class="ic">Part 1</span><div><b>Motion or notice of motion</b><span>The short request: who asks, for what relief, under which rule.</span></div></div>
-        <div class="ap"><span class="ic">Part 2</span><div><b>Memorandum of law</b><span>Facts, legal standard, argument and conclusion. Most citations live here.</span></div></div>
-        <div class="ap"><span class="ic">Part 3</span><div><b>Affidavits, declarations &amp; exhibits</b><span>The record support for every fact asserted.</span></div></div>
-        <div class="ap"><span class="ic">Part 4</span><div><b>Certificate of conference</b><span>Confirms you tried to resolve the issue first (e.g., D. Mass. L.R. 7.1(a)(2)).</span></div></div>
-        <div class="ap"><span class="ic">Part 5</span><div><b>Proposed order</b><span>The exact order you want the judge to sign.</span></div></div>
-        <div class="ap"><span class="ic">Part 6</span><div><b>Certificate of service</b><span>States how and when every party was served.</span></div></div>
+      <div class="ap-col">
+        <div class="anatomy" id="anatomy" role="group" aria-label="Parts of a motion"></div>
+        <p class="ap-closing"><a href="#motions" id="ap-real">See how these parts look in a real motion →</a></p>
       </div>
     </div>
 
@@ -1514,7 +1559,8 @@ function drawMotionGrid(){
   const list=MOTIONS.filter(m=>(mState.stage==="All"||m.s===mState.stage)&&(!q||(m.n+" "+m.r+" "+m.p).toLowerCase().includes(q)));
   $("#m-empty").hidden=list.length>0;
   $("#m-count").textContent="Showing "+list.length+" of "+MOTIONS.length+" motions"+(mState.stage!=="All"?" · "+mState.stage:"")+(q?" matching “"+mState.q+"”":"");
-  $("#m-grid").innerHTML=list.map(m=>{const i=MOTIONS.indexOf(m);return `<details class="motion" id="motion-${i}" ${mState.open===i?"open":""}><summary><div class="mh"><h3>${esc(m.n)}</h3><span class="pill info">${esc(m.s)}</span></div><span class="rule">${esc(m.r)}</span><span class="short">${esc(m.p)}</span><span class="more" aria-hidden="true"><span class="show">Show details</span><span class="hide">Hide details</span></span></summary><div class="mb"><dl><dt>When filed</dt><dd>${esc(m.t)}</dd><dt>Standard</dt><dd>${esc(m.std)}</dd></dl><div class="ai-note ${m.ai[0]}"><b>AI drafting care: ${m.ai[1]}</b>${esc(m.ai[2])}</div><a href="#advisor" style="font-size:.86rem;font-weight:600">Assess AI use for this motion →</a></div></details>`}).join("");
+  $("#m-grid").innerHTML=list.map(m=>{const i=MOTIONS.indexOf(m);return `<details class="motion" id="motion-${i}" ${mState.open===i?"open":""}><summary><div class="mh"><h3>${esc(m.n)}</h3><span class="pill info">${esc(m.s)}</span></div><span class="rule">${esc(m.r)}</span><span class="short">${esc(m.p)}</span><span class="more" aria-hidden="true"><span class="show">Show details</span><span class="hide">Hide details</span></span></summary><div class="mb"><dl><dt>When filed</dt><dd>${esc(m.t)}</dd><dt>Standard</dt><dd>${esc(m.std)}</dd><dt>Parts to file</dt><dd><span class="ap-jumps">${partsFor(m)}</span></dd></dl><div class="ai-note ${m.ai[0]}"><b>AI drafting care: ${m.ai[1]}</b>${esc(m.ai[2])}</div><a href="#advisor" style="font-size:.86rem;font-weight:600">Assess AI use for this motion →</a></div></details>`}).join("");
+  $$("[data-part-jump]",$("#m-grid")).forEach(b=>b.addEventListener("click",()=>openPart(b.dataset.partJump)));
 }
 const QUIZ=[
  {q:"Discovery responses are three weeks overdue and opposing counsel won’t confer. Which motion?",o:["Motion to Strike","Motion to Compel","Motion in Limine"],a:1,e:"A motion to compel under Rule 37(a) asks the court to order discovery responses. Include your certificate of conference."},
@@ -1528,6 +1574,95 @@ function renderQuiz(){
     $$(`[data-qz="${i}"]`).forEach(bb=>{bb.classList.remove("right","wrong");if(+bb.dataset.o===x.a)bb.classList.add("right")});
     if(j!==x.a)b.classList.add("wrong");
     const ex=$("#qx-"+i);ex.hidden=false;ex.textContent=(j===x.a?"Correct. ":"Not quite. ")+x.e}));
+}
+
+/* ---------------- PARTS OF A MOTION (guides, samples, templates, session checklist) ---------------- */
+const DMASS_LR="https://www.mad.uscourts.gov/general/pdf/local-rules/Combined%20Local%20Rules.pdf";
+const PARTS=[
+ {id:"motion",n:1,short:"Motion",title:"Motion or notice of motion",status:"req",def:"The short request: who asks, for what relief, under which rule.",
+  rule:{cite:"Fed. R. Civ. P. 7(b)(1)",also:"Mass. R. Civ. P. 7(b)(1)",url:"https://www.law.cornell.edu/rules/frcp/rule_7",note:"A request for a court order must be made by motion. It must be in writing, state the grounds with particularity and state the relief sought. Massachusetts Rule 7(b)(1) is the same in substance."},
+  include:["Caption: court, parties and docket number","Who is moving and the exact relief requested","The rule or statute the motion is brought under","A one-sentence statement of the grounds (the argument goes in the memorandum)","A request for a hearing, if the court wants one in the motion","Signature block: signing attorney, BBO number, firm and contact details, date"],
+  sample:[["Defendant Acme Corp. moves to strike paragraphs 14–16 of the Complaint",1],[" under Fed. R. Civ. P. 12(f)",2],[" because they describe confidential settlement discussions that are immaterial to the claims",3],[". Acme requests a hearing.",4]],
+  notes:["Who is moving and the precise relief.","The rule the motion rests on.","The grounds in one sentence; the argument belongs in the memorandum.","A hearing request, where the court expects it in the motion."],
+  mistakes:["Burying the requested relief inside the argument","Leaving out the rule the motion is brought under","Combining unrelated requests in one motion","Signing without reading the final version (Rule 11)"],
+  template:"[COURT NAME]\n\nCivil Action No. [________]\n\n[PLAINTIFF], Plaintiff,\nv.\n[DEFENDANT], Defendant.\n\n[MOVING PARTY]’S MOTION TO [RELIEF REQUESTED]\n\n[Moving party] moves under [RULE] for an order [describe the exact relief]. The grounds are [one-sentence summary] and are set out in the accompanying memorandum.\n\n[Request for hearing, if any.]\n\nRespectfully submitted,\n[NAME], BBO No. [______]\n[Firm, address, phone, email]\nDated: [DATE]"},
+ {id:"memo",n:2,short:"Memorandum",title:"Memorandum of law",status:"usual",def:"Facts, legal standard, argument and conclusion. Most citations live here.",
+  rule:{cite:"D. Mass. L.R. 7.1(b)(1)",also:"Mass. Super. Ct. R. 9A(a)",url:DMASS_LR,note:"In D. Mass., a party filing a motion must also file a memorandum of reasons with citations to supporting authorities, within the court’s page limits. In Massachusetts Superior Court, Rule 9A sets the memorandum and page requirements for civil motions."},
+  include:["Introduction stating the relief and why it should be granted","Statement of facts, with a record citation for every fact","The legal standard, quoted from the rule or controlling case","Argument applying the standard, with pinpoint citations","Conclusion restating the exact relief","Compliance with page limits and formatting rules"],
+  sample:[["Rule 12(f) lets a court strike “immaterial” matter from a pleading.",1],[" Paragraphs 14–16 recount settlement discussions, which Fed. R. Evid. 408 bars as proof of the claim.",2],[" See Compl. ¶¶ 14–16.",3]],
+  notes:["The standard, in the rule’s own words.","Each fact tied to the authority that makes it matter.","A record citation for every factual statement."],
+  mistakes:["Unverified citations; run the draft through the Citation Toolkit","Facts with no record citation","Exceeding the page limit without leave of court","Arguing grounds that are not in the motion itself"],
+  template:"MEMORANDUM IN SUPPORT OF [MOTION TITLE]\n\nI. INTRODUCTION\n[Relief sought and the core reason in two or three sentences.]\n\nII. FACTS\n[Numbered or narrative facts, each with a record cite: Compl. ¶ __; Ex. __ at __.]\n\nIII. LEGAL STANDARD\n[Rule text and controlling authority, with pinpoint cites.]\n\nIV. ARGUMENT\nA. [First reason the standard is met]\nB. [Second reason]\n\nV. CONCLUSION\n[Restate the exact relief.]"},
+ {id:"affidavits",n:3,short:"Affidavits & exhibits",title:"Affidavits, declarations & exhibits",status:"dep",def:"The record support for every fact asserted.",
+  rule:{cite:"Fed. R. Civ. P. 56(c)(4)",also:"28 U.S.C. § 1746; Mass. R. Civ. P. 56(e)",url:"https://www.law.cornell.edu/rules/frcp/rule_56",note:"An affidavit or declaration used to support or oppose summary judgment must be made on personal knowledge, set out facts that would be admissible in evidence and show the person is competent to testify. In federal court, an unsworn declaration under 28 U.S.C. § 1746 can take the place of a sworn affidavit."},
+  include:["Who the affiant is and how they know the facts","Numbered paragraphs of facts, not argument","Exhibits labeled, referenced in the text and authenticated","Signature under the pains and penalties of perjury, or a notarized jurat","Personal identifiers redacted (Fed. R. Civ. P. 5.2 / SJC Rule 1:24)"],
+  sample:[["1. I am the operations manager of Acme Corp. and have held that role since 2019.",1],[" 2. I personally reviewed the shipping records attached as Exhibit A.",2],[" I declare under penalty of perjury that the foregoing is true and correct.",3]],
+  notes:["Who the affiant is.","The basis for personal knowledge, and the exhibit it authenticates.","Declaration language that stands in for an oath in federal court."],
+  mistakes:["Legal argument or conclusions in the affidavit","Statements not based on personal knowledge","Unredacted Social Security or account numbers","Exhibits that are attached but never identified"],
+  template:"AFFIDAVIT OF [NAME]\n\nI, [NAME], state as follows:\n\n1. I am [role/relationship to the case]. I have personal knowledge of the facts below.\n2. [Fact.] A true copy of [document] is attached as Exhibit [A].\n3. [Fact.]\n\nSigned under the pains and penalties of perjury this [__] day of [MONTH], [YEAR].\n\n_______________________\n[NAME]"},
+ {id:"conference",n:4,short:"Certificate of conference",title:"Certificate of conference",status:"dep",def:"Confirms you tried to resolve or narrow the issue first.",
+  rule:{cite:"D. Mass. L.R. 7.1(a)(2)",also:"Mass. Super. Ct. R. 9C (discovery motions)",url:DMASS_LR,note:"In D. Mass., no motion may be filed unless counsel certify that they conferred and tried in good faith to resolve or narrow the issue. In Massachusetts Superior Court, Rule 9C requires a conference before most discovery motions."},
+  include:["When and how counsel conferred (telephone, video, in person)","Who took part","What was resolved or narrowed","The other side’s position on the motion"],
+  sample:[["Counsel conferred by telephone on [date]",1],[" and narrowed the dispute to paragraphs 14–16.",2],[" Plaintiff opposes the motion.",3]],
+  notes:["When and how the conference happened.","What the conference resolved.","Where the other side stands."],
+  mistakes:["Boilerplate when no real conference happened","Relying on a single unanswered email","Leaving the certificate out; the motion may be denied for that alone"],
+  template:"LOCAL RULE 7.1(a)(2) CERTIFICATION\n\nI certify that counsel for [moving party] conferred with counsel for [other party] by [method] on [DATE] in a good-faith attempt to resolve or narrow the issues presented by this motion. [Describe any issues resolved.] [Other party] [assents to / opposes / takes no position on] the motion.\n\n_______________________\n[NAME]"},
+ {id:"order",n:5,short:"Proposed order",title:"Proposed order",status:"dep",def:"The exact order you want the judge to sign.",
+  rule:{cite:"Judge’s session procedures",also:"",url:"https://www.mad.uscourts.gov/",note:"No general rule requires a proposed order, but many judges ask for one, especially with agreed or routine motions. Check the assigned judge’s procedures and standing orders for whether to submit one and in what format."},
+  include:["Caption matching the motion","Relief stated exactly as requested, and no broader","Blank lines for the date and the judge’s signature","No argument or findings the judge has not made"],
+  sample:[["ORDERED that paragraphs 14–16 of the Complaint are STRICKEN.",1],[" SO ORDERED. ________________ United States District Judge",2]],
+  notes:["Relief that mirrors the motion word for word.","Signature line for the judge, left blank."],
+  mistakes:["Asking for more relief than the motion requested","Adding findings or argument","Submitting the wrong file type for the judge (Word versus PDF)"],
+  template:"[COURT NAME]\n\n[CAPTION]\n\n[PROPOSED] ORDER\n\nUpon consideration of [moving party]’s Motion to [relief], it is ORDERED that [exact relief].\n\nSO ORDERED.\n\nDated: ____________        ______________________________\n                                [Title of judge]"},
+ {id:"service",n:6,short:"Certificate of service",title:"Certificate of service",status:"usual",def:"States how and when every party was served.",
+  rule:{cite:"Fed. R. Civ. P. 5(b), (d)(1)(B)",also:"Mass. R. Civ. P. 5",url:"https://www.law.cornell.edu/rules/frcp/rule_5",note:"Papers filed after the complaint must be served on every party. In federal court, no certificate of service is needed for papers served through the court’s electronic filing system, but one is required for anyone served another way. Massachusetts courts require proof of service."},
+  include:["What document was served","The date of service","The method: ECF, email by agreement, mail or hand delivery","Who was served, including anyone not on ECF","Signature"],
+  sample:[["I certify that on [date] this document was filed through the ECF system",1],[" and will be sent electronically to registered participants, and that paper copies will be mailed to any non-registered participants.",2]],
+  notes:["The date and the method of service.","Who receives it and by what route, including parties not on ECF."],
+  mistakes:["Forgetting self-represented or non-ECF parties","A service date that does not match the filing","Under Superior Court Rule 9A, filing before the opposition period has run"],
+  template:"CERTIFICATE OF SERVICE\n\nI certify that on [DATE] I served this document on [all counsel of record / NAME] by [ECF / email by agreement / first-class mail / hand delivery] [at ADDRESS].\n\n_______________________\n[NAME]"}
+];
+const PART_ST={req:["Required","st-req"],usual:["Usually required","st-usual"],dep:["Depends on court/motion","st-dep"]};
+const PKEY="motionAdvisor.motionParts";let partsDone={};
+try{partsDone=JSON.parse(sessionStorage.getItem(PKEY)||"{}")||{}}catch(e){partsDone={}}
+const savePartsDone=()=>{try{sessionStorage.setItem(PKEY,JSON.stringify(partsDone))}catch(e){}};
+function partsFor(m){const ids=["motion","memo"];if(/Dispositive|Emergency/.test(m.s)||/Compel|Protective|Sanctions|Suppress|Relief|New Trial/.test(m.n))ids.push("affidavits");if(m.s!=="Criminal")ids.push("conference");ids.push("order","service");
+  return ids.map(id=>{const p=PARTS.find(x=>x.id===id);return `<button type="button" class="ap-jump" data-part-jump="${id}">${esc(p.short)}</button>`}).join("")}
+function setPart(id,open){const b=$("#ap-btn-"+id),pnl=$("#ap-panel-"+id);if(!b)return;b.setAttribute("aria-expanded",String(open));pnl.hidden=!open;$("#part-"+id).classList.toggle("open",open)}
+function openPart(id,what){setPart(id,true);let t=$("#part-"+id);
+  if(what==="template"){$("#ap-tpl-"+id).hidden=false;t=$("#ap-tplh-"+id)}else if(what==="sample")t=$("#ap-sample-"+id);
+  t.scrollIntoView({behavior:"smooth",block:"start"});if(what)t.focus({preventScroll:true})}
+function updatePartsCount(){const n=PARTS.filter(p=>partsDone[p.id]).length;$("#ap-count").textContent=n+" of "+PARTS.length+" done";PARTS.forEach(p=>$("#part-"+p.id).classList.toggle("done",!!partsDone[p.id]))}
+function renderParts(){
+  const box=$("#anatomy");
+  box.innerHTML=`<div class="ap-progress"><div><b class="ap-h">Parts of a motion</b><span id="ap-count" aria-live="polite"></span> <span class="ap-save">· saved for this session only</span></div><button type="button" class="btn ghost sm" id="ap-reset">Reset</button></div>`+PARTS.map(p=>`
+  <div class="ap" id="part-${p.id}">
+    <span class="ic">Part ${p.n}</span>
+    <div class="ap-main">
+      <button type="button" class="ap-head" id="ap-btn-${p.id}" aria-expanded="false" aria-controls="ap-panel-${p.id}">
+        <span class="ap-title"><b>${esc(p.title)}</b><span class="st ${PART_ST[p.status][1]}">${PART_ST[p.status][0]}</span></span>
+        <span class="ap-def">${esc(p.def)}</span>
+        <span class="ap-more" aria-hidden="true"><span class="show">Open guide</span><span class="hide">Close guide</span></span>
+      </button>
+      <div class="ap-meta"><a class="ap-rule" href="${p.rule.url}" target="_blank" rel="noopener" aria-label="Governing rule: ${esc(p.rule.cite)} (opens in a new tab)">${esc(p.rule.cite)} ↗</a><button type="button" class="ap-link" data-show="sample" data-part="${p.id}">View sample</button><button type="button" class="ap-link" data-show="template" data-part="${p.id}">Template</button></div>
+      <div class="ap-panel" id="ap-panel-${p.id}" role="region" aria-labelledby="ap-btn-${p.id}" hidden>
+        <h5>What to include</h5><ul>${p.include.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+        <h5 id="ap-sample-${p.id}" tabindex="-1">Annotated sample <span class="ph">Placeholder</span></h5>
+        <div class="ap-sample"><p>${p.sample.map(([t,n])=>`<span class="anno">${esc(t)}<sup>${n}</sup></span>`).join("")}</p><ol>${p.notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>
+        <h5>Common mistakes</h5><ul>${p.mistakes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+        <h5>Governing rule</h5><p>${esc(p.rule.note)}</p><p class="ap-rules"><a href="${p.rule.url}" target="_blank" rel="noopener">${esc(p.rule.cite)} ↗</a>${p.rule.also?` <span class="muted">· See also ${esc(p.rule.also)}</span>`:""}</p>
+        <div class="ap-tpl" id="ap-tpl-${p.id}" hidden><h5 id="ap-tplh-${p.id}" tabindex="-1">Template <span class="ph">Placeholder</span></h5><textarea readonly rows="${Math.min(14,p.template.split("\n").length+1)}" aria-labelledby="ap-tplh-${p.id}">${esc(p.template)}</textarea><button type="button" class="btn sm" data-copy-tpl="${p.id}">Copy template</button></div>
+        <p class="ap-tpl-open"><button type="button" class="ap-link" data-show="template" data-part="${p.id}">Show the fill-in template</button></p>
+      </div>
+    </div>
+    <label class="ap-done"><input type="checkbox" data-done="${p.id}" ${partsDone[p.id]?"checked":""} aria-label="Mark ${esc(p.title)} as done"><span aria-hidden="true">Done</span></label>
+  </div>`).join("");
+  updatePartsCount();
+  $$(".ap-head",box).forEach(b=>b.addEventListener("click",()=>{const id=b.id.slice(7);setPart(id,b.getAttribute("aria-expanded")!=="true")}));
+  $$("[data-show]",box).forEach(b=>b.addEventListener("click",()=>openPart(b.dataset.part,b.dataset.show)));
+  $$("[data-done]",box).forEach(c=>c.addEventListener("change",()=>{if(c.checked)partsDone[c.dataset.done]=true;else delete partsDone[c.dataset.done];savePartsDone();updatePartsCount()}));
+  $("#ap-reset").addEventListener("click",()=>{partsDone={};savePartsDone();$$("[data-done]",box).forEach(c=>c.checked=false);updatePartsCount()});
+  $$("[data-copy-tpl]",box).forEach(b=>b.addEventListener("click",()=>{const ta=$("#ap-tpl-"+b.dataset.copyTpl+" textarea");const fail=()=>{ta.focus();ta.select();toast("Template selected. Copy it with Ctrl+C or ⌘C.")};try{navigator.clipboard?navigator.clipboard.writeText(ta.value).then(()=>toast("Template copied."),fail):fail()}catch(e){fail()}}));
 }
 
 /* ---------------- RULES & SOURCES ---------------- */
@@ -1616,6 +1751,8 @@ menuBtn.addEventListener("click",()=>setMenu(!hdr.classList.contains("nav-open")
 $$("nav.main a").forEach(a=>a.addEventListener("click",()=>setMenu(false)));
 $$("[data-jump]").forEach(b=>b.addEventListener("click",()=>{const el=$("#"+b.dataset.jump);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}));
 renderRules();
+renderParts();
+$("#ap-real").addEventListener("click",e=>{e.preventDefault();openMotion(MOTIONS.findIndex(m=>m.n==="Motion to Strike"))});
 renderAdvisor(); renderLastReport(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route();
 })();
 </script>
