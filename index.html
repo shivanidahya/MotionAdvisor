@@ -577,6 +577,16 @@ body.nav-locked{overflow:hidden}
   .anatomy .ap .ic{grid-column:1/-1}
   .anatomy .ap .ap-panel{grid-column:1/-1}
 }
+/* ---- Search-result highlight in the motion library ---- */
+.motion{scroll-margin-top:96px;transition:opacity .2s ease}
+.motion-grid.has-hit .motion:not(.search-hit){opacity:.7}
+.motion-grid.has-hit .motion:not(.search-hit):hover,.motion-grid.has-hit .motion:not(.search-hit):focus-within{opacity:1}
+.motion.search-hit{border:3px solid var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface));box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.motion.search-hit.pulse{animation:hit-pulse 1.5s ease-out 1}
+@keyframes hit-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent);background:color-mix(in srgb,var(--accent) 22%,var(--surface))}45%{box-shadow:0 0 0 14px color-mix(in srgb,var(--accent) 20%,transparent)}100%{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}}
+.hit-badge{display:inline-flex;align-items:center;gap:6px;width:max-content;margin-bottom:2px;padding:.2em .65em;border-radius:99px;background:var(--accent);color:var(--accent-ink);font-family:var(--f-ui);font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.motion.search-hit:focus{outline:none}
+.hit-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mark)}
 /* ---- Rule citation links ---- */
 .rule-link{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
 .rule-link:hover{text-decoration-thickness:2px}
@@ -1640,7 +1650,7 @@ function renderMotions(focusSel){
     `<input type="search" id="m-q" placeholder="Filter by name or rule" value="${esc(mState.q)}" aria-label="Filter motions by name or rule">`;
   $$("[data-stage]").forEach(b=>b.addEventListener("click",()=>{mState.stage=b.dataset.stage;renderMotions("[data-stage='"+b.dataset.stage+"']")}));
   $("#m-stage").addEventListener("change",e=>{mState.stage=e.target.value;renderMotions("#m-stage")});
-  const qi=$("#m-q");qi.addEventListener("input",()=>{mState.q=qi.value;drawMotionGrid()});
+  const qi=$("#m-q");qi.addEventListener("input",()=>{clearHit();mState.q=qi.value;drawMotionGrid()});
   if(focusSel){const f=$(focusSel);if(f)f.focus()}
   drawMotionGrid();
 }
@@ -1649,9 +1659,13 @@ function drawMotionGrid(){
   const list=MOTIONS.filter(m=>(mState.stage==="All"||m.s===mState.stage)&&(!q||(m.n+" "+m.r+" "+m.p).toLowerCase().includes(q)));
   $("#m-empty").hidden=list.length>0;
   $("#m-count").textContent="Showing "+list.length+" of "+MOTIONS.length+" motions"+(mState.stage!=="All"?" · "+mState.stage:"")+(q?" matching “"+mState.q+"”":"");
-  $("#m-grid").innerHTML=list.map(m=>{const i=MOTIONS.indexOf(m);return `<details class="motion" id="motion-${i}" ${mState.open===i?"open":""}><summary><div class="mh"><h3>${esc(m.n)}</h3><span class="pill info">${esc(m.s)}</span></div><span class="rule">${esc(m.r)}</span><span class="short">${esc(m.p)}</span><span class="more" aria-hidden="true"><span class="show">Show details</span><span class="hide">Hide details</span></span></summary><div class="mb"><dl><dt>When filed</dt><dd>${esc(m.t)}</dd><dt>Standard</dt><dd>${esc(m.std)}</dd><dt>Parts to file</dt><dd><span class="ap-jumps">${partsFor(m)}</span></dd></dl><div class="ai-note ${m.ai[0]}"><b>AI drafting care: ${m.ai[1]}</b>${esc(m.ai[2])}</div><a href="#advisor" style="font-size:.86rem;font-weight:600">Assess AI use for this motion →</a></div></details>`}).join("");
+  $("#m-grid").innerHTML=list.map(m=>{const i=MOTIONS.indexOf(m),hit=mState.hit===i;return `<details class="motion${hit?" search-hit":""}" id="motion-${i}" ${mState.open===i?"open":""}><summary>${hit?'<span class="hit-badge">Your search result</span>':""}<div class="mh"><h3>${esc(m.n)}</h3><span class="pill info">${esc(m.s)}</span></div><span class="rule">${esc(m.r)}</span><span class="short">${esc(m.p)}</span><span class="more" aria-hidden="true"><span class="show">Show details</span><span class="hide">Hide details</span></span></summary><div class="mb"><dl><dt>When filed</dt><dd>${esc(m.t)}</dd><dt>Standard</dt><dd>${esc(m.std)}</dd><dt>Parts to file</dt><dd><span class="ap-jumps">${partsFor(m)}</span></dd></dl><div class="ai-note ${m.ai[0]}"><b>AI drafting care: ${m.ai[1]}</b>${esc(m.ai[2])}</div><a href="#advisor" style="font-size:.86rem;font-weight:600">Assess AI use for this motion →</a></div></details>`}).join("");
+  $("#m-grid").classList.toggle("has-hit",mState.hit!=null&&list.some(m=>MOTIONS.indexOf(m)===mState.hit));
   $$("[data-part-jump]",$("#m-grid")).forEach(b=>b.addEventListener("click",()=>openPart(b.dataset.partJump)));
 }
+/* Search-result highlight: cleared by a click anywhere outside the matched motion, opening another motion, or a new search. */
+function clearHit(){if(mState.hit==null)return;mState.hit=null;$$(".motion.search-hit").forEach(e=>e.classList.remove("search-hit","pulse"));$$(".hit-badge").forEach(b=>b.remove());$("#m-grid").classList.remove("has-hit")}
+document.addEventListener("click",e=>{if(mState.hit==null)return;const card=$("#motion-"+mState.hit);if(card&&card.contains(e.target))return;clearHit()},true);
 const QUIZ=[
  {q:"Discovery responses are three weeks overdue and opposing counsel won’t confer. Which motion?",o:["Motion to Strike","Motion to Compel","Motion in Limine"],a:1,e:"A motion to compel under Rule 37(a) asks the court to order discovery responses. Include your certificate of conference."},
  {q:"The complaint alleges no facts showing your client made the promise at issue. Which motion?",o:["Motion to Dismiss under 12(b)(6)","Motion for Summary Judgment","Motion for New Trial"],a:0,e:"Rule 12(b)(6) tests whether the complaint states a plausible claim on its face, before discovery."},
@@ -1799,7 +1813,7 @@ function openRule(id){location.hash="#rules";setTimeout(()=>{const el=$("#rule-"
 
 /* ---------------- SEARCH ---------------- */
 const INDEX=[
- ...MOTIONS.map((m,i)=>({k:"motion",label:m.n,sub:m.r,go:()=>openMotion(i)})),
+ ...MOTIONS.map((m,i)=>({k:"motion",label:m.n,sub:m.r,go:()=>openMotion(i,true)})),
  {k:"tool",label:"AI Drafting Advisor",sub:"Should AI help draft this motion?",go:()=>location.hash="#advisor"},
  {k:"tool",label:"Citation Toolkit",sub:"Check citations and flag fabricated cases",go:()=>location.hash="#citations"},
  {k:"tool",label:"Redaction Game",sub:"Practice finding sensitive information",go:()=>location.hash="#redaction"},
@@ -1808,7 +1822,13 @@ const INDEX=[
  {k:"tool",label:"About Motion Advisor",sub:"What this is and where the law comes from",aliases:["about","what is this"],go:()=>location.hash="#about"},
  {k:"rule",label:"Bluebook reporter abbreviations",sub:"Citation format reference",go:()=>{location.hash="#citations";setTimeout(()=>$('[data-ctab="ref"]').click(),30)}}
 ];
-function openMotion(i){mState.stage="All";mState.q="";mState.open=i;location.hash="#motions";setTimeout(()=>{renderMotions();const el=$("#motion-"+i);if(el)el.scrollIntoView({behavior:"smooth",block:"center"})},40)}
+function openMotion(i,fromSearch){
+  mState.stage="All";mState.q="";mState.open=i;mState.hit=fromSearch?i:null;location.hash="#motions";
+  setTimeout(()=>{renderMotions();const el=$("#motion-"+i);if(!el)return;
+    const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({behavior:still?"auto":"smooth",block:"start"});
+    if(fromSearch){if(!still){el.classList.add("pulse");setTimeout(()=>el.classList.remove("pulse"),1600)}el.setAttribute("tabindex","-1");el.focus({preventScroll:true})}
+  },60)}
 function initSearch(){
   const inp=$("#search-q"),typ=$("#search-type"),box=$("#search-results");let hits=[],active=0;
   box.setAttribute("role","listbox");box.setAttribute("aria-label","Search results");
@@ -1821,7 +1841,7 @@ function initSearch(){
   const close=()=>{box.hidden=true;inp.setAttribute("aria-expanded","false");inp.removeAttribute("aria-activedescendant")};
   const go=i=>{const h=hits[i];if(!h)return;close();inp.blur();h.go()};
   const paint=()=>{$$("[data-i]",box).forEach(b=>{const on=+b.dataset.i===active;b.classList.toggle("active",on);b.setAttribute("aria-selected",String(on))});if(hits.length)inp.setAttribute("aria-activedescendant","sr-"+active)};
-  const draw=()=>{const q=norm(inp.value),t=typ.value;if(!q){hits=[];close();return}
+  const draw=()=>{clearHit();const q=norm(inp.value),t=typ.value;if(!q){hits=[];close();return}
     hits=INDEX.filter(x=>t==="all"||x.k===t).map(x=>({x,s:score(x,q)})).filter(o=>o.s>0).sort((a,b)=>b.s-a.s).slice(0,8).map(o=>Object.assign({},o.x,{best:o.s>=100}));
     /* rule matches first; the tool pages that apply those rules follow as secondary results */
     if(t==="all"||t==="tool"){const seen=new Set(hits.filter(h=>h.k==="tool").map(h=>h.label));
