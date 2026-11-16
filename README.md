@@ -31,6 +31,7 @@ config.js              # ALL decision content: options, factors, weights, rating
                        #   adjustments, gates, uncertainty, bias triggers, checklist
 engine.js              # Pure, deterministic functions that apply config.js
 tests/engine.test.js   # Automated scenarios (node:test)
+docs/DESIGN.md         # Design rationale, test results, values flagged for review
 package.json           # `npm test`
 ```
 
