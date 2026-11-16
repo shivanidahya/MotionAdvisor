@@ -1,39 +1,62 @@
 # Motion Advisor
 
-Motion Advisor is a standalone browser tool for deciding how artificial intelligence should be used when preparing a legal motion. It combines practical drafting guidance with citation verification, privacy review, and a short redaction exercise.
+Motion Advisor is a browser tool that helps lawyers decide whether and how to use generative AI when drafting a civil motion. It was built for Decision Making and Choice Management (Suffolk Law School, Fall 2026). It supports professional judgment. It does not decide for the user and it is not legal advice.
+
+Live site: <https://motionadvisor.vercel.app>
 
 ## Features
 
-- **AI Drafting Advisor**: Answer six sections about the motion, client information, workflow, supervision, and verification. The tool returns a weighted recommendation, stop conditions, and a review checklist.
-- **Citation Toolkit**: Paste or upload a draft to find and review common case, statute, rule, and docket citations. Results include highlighted text, issue severity, and export options.
-- **Redaction Game**: Practice removing identifying and confidential information before sharing legal text with an AI tool.
-- **Motions 101**: Browse common federal and Massachusetts motions by stage, search by name or rule, and review filing timing, standards, and AI drafting cautions.
-- **Responsive interface**: Works on desktop and mobile, with light and dark themes that follow the device preference.
-
-## Run locally
-
-No build step or package installation is required. Open [`index.html`](index.html) in a modern browser, or serve the folder with any static file server:
-
-```bash
-python3 -m http.server 8000
-```
-
-Then visit <http://localhost:8000/Motion%20Advisor.html>.
-
-The app is implemented as a single HTML file with inline CSS and JavaScript. Google Fonts are loaded remotely when an internet connection is available. The citation toolkit may also load export libraries on demand for PDF, spreadsheet, and document exports.
-
-## Important limitation
-
-Motion Advisor is an educational decision-support tool, not a lawyer, legal research service, or substitute for professional judgment. It does not provide legal advice. Verify every authority, deadline, citation, factual assertion, and court-specific requirement against current primary sources before filing or sharing a document. Do not paste confidential or identifying client information into an external AI service.
+- **AI Drafting Advisor**, a four-stage choice matrix:
+  1. **Frame the decision.** Multiple-choice questions cover the court, the motion, the deadline, the AI tool and its data settings, what would go into the tool, and your safeguards. There are no free-text fields for client details. Answers are kept only for the browser session.
+  2. **Gates.** Hard stops are applied before any weighing. A gate blocks the options it names, and no weight or rating can reopen them.
+  3. **Weigh the options.** Five options are scored against eight factors. Weights run from 0 to 10 and ratings from 1 to 5; both start with suggested values and can be edited. The view also includes:
+     - a live ranking
+     - close-call flags
+     - sensitivity
+     - an optional uncertainty panel
+     - bias checks
+     - a "rate without suggestions" mode
+  4. **Decide and record.** You pick any open option and write a short rationale. The tool produces a decision record with a tailored checklist, which you can download as a PDF or print.
+- **How this works**: a plain-language explanation of the method, with a worked example computed live.
+- **Citation Toolkit**: finds citations in a pasted or uploaded draft, flags problems, and tracks verification.
+- **Redaction Game**: practice removing identifying and confidential information.
+- **Motions 101**: what a motion is, its parts, its life cycle, and a library of 20 motions. Each motion has a "Start an assessment" button that pre-fills Stage 1.
+- **Rules & Sources**: every rule, opinion and case the site relies on.
 
 ## Project structure
 
 ```text
-MotionAdvisor/
-├── index.html            # Complete browser application
-└── README.md             # Project documentation
+index.html             # The page: layout, styles and UI code
+config.js              # ALL decision content: options, factors, weights, ratings,
+                       #   adjustments, gates, uncertainty, bias triggers, checklist
+engine.js              # Pure, deterministic functions that apply config.js
+tests/engine.test.js   # Automated scenarios (node:test)
+package.json           # `npm test`
 ```
 
-## License
+## How to edit the decision logic
 
-No license has been specified for this project.
+Edit `config.js`; nothing else needs to change. Each value carries a comment citing the authority or reasoning behind it, and values marked `REVIEW` are judgment calls awaiting expert review.
+
+- **Ratings** use a 1–5 scale where 5 is always the most favourable value on that factor.
+- **Conditions** (the `when` fields) are plain data, for example `{ field: "citeCheck", in: ["spot", "none"] }`.
+
+After any edit, run the tests:
+
+```bash
+npm test     # or: node --test tests/*.test.js   (Node 18+)
+```
+
+No AI model runs at runtime. The same inputs always produce the same output.
+
+## Run locally
+
+Serve the folder with any static server, for example `python3 -m http.server 8000`, then open <http://localhost:8000/>. Vercel deploys automatically on every push to `main`.
+
+## Important limitation
+
+Motion Advisor is an educational decision-support tool. It is not a lawyer, a legal research service, or a substitute for professional judgment.
+
+- Its suggested weights and ratings are the developer's judgments, not measured data.
+- Verify every authority, deadline, citation and court-specific requirement against current primary sources before filing.
+- Do not paste confidential or identifying client information into any external AI service.
