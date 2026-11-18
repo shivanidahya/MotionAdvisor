@@ -1,6 +1,6 @@
 # Motion Advisor
 
-Motion Advisor is a browser tool that helps lawyers decide whether and how to use generative AI when drafting a civil motion. It was built for Decision Making and Choice Management (Suffolk Law School, Fall 2026). It supports professional judgment. It does not decide for the user and it is not legal advice.
+Motion Advisor helps you decide whether it's worth using AI to draft your motion. Complete a short assessment, and Motion Advisor will calculate the risks and give you a report with those risks and suggestions for using AI safely. It was built for Decision Making and Choice Management (Suffolk Law School, Fall 2026). It supports professional judgment. It does not decide for the user and it is not legal advice.
 
 Live site: <https://motionadvisor.vercel.app>
 
@@ -16,7 +16,7 @@ Live site: <https://motionadvisor.vercel.app>
      - an optional uncertainty panel
      - bias checks
      - a "rate without suggestions" mode
-  4. **Decide and record.** You pick any open option and write a short rationale. The tool produces a decision record with a tailored checklist, which you can download as a PDF or print.
+  4. **Your Report.** You pick any open option and write a short rationale. The tool produces Your Report, with the risks identified and suggestions for using AI, which you can download as a PDF or print.
 - **How this works**: a plain-language explanation of the method, with a worked example computed live.
 - **Citation Toolkit**: finds citations in a pasted or uploaded draft, flags problems, and tracks verification.
 - **Redaction Game**: practice removing identifying and confidential information.
