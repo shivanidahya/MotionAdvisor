@@ -152,3 +152,71 @@ test("13. Every gate, option and factor in config is well formed", () => {
   CONFIG.adjustments.forEach((a) => assert.ok(CONFIG.ratings[a.factor], a.id));
   CONFIG.factors.forEach((f) => assert.ok(f.weight >= 0 && f.weight <= 10));
 });
+
+/* ===================== Main path: questionnaire + risk report ===================== */
+const BASE = { court: "ma_state", maDept: "superior", motion: "compel", dispositive: "no", issue: "settled", tool: "enterprise", trains: "no", retains: "no", grounded: "no",
+  info: ["public"], parts: ["service", "order", "editing"], citeCheck: "yes", factCheck: "yes", deadline: "gt7", policy: "yes", consent: "na", familiarity: "very" };
+const A = (o) => Object.assign({}, BASE, o);
+
+test("R1. Low risk: routine parts, enterprise tool that doesn't train, public information", () => {
+  const r = E.assess(BASE);
+  assert.equal(r.overall, "Low");
+  assert.ok(r.parts.every((p) => p.level === "Low"));
+  assert.equal(r.risks.length, 0);
+  assert.match(r.suggestions[0], /Every part you selected is lower-risk/);
+  assert.match(r.checklist[0], /Superior Court Rule 9A/);
+});
+
+test("R2. Moderate risk: AI-assisted legal argument with every safeguard in place", () => {
+  const r = E.assess(A({ tool: "legal_research", grounded: "yes", parts: ["research", "memo_argument"] }));
+  assert.equal(r.overall, "Moderate");
+  assert.equal(r.parts.find((p) => p.id === "memo_argument").level, "Moderate");
+  assert.ok(r.risks.some((x) => x.kind === "part"));
+  assert.equal(E.lowerRisk(A({ tool: "legal_research", grounded: "yes", parts: ["research", "memo_argument"] }))[0].id, "no-argument");
+});
+
+test("R3. High risk: dispositive, novel, consumer tool, spot-checks, under 48 hours", () => {
+  const ans = A({ motion: "msj", dispositive: "yes", issue: "novel", tool: "consumer", trains: "yes", retains: "yes", parts: ["research", "memo_argument", "service"], citeCheck: "partial", deadline: "lt48", policy: "no" });
+  const r = E.assess(ans);
+  assert.equal(r.overall, "High");
+  assert.equal(r.hardStop, false);
+  assert.equal(r.parts.find((p) => p.id === "service").level, "Low");
+  assert.match(r.suggestions.join(" "), /Use AI only for the certificate of service/);
+  assert.ok(E.lowerRisk(ans).length > 0);
+});
+
+test("R4. Hard stops: confidential data + unsure tool, and AI-drafted affidavits", () => {
+  const r = E.assess(A({ tool: "consumer", trains: "notsure", retains: "yes", info: ["confidential"], parts: ["memo_facts", "service", "affidavits"], consent: "no" }));
+  assert.equal(r.overall, "High");
+  assert.equal(r.parts.find((p) => p.id === "memo_facts").level, "Not recommended");
+  assert.equal(r.parts.find((p) => p.id === "affidavits").level, "Not recommended");
+  assert.equal(r.parts.find((p) => p.id === "service").level, "Low", "parts that need no client data stay open");
+  assert.deepEqual(r.risks.filter((x) => x.kind === "hard").map((x) => x.id), ["confidential-data", "sworn-statements"]);
+  assert.match(r.suggestions[0], /Switch to a tool that doesn't train/);
+  // no citation check blocks research and argument only
+  const n = E.assess(A({ citeCheck: "no", parts: ["research", "memo_argument", "order"] }));
+  assert.deepEqual(n.parts.filter((p) => p.level === "Not recommended").map((p) => p.id), ["research", "memo_argument"]);
+});
+
+test("R5. Safeguard gaps raise the overall level one step", () => {
+  const r = E.assess(A({ policy: "no", familiarity: "not" }));
+  assert.equal(r.overall, "Moderate");
+  assert.equal(r.bumped, true);
+});
+
+test("R6. Report answers pre-fill the Compare Your Options matrix, with the same hard stops", () => {
+  const ans = A({ tool: "consumer", trains: "notsure", retains: "yes", info: ["sealed"], parts: ["memo_argument"], citeCheck: "partial", deadline: "lt48" });
+  const st = E.newState(E.framingFromAnswers(ans));
+  assert.equal(st.framing.citeCheck, "spot");
+  assert.deepEqual(st.framing.info, ["confidential"]);
+  const g = E.gates(st);
+  assert.deepEqual(g.triggered.map((x) => x.id).sort(), ["citation-verification", "confidential-data"]);
+  assert.ok(g.blocked.D && g.blocked.E);
+});
+
+test("R7. Questionnaire validation and determinism", () => {
+  assert.deepEqual(E.stepMissing(0, { court: "ma_state" }), ["maDept"]);
+  assert.deepEqual(E.stepMissing(0, { court: "dmass" }), []);
+  assert.equal(E.qComplete(BASE), true);
+  assert.deepEqual(E.assess(BASE), E.assess(JSON.parse(JSON.stringify(BASE))));
+});

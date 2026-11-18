@@ -6,18 +6,17 @@ Live site: <https://motionadvisor.vercel.app>
 
 ## Features
 
-- **AI Drafting Advisor**, a four-stage choice matrix:
-  1. **Frame the decision.** Multiple-choice questions cover the court, the motion, the deadline, the AI tool and its data settings, what would go into the tool, and your safeguards. There are no free-text fields for client details. Answers are kept only for the browser session.
-  2. **Gates.** Hard stops are applied before any weighing. A gate blocks the options it names, and no weight or rating can reopen them.
-  3. **Weigh the options.** Five options are scored against eight factors. Weights run from 0 to 10 and ratings from 1 to 5; both start with suggested values and can be edited. The view also includes:
-     - a live ranking
-     - close-call flags
-     - sensitivity
-     - an optional uncertainty panel
-     - bias checks
-     - a "rate without suggestions" mode
-  4. **Your Report.** You pick any open option and write a short rationale. The tool produces Your Report, with the risks identified and suggestions for using AI, which you can download as a PDF or print.
-- **How this works**: a plain-language explanation of the method, with a worked example computed live.
+- **AI Drafting Advisor** (main path): seven multiple-choice questions, one per screen, with a progress bar, Back/Next and a "Why we ask this" note on each. Motion Advisor then calculates the risks and shows **Your Report**:
+  - an overall risk level (Low, Moderate or High)
+  - the risks identified, each with the answer that triggered it and the rule behind it
+  - a part-by-part table
+  - suggestions for using AI
+  - what would lower your risk
+  - a "Before you file" checklist
+
+  The report can be downloaded as a PDF or printed. Answers are kept only for the browser session.
+- **Compare Your Options** (optional, advanced): a choice matrix of five ways of using AI against eight factors, with weights you set, sensitivity, an uncertainty panel and bias checks. It is filled in from your answers, and options ruled out by a hard stop are locked.
+- **How this works**: a plain-language explanation of the questionnaire and risk calculation; its tables are drawn straight from `config.js`.
 - **Citation Toolkit**: finds citations in a pasted or uploaded draft, flags problems, and tracks verification.
 - **Redaction Game**: practice removing identifying and confidential information.
 - **Motions 101**: what a motion is, its parts, its life cycle, and a library of 20 motions. Each motion has a "Start an assessment" button that pre-fills Stage 1.
@@ -27,8 +26,8 @@ Live site: <https://motionadvisor.vercel.app>
 
 ```text
 index.html             # The page: layout, styles and UI code
-config.js              # ALL decision content: options, factors, weights, ratings,
-                       #   adjustments, gates, uncertainty, bias triggers, checklist
+config.js              # ALL decision content: questions, risk rules, points, thresholds,
+                       #   suggestions, checklist; plus the Compare Your Options matrix
 engine.js              # Pure, deterministic functions that apply config.js
 tests/engine.test.js   # Automated scenarios (node:test)
 docs/DESIGN.md         # Design rationale, test results, values flagged for review

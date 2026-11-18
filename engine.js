@@ -359,7 +359,144 @@
       };
     }
 
+    /* ======================================================================
+       MAIN PATH: questionnaire + risk report (config.questionnaire, config.risk)
+       ==================================================================== */
+    var Q = cfg.questionnaire, RK = cfg.risk, LEVELS = ["Low", "Moderate", "High"];
+
+    function qVisible(fieldId, ans) { var f = Q.fields[fieldId]; return !f.showIf || test(f.showIf, ans); }
+    function qLabel(fieldId, v) {
+      var f = Q.fields[fieldId]; if (!f) return String(v);
+      var find = function (x) { for (var i = 0; i < f.choices.length; i++) if (f.choices[i].v === x) return f.choices[i].label; return x; };
+      return Array.isArray(v) ? v.map(find).join("; ") : find(v);
+    }
+    function qAnswered(fieldId, ans) { var v = ans[fieldId]; return Array.isArray(v) ? v.length > 0 : v != null && v !== ""; }
+    /* Fields still unanswered on a step (empty array = the step is complete). */
+    function stepMissing(stepIndex, ans) {
+      return Q.steps[stepIndex].fields.filter(function (f) { return qVisible(f, ans) && !qAnswered(f, ans); });
+    }
+    function complete(ans) { for (var i = 0; i < Q.steps.length; i++) if (stepMissing(i, ans).length) return false; return true; }
+    function levelOf(points) { return points >= RK.partLevels.high ? "High" : points >= RK.partLevels.moderate ? "Moderate" : "Low"; }
+    function partsOf(rule, sel) {
+      var list = rule.parts === "clientData" ? Object.keys(RK.parts).filter(function (p) { return RK.parts[p].usesClientData; }) : rule.parts;
+      return sel.filter(function (p) { return list.indexOf(p) >= 0; });
+    }
+    function trigger(rule, ans, affects) {
+      return (rule.fields || []).filter(function (f) { return qVisible(f, ans); }).map(function (f) {
+        var v = ans[f];
+        if (f === "parts" && affects) v = affects;                       // only the parts this rule is about
+        if (f === "info") v = asList(v).filter(function (x) { return RK.clientData.indexOf(x) >= 0; }).length ? asList(v).filter(function (x) { return RK.clientData.indexOf(x) >= 0; }) : v;
+        return { field: f, question: Q.fields[f].ask || Q.fields[f].label, answer: qLabel(f, v) }; });
+    }
+
+    function assess(ans) {
+      var sel = asList(ans.parts).filter(function (p) { return RK.parts[p]; });
+      var hard = RK.hardStops.filter(function (h) { return test(h.when, ans); })
+        .map(function (h) { return { rule: h, affects: partsOf(h, sel) }; }).filter(function (x) { return x.affects.length; });
+      var factors = RK.factors.filter(function (f) { return test(f.when, ans); })
+        .map(function (f) { return { rule: f, affects: partsOf(f, sel) }; }).filter(function (x) { return x.affects.length; });
+      var guards = RK.safeguards.filter(function (s) { return test(s.when, ans); });
+      var safeguardPoints = guards.reduce(function (s, g) { return s + g.points; }, 0);
+
+      var parts = sel.map(function (p) {
+        var def = RK.parts[p], blocked = hard.filter(function (h) { return h.affects.indexOf(p) >= 0; });
+        var hits = factors.filter(function (f) { return f.affects.indexOf(p) >= 0; });
+        var points = def.base + hits.reduce(function (s, f) { return s + f.rule.points; }, 0);
+        var level = blocked.length ? "Not recommended" : levelOf(points);
+        var reason = blocked.length ? blocked[0].rule.title + "." :
+          hits.length ? hits.slice().sort(function (a, b) { return b.rule.points - a.rule.points; }).map(function (f) { return f.rule.title; }).slice(0, 2).join("; ") + "." : def.low;
+        return { id: p, label: qLabel("parts", p), learn: def.learn, points: points, level: level, blockedBy: blocked.map(function (h) { return h.rule.id; }), reason: reason };
+      });
+
+      var maxIdx = parts.reduce(function (m, p) { return Math.max(m, LEVELS.indexOf(p.level)); }, 0);
+      var bumped = !hard.length && safeguardPoints >= RK.safeguardBump && maxIdx < 2;
+      var overall = hard.length ? "High" : LEVELS[Math.min(2, maxIdx + (bumped ? 1 : 0))];
+      var summary = hard.length ? RK.summaries.hard : RK.summaries[overall];
+
+      var risks = []
+        .concat(hard.map(function (h) { return { kind: "hard", id: h.rule.id, title: h.rule.title, text: h.rule.text, authorities: h.rule.authorities, trigger: trigger(h.rule, ans, h.affects), affects: h.affects }; }))
+        .concat(factors.slice().sort(function (a, b) { return b.rule.points - a.rule.points; }).map(function (f) { return { kind: "factor", id: f.rule.id, title: f.rule.title, text: f.rule.text, authorities: f.rule.authorities, trigger: trigger(f.rule, ans), affects: f.affects, points: f.rule.points }; }))
+        .concat(parts.filter(function (p) { return !p.blockedBy.length && RK.parts[p.id].base >= RK.partLevels.moderate; }).map(function (p) {
+          return { kind: "part", id: "part-" + p.id, title: "AI drafting " + RK.parts[p.id].phrase, text: RK.parts[p.id].low, authorities: RK.parts[p.id].authorities || [], trigger: [{ field: "parts", question: Q.fields.parts.ask, answer: p.label }] }; }))
+        .concat(guards.map(function (g) { return { kind: "safeguard", id: g.id, title: g.title, text: g.text, authorities: g.authorities, trigger: trigger(g, ans), points: g.points }; }));
+
+      var ids = { hard: hard.map(function (h) { return h.rule.id; }), factor: factors.map(function (f) { return f.rule.id; }), safeguard: guards.map(function (g) { return g.id; }) };
+      var lowParts = parts.filter(function (p) { return p.level === "Low"; });
+      function sTest(c) {
+        if (c.any) return c.any.some(sTest);
+        if (c.hard) return ids.hard.indexOf(c.hard) >= 0;
+        if (c.factor) return ids.factor.indexOf(c.factor) >= 0;
+        if (c.safeguard) return ids.safeguard.indexOf(c.safeguard) >= 0;
+        if (c.lowParts) return lowParts.length > 0;
+        return test(c, ans);
+      }
+      function joinParts(list) {
+        var w = list.map(function (p) { return RK.parts[p.id].phrase; });
+        return w.length < 2 ? w.join("") : w.slice(0, -1).join(", ") + " and " + w[w.length - 1];
+      }
+      var suggestions = RK.suggestions.filter(function (s) { return sTest(s.when); }).map(function (s) {
+        if (s.when.lowParts) return (lowParts.length === parts.length ? RK.lowPartsText.all : RK.lowPartsText.some).replace("{parts}", joinParts(lowParts));
+        return s.text;
+      });
+
+      var checklist = RK.checklist.slice();
+      var note = RK.courtNotes[ans.court === "ma_state" ? ans.maDept : ans.court];
+      if (note) checklist[0] = checklist[0] + " " + note;
+
+      return {
+        overall: overall, summary: summary, hardStop: hard.length > 0, bumped: bumped, safeguardPoints: safeguardPoints,
+        parts: parts, risks: risks, suggestions: suggestions, checklist: checklist,
+        score: LEVELS.indexOf(overall) * 1000 + hard.length * 100 + parts.reduce(function (s, p) { return s + p.points; }, 0) + safeguardPoints
+      };
+    }
+
+    /* The one or two answer changes that would reduce risk the most. */
+    function lowerRisk(ans, max) {
+      var base = assess(ans), out = [];
+      RK.fixes.forEach(function (fx, order) {
+        if (fx.onlyIf && !test(fx.onlyIf, ans)) return;
+        var next = clone(ans), changed = false;
+        Object.keys(fx.set || {}).forEach(function (k) { if (JSON.stringify(next[k]) !== JSON.stringify(fx.set[k])) { next[k] = clone(fx.set[k]); changed = true; } });
+        if (fx.removeParts) {
+          var before = asList(next.parts).length;
+          next.parts = asList(next.parts).filter(function (p) { return fx.removeParts.indexOf(p) < 0; });
+          if (next.parts.length !== before && next.parts.length) changed = true; else if (!next.parts.length) changed = false;
+        }
+        if (!changed) return;
+        var r = assess(next), drop = base.score - r.score;
+        var hardBefore = base.risks.filter(function (x) { return x.kind === "hard"; }).length, hardAfter = r.risks.filter(function (x) { return x.kind === "hard"; }).length;
+        if (drop > 0) out.push({ id: fx.id, label: fx.label, drop: drop, order: order, overall: r.overall, sameLevel: r.overall === base.overall, clearsHard: hardAfter < hardBefore });
+      });
+      out.sort(function (a, b) { return b.drop - a.drop || a.order - b.order; });
+      return out.slice(0, max || 2);
+    }
+
+    /* Questionnaire answers -> the framing used by the Compare Your Options matrix. */
+    function framingFromAnswers(ans) {
+      var cd = RK.clientData, info = asList(ans.info);
+      var fInfo = [];
+      if (info.indexOf("confidential") >= 0 || info.indexOf("sealed") >= 0 || info.indexOf("thirdparty") >= 0) fInfo.push("confidential");
+      if (info.indexOf("privileged") >= 0) fInfo.push("privileged");
+      if (!fInfo.length) fInfo.push("public");
+      var motion = { strike: "strike", dismiss: "dismiss", msj: "msj", mds: "mds", compel: "compel", jop: "jop" }[ans.motion] || "other";
+      var tool = { legal_research: "legal", legal_drafting: "legal", enterprise: "enterprise", consumer: "consumer" }[ans.tool] || "undecided";
+      return {
+        court: ans.court === "ma_state" ? (ans.maDept === "superior" ? "ma_superior" : "ma_other") : ans.court === "dmass" ? "dmass" : ans.court === "fed_other" ? "fed_other" : "state_other",
+        motion: motion, dispositive: ans.dispositive || "unsure",
+        deadline: { lt48: "h24_48", d2_7: "d3_7", gt7: "gt7" }[ans.deadline] || "d3_7",
+        tool: tool, trains: ans.trains || "notsure", retains: ans.retains || "notsure", grounded: ans.grounded || "notsure",
+        info: fInfo,
+        swornAI: asList(ans.parts).indexOf("affidavits") >= 0 ? "yes" : "no",
+        citeCheck: { yes: "full", partial: "spot", no: "none" }[ans.citeCheck] || "spot",
+        finalReview: "signer",          // not asked on the main path; assumed
+        standingOrder: "unchecked",     // not asked on the main path
+        clientConsent: { yes: "yes", no: "notyet", notsure: "notyet", na: "na" }[ans.consent] || "notyet"
+      };
+    }
+
     return {
+      assess: assess, lowerRisk: lowerRisk, framingFromAnswers: framingFromAnswers, stepMissing: stepMissing,
+      qComplete: complete, qVisible: qVisible, qLabel: qLabel,
       config: cfg, test: test, defaultFraming: defaultFraming, prefillFor: prefillFor, framingLabel: framingLabel,
       newState: newState, refreshSuggested: refreshSuggested, gates: gates, suggestedWeights: suggestedWeights,
       suggestedCell: suggestedCell, cell: cell, score: score, sensitivity: sensitivity,
