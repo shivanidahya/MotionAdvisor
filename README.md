@@ -6,17 +6,21 @@ Live site: <https://motionadvisor.vercel.app>
 
 ## Features
 
-- **AI Drafting Advisor** (main path): seven multiple-choice questions, one per screen, with a progress bar, Back/Next and a "Why we ask this" note on each. Motion Advisor then calculates the risks and shows **Your Report**:
-  - an overall risk level (Low, Moderate or High)
-  - the risks identified, each with the answer that triggered it and the rule behind it
-  - a part-by-part table
-  - suggestions for using AI
-  - what would lower your risk
-  - a "Before you file" checklist
+- **AI Drafting Advisor**: 13 multiple-choice questions in six weighted sections, one section per screen, with a review screen. The result has four parts:
+  - a risk index (0–100) and a verdict
+  - automatic stop conditions
+  - a Low/Moderate/High rating for each section
+  - a workflow, a checklist and the rules to check
 
-  The report can be downloaded as a PDF or printed. Answers are kept only for the browser session.
-- **Compare Your Options** (optional, advanced): a choice matrix of five ways of using AI against eight factors, with weights you set, sensitivity, an uncertainty panel and bias checks. It is filled in from your answers, and options ruled out by a hard stop are locked.
-- **How this works**: a plain-language explanation of the questionnaire and risk calculation; its tables are drawn straight from `config.js`.
+  The result can be downloaded as a PDF. The latest result is saved in this browser only.
+- **Options Report** (optional, from "Compare your options →" on the result): rates four ways of using AI on the same six sections from the same answers. It contains:
+  - the safest useful option first
+  - Low/Moderate/High risk chips, with a detail panel for each cell
+  - options blocked by automatic stops, locked
+  - optional weight sliders
+  - a one-option-at-a-time card view on phones
+  - a PDF download
+- **How this works**: a plain-language explanation of the scoring; its tables are drawn straight from `config.js`.
 - **Citation Toolkit**: finds citations in a pasted or uploaded draft, flags problems, and tracks verification.
 - **Redaction Game**: practice removing identifying and confidential information.
 - **Motions 101**: what a motion is, its parts, its life cycle, and a library of 20 motions. Each motion has a "Start an assessment" button that pre-fills Stage 1.
@@ -26,10 +30,11 @@ Live site: <https://motionadvisor.vercel.app>
 
 ```text
 index.html             # The page: layout, styles and UI code
-config.js              # ALL decision content: questions, risk rules, points, thresholds,
-                       #   suggestions, checklist; plus the Compare Your Options matrix
+config.js              # ALL scoring content: questions, answer scores, weights, thresholds,
+                       #   automatic stops, personas, Options Report rules
 engine.js              # Pure, deterministic functions that apply config.js
-tests/engine.test.js   # Automated scenarios (node:test)
+tests/engine.test.js   # Automated tests (node:test), incl. parity with the original scoring
+tests/original-compute.js # The original scoring code, kept for the parity test
 docs/DESIGN.md         # Design rationale, test results, values flagged for review
 package.json           # `npm test`
 ```

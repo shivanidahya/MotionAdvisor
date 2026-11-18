@@ -897,6 +897,61 @@ details.sens[open] summary{margin-bottom:6px}
 @media (max-width:1020px){.mx-layout{grid-template-areas:"r" "w" "m" "u"}}
 @media (max-width:760px){.report{padding:20px 18px}.level-card{grid-template-columns:1fr}.level-card p{grid-column:1;grid-row:auto}.method-two{grid-template-columns:1fr}}
 @media print{#v-advisor .rec-actions,.why-btn{display:none!important}.report{border:0;padding:0}.level-card{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+/* ==== Restored assessment: Compare button + Options Report ==== */
+.cmp-cta{display:flex;justify-content:space-between;align-items:center;gap:14px 24px;flex-wrap:wrap;margin-top:22px;padding:18px 22px;border:2px solid var(--accent);border-radius:10px;background:color-mix(in srgb,var(--accent) 6%,var(--surface))}
+.cmp-cta b{font-size:1.05rem}.cmp-cta p{margin:2px 0 0;color:var(--ink-2);font-size:.92rem}
+.or-nav{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.or-bottom{margin-bottom:18px}
+.or-lead{font-size:1.05rem;font-weight:600;margin:0 0 8px}
+.or-best{border:2px solid;border-left-width:10px;border-radius:10px;padding:18px 22px;display:grid;gap:6px;max-width:760px;background:var(--surface)}
+.or-best.lv-ok{border-color:var(--ok)}.or-best.lv-warn{border-color:var(--warn)}.or-best.lv-bad{border-color:var(--bad)}
+.or-best strong{font-family:var(--f-display);font-weight:400;font-size:1.6rem;line-height:1.15}
+.or-best p{margin:0;color:var(--ink-2)}
+.or-num{font-family:var(--f-ui);font-size:.74rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2)}
+.or-why{margin:10px 0 0;font-size:.94rem;color:var(--ink-2);max-width:70ch}
+.or-also{margin:10px 0 0;padding-left:1.1em;display:grid;gap:6px;font-size:.93rem}
+.or-also .or-blk{list-style:none;margin-left:-1.1em;display:flex;gap:8px;align-items:baseline;color:var(--ink)}
+.or-also .or-blk .lock-ic{color:var(--bad)}
+.rchip{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-ui);font-size:.84rem;font-weight:600;padding:.3em .7em;border-radius:99px;white-space:nowrap}
+.rchip .ic{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;font-size:.7rem;color:var(--surface)}
+.rchip.ok{background:var(--ok-bg);color:var(--ok)}.rchip.ok .ic{background:var(--ok)}
+.rchip.warn{background:var(--warn-bg);color:var(--warn-text)}.rchip.warn .ic{background:var(--warn)}
+.rchip.bad{background:var(--bad-bg);color:var(--bad)}.rchip.bad .ic{background:var(--bad)}
+.or-grid-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
+.or-grid th,.or-grid td{border-bottom:1px solid var(--line);padding:10px 12px;vertical-align:middle;text-align:left}
+.or-grid thead th{vertical-align:top;background:var(--sunk);width:21%}
+.or-grid thead th:first-child{width:16%}
+.or-grid tbody th{font-weight:600;font-family:var(--f-ui)}
+.or-on{display:block;font-weight:700;margin-top:2px;line-height:1.25}
+.or-od{display:block;font-weight:400;font-size:.8rem;color:var(--muted);margin-top:4px;line-height:1.35}
+.or-bb{display:flex;gap:6px;align-items:baseline;margin-top:6px;font-size:.8rem;font-weight:600;color:var(--bad);line-height:1.35}
+.or-oh.blocked .or-on{color:var(--muted)}
+.or-grid td.blocked,.or-mcard.blocked{background:repeating-linear-gradient(-45deg,var(--sunk) 0 6px,transparent 6px 12px);color:var(--muted)}
+.or-cell{background:none;border:1px solid transparent;border-radius:99px;padding:2px;cursor:pointer}
+.or-cell:hover{border-color:var(--ink-2)}
+.or-cell:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.or-bar{display:grid;gap:4px;min-width:110px}
+.or-bar .track{height:10px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.or-bar .track i{display:block;height:100%;border-radius:99px;transition:width .25s}
+.or-bar .track i.ok{background:var(--ok)}.or-bar .track i.warn{background:var(--warn)}.or-bar .track i.bad{background:var(--bad)}
+.or-bar .bl{font-family:var(--f-ui);font-size:.8rem;font-weight:600}
+.or-grid tfoot th,.or-grid tfoot td{border-bottom:0;background:var(--sunk)}
+.or-mobile{display:none}
+.or-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:10px}
+.or-tabs button{padding:10px 4px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-family:var(--f-ui);font-weight:600;font-size:.84rem;cursor:pointer;display:flex;gap:4px;justify-content:center;align-items:center}
+.or-tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.or-mcard{border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--surface);display:grid;gap:8px}
+.or-mcard h3{font-size:1.3rem;margin:0}
+.or-mrows{list-style:none;margin:4px 0;padding:0;display:grid;gap:2px}
+.or-mrows li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-weight:600;font-size:.92rem}
+.or-adv{margin-top:20px;border:1px solid var(--line);border-radius:10px;padding:14px 18px;background:var(--surface)}
+.or-adv summary{cursor:pointer;font-weight:700;color:var(--accent)}
+.or-adv[open] summary{margin-bottom:8px}
+.or-w{display:grid;grid-template-columns:minmax(0,180px) minmax(0,1fr) 48px;gap:12px;align-items:center;padding:6px 0}
+.or-w input{width:100%;accent-color:var(--accent)}
+.or-w output{font-family:var(--f-mono);font-weight:600;text-align:right}
+@media (max-width:760px){.or-grid-wrap{display:none}.or-mobile{display:block}.or-w{grid-template-columns:1fr 48px}.or-w label{grid-column:1/-1}.or-best strong{font-size:1.35rem}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -990,7 +1045,7 @@ details.sens[open] summary{margin-bottom:6px}
 <!-- ============ ADVISOR ============ -->
 <section class="view" id="v-advisor" hidden>
   <div class="wrap">
-    <div class="page-head"><div><div class="eyebrow">AI Drafting Advisor</div><h1>Is it worth using AI to draft this motion?</h1><p>Answer seven short questions about your motion, the AI tool and your safeguards. Motion Advisor calculates the risks and gives you a report with those risks and suggestions for using AI safely.</p></div></div>
+    <div class="page-head"><div><div class="eyebrow">AI Drafting Advisor</div><h1>Should AI help draft this motion?</h1><p>Answer for the specific motion in front of you. Your answers stay in this browser. Your latest result is saved on this device so it appears on the home page, and you can clear it there.</p></div></div>
     <div id="adv-root"></div>
   </div>
 </section>
@@ -998,7 +1053,7 @@ details.sens[open] summary{margin-bottom:6px}
 <!-- ============ COMPARE YOUR OPTIONS ============ -->
 <section class="view" id="v-compare" hidden>
   <div class="wrap">
-    <div class="page-head"><div><div class="eyebrow">Compare Your Options · Optional</div><h1>Compare your options</h1><p>Want to dig deeper? Compare different ways of using AI side by side and adjust how much each factor matters to you.</p></div></div>
+    <div class="page-head"><div><div class="eyebrow">Options Report · Optional</div><h1>Compare your options</h1><p>Four ways of using AI on this motion, rated on the same six risk areas as your assessment and built from the same answers.</p></div></div>
     <div id="cmp-root"></div>
   </div>
   <div class="drawer-scrim" id="cell-scrim" hidden></div>
@@ -1008,33 +1063,31 @@ details.sens[open] summary{margin-bottom:6px}
 <!-- ============ HOW THIS WORKS ============ -->
 <section class="view" id="v-method" hidden>
   <div class="wrap">
-    <div class="page-head"><div><div class="eyebrow">How this works</div><h1>How Motion Advisor calculates your risk</h1><p>Motion Advisor helps you decide whether it’s worth using AI to draft your motion. Complete a short assessment, and Motion Advisor will calculate the risks and give you a report with those risks and suggestions for using AI safely. No AI model runs in the tool, so the same answers always produce the same report.</p></div></div>
+    <div class="page-head"><div><div class="eyebrow">How this works</div><h1>How Motion Advisor scores your answers</h1><p>Motion Advisor helps you decide whether it’s worth using AI to draft your motion. Complete a short assessment, and Motion Advisor will calculate the risks and give you a report with those risks and suggestions for using AI safely. No AI model runs in the tool, so the same answers always produce the same result.</p></div></div>
 
-    <ol class="mflow" aria-label="How your answers become a report, in order">
-      <li><span class="fn">Step 1</span><b>Questions</b><p>Seven multiple-choice questions about the court, the motion, the AI tool, your information, the parts of the motion and your safeguards.</p></li>
-      <li><span class="fn">Step 2</span><b>Hard stops</b><p>Uses of AI that aren’t safe as planned are marked “Not recommended”.</p><span class="branch"><span class="lock-ic" aria-hidden="true"></span>No score can override them</span></li>
-      <li><span class="fn">Step 3</span><b>Risk points</b><p>Each part of the motion you selected gets starting points plus points for every risk factor that applies to it.</p></li>
-      <li><span class="fn">Step 4</span><b>Risk level</b><p>Points become Low, Moderate or High, for each part and overall.</p></li>
-      <li><span class="fn">Step 5</span><b>Your Report</b><p>Risks identified, a part-by-part table, suggestions, what would lower your risk and a checklist.</p></li>
+    <ol class="mflow" aria-label="How your answers become a result, in order">
+      <li><span class="fn">Step 1</span><b>13 questions</b><p>Six sections: Task, Confidentiality, Competence, Verification, Jurisdiction and Client communication.</p></li>
+      <li><span class="fn">Step 2</span><b>Risk index</b><p>Each answer carries risk points. Confidentiality and Verification count 1.5×.</p></li>
+      <li><span class="fn">Step 3</span><b>Automatic stops</b><p>Some answers force “Not recommended” whatever the score.</p><span class="branch"><span class="lock-ic" aria-hidden="true"></span>No score overrides them</span></li>
+      <li><span class="fn">Step 4</span><b>Your result</b><p>A verdict, a level for each section, a workflow, a checklist and the rules to check.</p></li>
+      <li><span class="fn">Optional</span><b>Options Report</b><p>Four ways of using AI compared on the same six sections.</p></li>
     </ol>
 
     <div class="method-grid">
-      <div class="card"><h2>1. The questionnaire</h2><p>One question per screen, with a short “Why we ask this” note on each. Every answer is multiple choice, so there is nowhere to type client details, and you can go back and change any answer before you see the report. Your answers stay in this browser tab and are cleared when you close it.</p><p>When you’re not sure about a tool’s data settings or grounding, “Not sure” is treated as the riskier answer.</p></div>
-      <div class="card"><h2>2. Hard stops come first</h2><p>Some risks aren’t tradeoffs. If one applies to a part of the motion you selected, that part is “Not recommended” and the overall risk is High, whatever else you answered.</p><div id="method-hard"></div></div>
-      <div class="card wide"><h2>3. Risk points for each part</h2><p>Every part of the motion starts with a few points, because some parts carry more risk on their own: a certificate of service is routine, while the legal argument carries the authority. Each risk factor in your answers then adds points to the parts it affects.</p>
-        <div class="method-two"><div id="method-parts"></div><div id="method-factors"></div></div>
-        <p class="formula">Part points = starting points + points for each risk factor that applies to that part</p>
-        <p>A part with <span data-cfg="moderate"></span> or more points is Moderate risk, <span data-cfg="high"></span> or more is High, and anything lower is Low.</p></div>
-      <div class="card"><h2>4. The overall risk level</h2><p>The overall level is the highest level among the parts you selected, or High if any part hits a hard stop.</p><p>Gaps in your safeguards add points of their own. When they reach <span data-cfg="bump"></span> or more, the overall level goes up one step:</p><div id="method-guards"></div></div>
-      <div class="card"><h2>5. Your Report</h2><p>The report opens with the overall risk level in a color-coded card that always carries a text label. It then lists each risk in plain language with the answer that triggered it and the rule behind it, and shows a part-by-part table that links to Motions 101.</p><p>After that come tailored suggestions for using AI, the one or two answer changes that would lower your risk most, and a “Before you file” checklist. Download it as a PDF or print it.</p></div>
-      <div class="card"><h2>6. Compare Your Options (optional)</h2><p>For a deeper look, <a href="#compare">Compare Your Options</a> lays five ways of using AI side by side, from no AI to substantial drafting. It rates each against eight factors, and you choose how much each factor matters. It fills in from your answers and locks the options a hard stop rules out. It also shows what would change the ranking, an optional uncertainty panel and short bias checks.</p></div>
+      <div class="card"><h2>1. The questions</h2><p>Thirteen multiple-choice questions in six sections, one section per screen, each with a “Why we ask this” note. There are no free-text fields, and you review every answer before seeing your result.</p><div id="method-sections"></div></div>
+      <div class="card"><h2>2. The risk index</h2><p>Every answer has a risk score, from 0 for the safest answer upward. Each section’s score is weighted, and the total is scaled to a risk index from 0 to 100.</p>
+        <p class="formula">Risk index = Σ (section points × weight) ÷ Σ (section maximum × weight) × 100</p>
+        <p>An index of 30 or less is “Recommended with safeguards”, 31 to 55 is “Use with limits”, and above 55 is “Not recommended”. Each section is also rated Low, Moderate or High from its own share of the maximum.</p></div>
+      <div class="card"><h2>3. Automatic stops</h2><p>These answers force “Not recommended”, whatever the risk index:</p><div id="method-stops"></div></div>
+      <div class="card"><h2>4. Your result</h2><p>The result shows the verdict and the risk index, any automatic stops, a Low, Moderate or High rating for each section with an explanation, a recommended workflow, a verification checklist and the rules to check for your court. Download it as a PDF. Your latest result is saved only in this browser.</p></div>
+      <div class="card wide"><h2>5. The Options Report (optional)</h2><p>From your result, “Compare your options →” opens a separate report that rates four ways of using AI on the same six sections, using the same answers. It starts with the safest useful option: the way of using AI with the lowest overall risk for your answers, or drafting without AI if every AI option is blocked or high risk. It greys out any option an automatic stop rules out. Select any cell to see why it has its rating, which answers caused it and the rule behind it.</p><div id="method-options"></div></div>
       <div class="card"><h2>What the tool deliberately doesn’t do</h2><ul>
-        <li>It doesn’t decide for you. The report supports your professional judgment.</li>
+        <li>It doesn’t decide for you. The result supports your professional judgment.</li>
         <li>It doesn’t read your draft, your client’s facts or the AI tool’s terms. It relies on your answers.</li>
-        <li>It doesn’t check whether a court has an AI order; the checklist reminds you to.</li>
+        <li>It doesn’t check whether a court has an AI order; it asks you whether you checked.</li>
         <li>It doesn’t verify citations. Use the Citation Toolkit and a citator for that.</li>
-        <li>It isn’t legal advice, and a Low risk level never replaces final review by the signing attorney.</li></ul></div>
-      <div class="card"><h2>Where the numbers live</h2><p>Every question, hard stop, risk factor, point value, threshold and suggestion lives in one file, <a href="https://github.com/shivanidahya/MotionAdvisor/blob/main/config.js" target="_blank" rel="noopener noreferrer">config.js ↗</a>, with a comment citing the rule or reasoning behind it. The tables on this page are drawn from that file, so they always match the tool.</p><p>The values are judgment calls by the developer, not measured data, and are marked for review by a practising attorney.</p></div>
+        <li>It isn’t legal advice, and a low risk index never replaces final review by the signing attorney.</li></ul></div>
+      <div class="card"><h2>Where the numbers live</h2><p>Every question, answer score, weight, threshold, automatic stop and Options Report rule lives in one file, <a href="https://github.com/shivanidahya/MotionAdvisor/blob/main/config.js" target="_blank" rel="noopener noreferrer">config.js ↗</a>. The tables on this page are drawn from that file, so they always match the tool.</p><p>The values are judgment calls by the developer, not measured data, and are marked for review by a practising attorney.</p></div>
     </div>
   </div>
 </section>
@@ -1268,373 +1321,370 @@ function route(){
 }
 window.addEventListener("hashchange",route);
 
+/* ======================================================
+   ADVISOR
+   ====================================================== */
 const CFG=window.MA_CONFIG, ENG=window.MAEngine(CFG);
-const SKEY="motionAdvisor.session";
-function freshAdv(framing){return {ready:false,source:null,ansKey:null,st:ENG.newState(framing),dismissed:{},showOptEd:false,showFacAdd:false,review:false,sensOpen:false,uncOpen:false}}
-let A=(()=>{try{const s=JSON.parse(sessionStorage.getItem(SKEY)||"null");if(s&&s.st&&s.st.framing&&s.st.options&&"ready" in s)return Object.assign(freshAdv(),s)}catch(e){}return freshAdv()})();
-function persist(){try{sessionStorage.setItem(SKEY,JSON.stringify(A))}catch(e){}}
-const st=()=>A.st;
-const optById=id=>st().options.find(o=>o.id===id);
-const facById=id=>st().factors.find(f=>f.id===id);
-const oLabel=o=>(o.custom?"":"Option "+o.id+": ")+o.name;
-const fmt=(n,d=1)=>(Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);
-const fmtR=v=>Number.isInteger(v)?String(v):fmt(v,1);
+/* Questions, scores, weights, thresholds and automatic stops live in config.js. */
+const SECTIONS=CFG.assessment.sections;
+const QUESTIONS=SECTIONS.flatMap(s=>s.qs.map(q=>({...q,sec:s.id})));
+const qById=Object.fromEntries(QUESTIONS.map(q=>[q.id,q]));
+const optOf=(qid,v)=>qById[qid].options.find(o=>o.v===v);
 
-/* authorities: "rule:<id>" opens the Rules & Sources card; "cite:<text>" is plain text (civil rules auto-link) */
-function authHTML(list){return `<span class="auth-chips">${(list||[]).map(a=>{const [k,v]=a.split(/:(.+)/);
-  if(k==="rule"){const r=RULES.find(x=>x.id===v);return r?`<a href="#rules" class="auth-chip" data-rule="${esc(v)}">${esc(r.short)}</a>`:""}
-  return `<span class="auth-chip plain">${esc(v)}</span>`}).join("")}</span>`}
-function partLinks(o){const base=ENG.baseOf(o);const ids=base.parts.length?base.parts:["motion"];
-  return ids.map(id=>{const p=PARTS.find(x=>x.id===id);return p?`<a href="#motions" class="auth-chip" data-part="${id}">${esc(p.short)}</a>`:""}).join("")}
+const PERSONAS=CFG.assessment.personas;
 
+const adv={step:-1,answers:{},ack:false,showErr:false,fromReview:false,fromMotion:null};
+const STEP_REVIEW=SECTIONS.length, STEP_RESULT=SECTIONS.length+1;
 
-/* ======================================================
-   AI DRAFTING ADVISOR: questionnaire + risk report (main path)
-   Questions, risk rules and suggestions come from config.js (questionnaire, risk);
-   engine.js calculates the report. No weights or ratings are set by the user here.
-   ====================================================== */
-const QKEY="motionAdvisor.questionnaire";
-const QC=CFG.questionnaire, QF=QC.fields, NQ=QC.steps.length;
-function freshQ(){return {step:0,view:"q",ans:{},done:false,created:null,fromMotion:null,autoDisp:false}}
-let Q=(()=>{try{const s=JSON.parse(sessionStorage.getItem(QKEY)||"null");if(s&&s.ans)return Object.assign(freshQ(),s)}catch(e){}return freshQ()})();
-let qMem=null;
-function qPersist(){qMem=Q;try{sessionStorage.setItem(QKEY,JSON.stringify(Q))}catch(e){}}
-const LV_CLASS={Low:"ok",Moderate:"warn",High:"bad","Not recommended":"bad"};
+function sectionComplete(i){return SECTIONS[i].qs.every(q=>adv.answers[q.id]!=null)}
+function allComplete(){return SECTIONS.every((s,i)=>sectionComplete(i))}
 
-function qFieldHTML(k){
-  const d=QF[k],v=Q.ans[k],multi=d.type==="checkbox",vals=multi?(v||[]):[v],id="q-"+k;
-  const note=k==="dispositive"&&Q.autoDisp?`<p class="fq-note">Filled in from the motion you picked. Change it if your motion differs.</p>`:"";
-  return `<fieldset class="fq qf" id="fq-${k}"><legend>${esc(d.label)}</legend>
-    <div class="why-wrap"><button type="button" class="why-btn" aria-expanded="false" aria-controls="why-${k}" data-why-q="${k}">Why we ask this</button><p class="why-pop" id="why-${k}" hidden>${esc(d.why)}</p></div>
-    <div class="opts compact">${d.choices.map((c,i)=>{const on=vals.includes(c.v);
-      return `<label class="opt${on?" sel":""}"><input type="${multi?"checkbox":"radio"}" name="${id}" value="${c.v}" data-q="${k}" ${on?"checked":""}><span>${esc(c.label)}</span></label>`}).join("")}</div>${note}</fieldset>`}
-
-function renderQ(focus){
-  const root=$("#adv-root");if(!root)return;
-  if(Q.view==="report"&&ENG.qComplete(Q.ans)){root.innerHTML=reportHTML();bindReport();if(focus){const h=$("#stage-h");if(h)h.focus({preventScroll:true})}return}
-  Q.view="q";const i=Math.max(0,Math.min(NQ-1,Q.step)),step=QC.steps[i];
-  root.innerHTML=`<div class="card qcard">
-    <div class="q-progress"><div class="q-prog-text"><span class="eyebrow">Question ${i+1} of ${NQ}</span>${Q.done&&ENG.qComplete(Q.ans)?`<button type="button" class="linkish" data-qreport>Back to your report →</button>`:""}</div>
-      <div class="q-bar" role="progressbar" aria-label="Question ${i+1} of ${NQ}" aria-valuemin="1" aria-valuemax="${NQ}" aria-valuenow="${i+1}"><i style="width:${(i+1)/NQ*100}%"></i></div></div>
-    ${i===0?`<div class="privacy-note" role="note"><b>${esc(QC.notice)}</b> Every question is multiple choice, and your answers stay in this browser tab.</div>`:""}
-    ${Q.fromMotion&&i<=1?`<div class="prefill-note">Question 2 is pre-filled from Motions 101: <b>${esc(Q.fromMotion)}</b>.</div>`:""}
-    <h2 class="q-title" id="stage-h" tabindex="-1">${esc(step.title)}</h2>
-    ${step.fields.filter(f=>ENG.qVisible(f,Q.ans)).map(qFieldHTML).join("")}
-    <div class="nav-btns"><button type="button" class="btn" data-qback ${i===0?"disabled":""}>← Back</button><span class="err" id="q-err" role="alert"></span><button type="button" class="btn primary" data-qnext>${i===NQ-1?"See your report →":"Next →"}</button></div></div>`;
-  bindQ();
-  if(focus){const h=$("#stage-h");if(h)h.focus({preventScroll:true})}
-}
-function qScrollTop(){const el=$("#v-advisor");window.scrollTo({top:Math.max(0,el.offsetTop-70),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}
-function onQ(e){
-  const t=e.target,k=t.dataset.q;if(!k)return;const d=QF[k];
-  if(d.type==="checkbox"){let vals=$$(`[data-q="${k}"]`).filter(x=>x.checked).map(x=>x.value);
-    if(d.exclusive){if(t.value===d.exclusive&&t.checked)vals=[d.exclusive];else if(t.checked)vals=vals.filter(x=>x!==d.exclusive)}
-    Q.ans[k]=vals;$$(`[data-q="${k}"]`).forEach(x=>{x.checked=vals.includes(x.value);x.closest(".opt").classList.toggle("sel",x.checked)})}
-  else{Q.ans[k]=t.value;$$(`[data-q="${k}"]`).forEach(x=>x.closest(".opt").classList.toggle("sel",x.checked))}
-  if(k==="dispositive")Q.autoDisp=false;
-  if(k==="motion"){const c=d.choices.find(x=>x.v===t.value);if(c&&c.dispositive){Q.ans.dispositive=c.dispositive;Q.autoDisp=true}else{delete Q.ans.dispositive;Q.autoDisp=false}Q.fromMotion=null}
-  $("#q-err").textContent="";qPersist();
-  if(k==="court"||k==="motion"){const v=t.value;renderQ();const el=$(`[data-q="${k}"][value="${v}"]`);if(el)el.focus()}
-}
-function bindQ(){
+function renderAdvisor(){
   const root=$("#adv-root");
-  $$("[data-q]",root).forEach(i=>i.addEventListener("change",onQ));
-  $$("[data-why-q]",root).forEach(b=>b.addEventListener("click",()=>{const p=$("#why-"+b.dataset.whyQ),open=b.getAttribute("aria-expanded")==="true";b.setAttribute("aria-expanded",String(!open));p.hidden=open}));
-  $("[data-qback]",root).addEventListener("click",()=>{Q.step=Math.max(0,Q.step-1);qPersist();renderQ(true);qScrollTop()});
-  $("[data-qnext]",root).addEventListener("click",()=>{
-    const miss=ENG.stepMissing(Q.step,Q.ans);
-    if(miss.length){$("#q-err").textContent="Answer every question on this screen to continue.";const f=$(`[data-q="${miss[0]}"]`);if(f)f.focus();return}
-    if(Q.step<NQ-1){Q.step++;qPersist();renderQ(true);qScrollTop();return}
-    Q.view="report";Q.done=true;Q.created=new Date().toISOString();qPersist();renderQ(true);renderLastReport();qScrollTop()});
-  const br=$("[data-qreport]",root);if(br)br.addEventListener("click",()=>{Q.view="report";qPersist();renderQ(true);qScrollTop()});
+  if(adv.step===-1){root.innerHTML=introHTML();bindIntro();return}
+  if(adv.step===STEP_RESULT){const r=compute();root.innerHTML=resultHTML(r);bindResult();if(!adv.at)saveLast(r);return}
+  const pct=adv.step===STEP_REVIEW?100:Math.round(adv.step/SECTIONS.length*100);
+  let rail=SECTIONS.map((s,i)=>{const cls=i===adv.step?"cur":(sectionComplete(i)?"done":"");const can=sectionComplete(i)||i<=firstIncomplete();return `<button class="rs ${cls}" data-go="${i}" ${can?"":"disabled"}><span class="n">${sectionComplete(i)&&i!==adv.step?"✓":i+1}</span><span class="lbl">${s.title}</span></button>`}).join("");
+  rail+=`<button class="rs ${adv.step===STEP_REVIEW?"cur":""}" data-go="${STEP_REVIEW}" ${allComplete()?"":"disabled"}><span class="n">R</span><span class="lbl">Review answers</span></button>`;
+  let body;
+  if(adv.step===STEP_REVIEW){body=reviewHTML()}
+  else{
+    const s=SECTIONS[adv.step];
+    body=`<div class="eyebrow">Section ${adv.step+1} of ${SECTIONS.length}${s.weight>1?" · weighted 1.5×":""}</div><h2 style="font-size:1.9rem;margin:6px 0 14px">${s.title}</h2>`+
+    s.qs.map(q=>questionHTML(q)).join("")+
+    `<div class="nav-btns"><button class="btn" id="adv-back">← ${adv.step===0?"Introduction":"Back"}</button>${adv.showErr&&!sectionComplete(adv.step)?'<span class="err" role="alert">Answer every required question to continue.</span>':""}<button class="btn primary" id="adv-next">${adv.fromReview?"Back to review":(adv.step===SECTIONS.length-1?"Review answers":"Next")} →</button></div>`;
+  }
+  root.innerHTML=`<div class="adv-shell"><nav class="adv-rail" aria-label="Sections">${rail}</nav><div><div class="progress" aria-label="Progress"><i style="width:${pct}%"></i></div><div class="card">${body}</div></div></div>`;
+  bindSteps();
+}
+function firstIncomplete(){for(let i=0;i<SECTIONS.length;i++)if(!sectionComplete(i))return i;return SECTIONS.length}
+function questionHTML(q){
+  const val=adv.answers[q.id];
+  let control;
+  if(q.type==="select"){
+    control=`<select class="field" id="q-${q.id}" data-q="${q.id}"><option value="">Choose one…</option>${q.options.map(o=>`<option value="${o.v}" ${val===o.v?"selected":""}>${esc(o.label)}</option>`).join("")}</select>`;
+  }else{
+    control=`<div class="opts" role="radiogroup" aria-labelledby="qt-${q.id}">${q.options.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${val===o.v?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(o.hint)}</small>`:""}</span></label>`).join("")}</div>`;
+  }
+  return `<div class="q"><div class="q-text" id="qt-${q.id}">${esc(q.text)}<span class="req" aria-label="required">*</span></div><details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}</div>`;
+}
+function reviewHTML(){
+  return `<div class="eyebrow">Before your result</div><h2 style="font-size:1.9rem;margin:6px 0 14px">Review your answers</h2>`+
+  SECTIONS.map((s,i)=>`<div class="review-sec"><div class="rh"><h4>${s.title}</h4><button class="btn sm ghost" data-edit="${i}">Edit</button></div><dl>${s.qs.map(q=>`<dt>${esc(q.text)}</dt><dd>${esc(optOf(q.id,adv.answers[q.id]).label)}</dd>`).join("")}</dl></div>`).join("")+
+  `<div class="nav-btns"><button class="btn" id="adv-back">← Back</button><button class="btn primary" id="adv-see">See my result →</button></div>`;
+}
+function introHTML(){
+  return `<div class="intro-grid"><div class="card">
+    <div class="notice"><strong>Disclaimer.</strong> Motion Advisor is an educational decision-support tool. It is not legal advice and does not replace your professional judgment, supervisor review, or the rules and standing orders of your court. A low-risk result never means a filing can skip attorney review. Results rely on your own answers.</div>
+    <h3 style="font-size:1.5rem;margin:22px 0 8px">What you’ll do</h3>
+    <p class="muted">Thirteen multiple-choice questions in six sections, about four minutes. Each question has a “Why we ask this” note. You can go back and edit at any time, and you’ll review all answers before the result.</p>
+    ${adv.fromMotion?`<p class="prefill-note">Pre-filled from Motions 101: <b>${esc(adv.fromMotion)}</b>. The motion type is already answered.</p>`:""}
+    <p class="muted" style="margin-top:10px">Answer for one specific motion. Don’t think about client names or facts; nothing here asks for them, and nothing leaves your browser.</p>
+    <label class="check-line"><input type="checkbox" id="adv-ack" ${adv.ack?"checked":""}><span>I understand this is not legal advice and that I remain responsible for reviewing anything I file.</span></label>
+    <div class="nav-btns"><span></span><button class="btn primary" id="adv-start" ${adv.ack?"":"disabled"}>Begin assessment →</button></div>
+  </div><div class="card">
+    <div class="eyebrow">Try a sample persona</div>
+    <p class="muted" style="font-size:.9rem;margin-top:6px">Fill the questionnaire with a test scenario from the project’s testing plan, then review or change any answer.</p>
+    <div class="personas">${PERSONAS.map((p,i)=>`<button data-persona="${i}"><b>${esc(p.name)}</b>${esc(p.desc)}</button>`).join("")}</div>
+  </div></div>`;
+}
+function bindIntro(){
+  const ack=$("#adv-ack"),start=$("#adv-start");
+  ack.addEventListener("change",()=>{adv.ack=ack.checked;start.disabled=!ack.checked});
+  start.addEventListener("click",()=>{adv.step=0;adv.showErr=false;renderAdvisor();scrollTop()});
+  $$("[data-persona]").forEach(b=>b.addEventListener("click",()=>{adv.answers={...PERSONAS[+b.dataset.persona].a};adv.ack=true;adv.step=STEP_REVIEW;renderAdvisor();scrollTop()}));
+}
+function scrollTop(){const el=$("#v-advisor");window.scrollTo({top:el.offsetTop-70,behavior:"smooth"})}
+function bindSteps(){
+  $$("[data-q]").forEach(el=>el.addEventListener("change",()=>{
+    adv.answers[el.dataset.q]=el.value||undefined; if(!el.value)delete adv.answers[el.dataset.q];
+    if(el.type==="radio"){$$(`input[name="${el.name}"]`).forEach(r=>r.closest(".opt").classList.toggle("sel",r.checked))}
+    if(adv.showErr&&sectionComplete(adv.step)){const e=$(".err");if(e)e.remove()}
+  }));
+  $$("[data-go]").forEach(b=>b.addEventListener("click",()=>{adv.step=+b.dataset.go;adv.showErr=false;renderAdvisor()}));
+  $$("[data-edit]").forEach(b=>b.addEventListener("click",()=>{adv.step=+b.dataset.edit;adv.fromReview=true;adv.showErr=false;renderAdvisor();scrollTop()}));
+  const back=$("#adv-back"); if(back)back.addEventListener("click",()=>{adv.showErr=false;adv.fromReview=false;adv.step=adv.step===STEP_REVIEW?SECTIONS.length-1:adv.step-1;renderAdvisor();scrollTop()});
+  const next=$("#adv-next"); if(next)next.addEventListener("click",()=>{
+    if(!sectionComplete(adv.step)){adv.showErr=true;renderAdvisor();return}
+    adv.showErr=false;
+    if(adv.fromReview&&allComplete()){adv.fromReview=false;adv.step=STEP_REVIEW}
+    else adv.step=adv.step+1>=SECTIONS.length?STEP_REVIEW:adv.step+1;
+    renderAdvisor();scrollTop()});
+  const see=$("#adv-see"); if(see)see.addEventListener("click",()=>{adv.at=null;adv.step=STEP_RESULT;renderAdvisor();scrollTop()});
 }
 
-/* ---------- the report ---------- */
-function reportData(){const r=ENG.assess(Q.ans);return {ans:Q.ans,r,fixes:ENG.lowerRisk(Q.ans,2),created:Q.created||new Date().toISOString()}}
-const KIND_PILL={hard:["bad","Hard stop"],factor:["warn","Raises risk"],part:["warn","Higher-risk part"],safeguard:["verify","Safeguard gap"]};
-function reportHTML(){
-  const D=reportData(),r=D.r,a=D.ans,lv=LV_CLASS[r.overall];
-  const court=a.court==="ma_state"?ENG.qLabel("maDept",a.maDept):ENG.qLabel("court",a.court);
-  const risks=r.risks.length?r.risks.map(x=>`<div class="risk-item k-${x.kind}"><div class="ri-head"><span class="pill ${KIND_PILL[x.kind][0]}">${KIND_PILL[x.kind][1]}</span><b>${esc(x.title)}</b></div><p>${esc(x.text)}</p>
-      <p class="ri-trig"><span>Triggered by your answer:</span> ${x.trigger.map(t=>`${esc(t.question)} <b>${esc(t.answer)}</b>`).join("; ")}</p>${x.authorities&&x.authorities.length?`<div class="ri-auth">${authHTML(x.authorities)}</div>`:""}</div>`).join("")
-    :`<p>None of your answers triggered a specific risk.</p>`;
-  const rows=r.parts.map(p=>{const card=PARTS.find(x=>x.id===p.learn);return `<tr><th scope="row">${esc(p.label)}${card?`<br><a href="#motions" class="tbl-link" data-part="${p.learn}">Learn: ${esc(card.short)} →</a>`:""}</th><td><span class="pill ${LV_CLASS[p.level]}">${esc(p.level)}</span></td><td>${esc(p.reason)}</td></tr>`}).join("");
-  const fixes=D.fixes.length?`<ol class="fix-list">${D.fixes.map(f=>`<li><b>${esc(f.label)}.</b> ${f.sameLevel?(f.clearsHard?`This clears a hard stop. Your overall risk would stay ${esc(f.overall)} until the other hard stop is cleared too.`:`Your overall risk would stay ${esc(f.overall)}, but this lowers the risk points behind it.`):`Your overall risk would drop to <b>${esc(f.overall)}</b>.`}</li>`).join("")}</ol>`:`<p>Your answers already give the lowest risk for the uses you selected.</p>`;
-  return `<article class="report" id="report-doc">
-    <header class="rp-head"><div class="eyebrow">Motion Advisor · Your Report</div><h2 id="stage-h" tabindex="-1">Your Report</h2>
-      <p class="muted">${esc(ENG.qLabel("motion",a.motion))} · ${esc(court)} · ${new Date(D.created).toLocaleString(undefined,{dateStyle:"long",timeStyle:"short"})}</p></header>
-    <section class="level-card lv-${lv}" aria-label="Overall risk level"><span class="lv-k">Overall risk</span><strong class="lv-v">${esc(r.overall)}</strong><p>${esc(r.summary)}${r.bumped?" Gaps in your safeguards raised the level by one step.":""}</p></section>
-    <section><h3>Risks identified</h3>${risks}</section>
-    <section><h3>Part by part</h3><div class="rec-scroll"><table class="rec-table part-table"><thead><tr><th>Part of the motion</th><th>Risk</th><th>Why</th></tr></thead><tbody>${rows}</tbody></table></div></section>
-    <section><h3>Suggestions for using AI</h3><ul class="sugg-list">${r.suggestions.map(s=>`<li>${esc(s)}</li>`).join("")}</ul></section>
-    <section><h3>What would lower your risk</h3>${fixes}</section>
-    <section><h3>Before you file</h3><ul class="checklist">${r.checklist.map((t,i)=>`<li><label><input type="checkbox" id="rpc-${i}"><span>${esc(t)}</span></label></li>`).join("")}</ul></section>
-  </article>
-  <div class="rec-actions no-print"><button type="button" class="btn primary" id="rp-pdf">Download PDF</button><button type="button" class="btn" id="rp-print">Print</button><button type="button" class="btn" id="rp-edit">Edit answers</button><button type="button" class="btn ghost" data-qrestart>Start over</button><button type="button" class="btn" id="rp-compare">Compare your options in detail →</button></div>
-  <p class="rp-disc">This report is general information to support your professional judgment, not legal advice. You remain responsible for the accuracy of every filing.</p>`}
-let qRestartArmed=0;
-function bindReport(){
-  const root=$("#adv-root");
-  $("#rp-pdf").addEventListener("click",()=>reportPDF(reportData()));
-  $("#rp-print").addEventListener("click",()=>{if(window.claude&&window.claude.use){toast("Printing isn’t available in this preview. Download the PDF and print it.");reportPDF(reportData());return}window.print()});
-  $("#rp-edit").addEventListener("click",()=>{Q.view="q";Q.step=0;qPersist();renderQ(true);qScrollTop()});
-  $("#rp-compare").addEventListener("click",()=>openCompareFromReport());
-  $("[data-qrestart]",root).addEventListener("click",e=>{const b=e.currentTarget;
-    if(Date.now()-qRestartArmed>4000){qRestartArmed=Date.now();b.textContent="Click again to clear your answers";setTimeout(()=>{if(document.body.contains(b))b.textContent="Start over"},4000);return}
-    qRestartArmed=0;Q=freshQ();qPersist();renderQ(true);renderLastReport();qScrollTop();toast("Started over.")});
+function compute(){ /* scoring in engine.js, rules in config.js */
+  const r=ENG.assess(adv.answers);r.date=adv.at?new Date(adv.at):new Date();return r;
 }
+function workflow(A){
+  const steps=["Write down, in one sentence, what the AI will do on this motion and what it will not do (no legal research, no final language without review)."];
+  if(A.clientInfo!=="no")steps.push("Strip names, dates, account numbers and other identifiers before any prompt. Use placeholders such as [Client] and [Date].");
+  if(A.tool!=="legal")steps.push("Confirm the tool’s data-retention and training terms in writing before use, or switch to a tool under a firm contract.");
+  if(A.informed!=="consent"&&A.clientInfo!=="no")steps.push("Explain the planned AI use to the client and record informed consent before entering client information.");
+  const t={format:"Use AI only on a blank firm template and on your finished text for proofreading. Do not let it add or change citations.",
+    outline:"Prepare your own list of authorities first. Ask AI to organize your points, not to supply law.",
+    summarize:"Have AI summarize only documents you provide, then spot-check each summary against the record before relying on it.",
+    draft:"Give AI your outline and verified authorities, and treat its prose as a first draft to rewrite in your own voice.",
+    research:"Do not use general AI to find authority. Research in Westlaw, Lexis, Fastcase or a court database; use AI only to explain concepts."}[A.aiTask];
+  steps.push(t);
+  steps.push("Treat every citation as unverified until pulled, read and checked for negative history. Run the draft through the Citation Toolkit.");
+  steps.push(A.finalReview==="signer"?"The signing attorney reads the entire final motion line by line before filing.":"Make the signing attorney, not the drafter, read the entire final motion before filing (Rules 5.1, 5.3; Fed. R. Civ. P. 11).");
+  steps.push(A.standing==="none"?"Re-check the judge’s standing orders the week you file; they change.":"Check the judge’s standing orders and add any required AI disclosure or certification.");
+  steps.push("Redact personal identifiers under Fed. R. Civ. P. 5.2 or SJC Rule 1:24 before filing.");
+  steps.push("Note AI use in the file memo and bill only actual time spent.");
+  return steps;
+}
+const CHECKLIST=["Every case pulled from Westlaw, Lexis or an official source and read in full","Each pincite supports the sentence it follows","Every quotation compared word for word with the source","Each authority checked for negative history (KeyCite / Shepard’s)","Statutes and rules checked against the current version","Record citations match the actual exhibits and transcript pages","No client identifiers left in prompts, chat history or uploaded files","Standing-order AI disclosure or certification added, if required","Personal identifiers redacted (Fed. R. Civ. P. 5.2 / SJC Rule 1:24)","Signing attorney reviewed the final version"];
+function rulesFor(j){
+  const base=[["ABA Formal Opinion 512 (July 29, 2024)","Generative AI and the duties of competence, confidentiality, communication, candor, supervision and fees."],["Model Rules 1.1 (cmt. 8), 1.4, 1.5, 1.6, 3.3, 5.1, 5.3","The professional duties the questionnaire maps to."]];
+  const m={
+   ma:[["Mass. R. Prof. C. 1.1, 1.6, 3.3, 5.1, 5.3","Massachusetts versions of the competence, confidentiality, candor and supervision rules."],["Mass. R. Civ. P. 11","Signature certifies good ground to support the pleading or motion."],["Superior Court Rule 9A","Service-first motion practice and filing of the full package."],["SJC Rule 1:24","Redaction of personal identifying information in court filings."],["Smith v. Farwell (Mass. Super. Ct. 2024)","$2,000 sanction for AI-generated fictitious citations."],["Mass. Office of Bar Counsel, “Two Years of Fake Cases…” (2025)","Verify every citation; ask co-counsel whether AI was used."]],
+   dmass:[["Fed. R. Civ. P. 11","Certification that legal contentions are warranted by existing law."],["Fed. R. Civ. P. 5.2","Privacy protection for filings: last four digits, birth year, minors’ initials."],["D. Mass. Local Rule 7.1","Conferral certification and memorandum requirements."],["Judge-specific session procedures","Check the assigned judge’s page for AI disclosure orders."],["Mass. R. Prof. C. (applies to D. Mass. practice)","D. Mass. Local Rule 83.6.1 adopts the Massachusetts Rules of Professional Conduct."]],
+   fed:[["Fed. R. Civ. P. 11 and Fed. R. Civ. P. 5.2","Signature certification and privacy redactions."],["Local rules and judges’ standing orders","Many federal judges require AI-use certification."],["Mata v. Avianca, Inc., 678 F. Supp. 3d 443 (S.D.N.Y. 2023)","Sanctions for ChatGPT-fabricated cases."],["Park v. Kim, 91 F.4th 610 (2d Cir. 2024)","Referral for citing a nonexistent case."]],
+   state:[["Your state’s Rules of Professional Conduct and bar AI opinions","Many state bars have issued their own generative-AI guidance."],["State analog to Rule 11","Signature and certification rule for filings."],["Court-level AI orders","Check state and local court administrative orders."]]};
+  return base.concat(m[j]||[]);
+}
+const FAQ=[["Does a low-risk result mean I can skip review?","No. Every result assumes the signing attorney reviews the full motion and verifies every citation. The score measures the risk of using AI, not whether review is needed."],["Why did I get “Not recommended” with a low score?","Some answers are stop conditions: no citation check, no final review, client information in a consumer tool, or a court order restricting AI. They override the score."],["Is anything I entered saved?","Only on your own device. Your latest answers and result are saved in this browser so the home page can show your last report. Nothing is sent anywhere. Use Clear on the home page to remove it."],["What should I do if my court has no AI rule?","Your existing duties still apply: competence, confidentiality, candor and Rule 11. Re-check standing orders before filing, because they change."]];
 
-/* PDF of the report (jsPDF) */
-function reportPDF(D){
-  if(!window.jspdf){toast("The PDF library didn’t load. Use Print instead.");return}
-  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"pt",format:"letter"}),r=D.r,a=D.ans;
-  const W=612,M=54,ink=[50,54,89],mute=[110,90,76],acc=[150,82,31];let y=M;
-  const clean=s=>String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,"-").replace(/…/g,"...").replace(/[→←]/g,"").replace(/ /g," ").replace(/·/g,"-");
-  const need=h=>{if(y+h>792-M){doc.addPage();y=M}};
-  const text=(s,o={})=>{doc.setFont("helvetica",o.bold?"bold":o.italic?"italic":"normal");doc.setFontSize(o.size||10);doc.setTextColor(...(o.color||ink));
-    doc.splitTextToSize(clean(s),o.w||(W-2*M-(o.x||0))).forEach(l=>{need(o.lh||14);doc.text(l,M+(o.x||0),y);y+=o.lh||14})};
-  const head=s=>{y+=8;need(30);doc.setDrawColor(...acc);doc.line(M,y-10,W-M,y-10);text(s.toUpperCase(),{bold:true,size:9,color:acc});y+=2};
-  const court=a.court==="ma_state"?ENG.qLabel("maDept",a.maDept):ENG.qLabel("court",a.court);
-  text("MOTION ADVISOR - YOUR REPORT",{bold:true,size:9,color:mute});
-  text("Your Report: "+ENG.qLabel("motion",a.motion),{bold:true,size:17,lh:21});
-  text(court+"  -  "+new Date(D.created).toLocaleString(),{size:9,color:mute});
-  y+=6;text("Overall risk: "+r.overall.toUpperCase(),{bold:true,size:14,lh:18});text(r.summary+(r.bumped?" Gaps in your safeguards raised the level by one step.":""));
-  head("Risks identified");if(!r.risks.length)text("None of your answers triggered a specific risk.");
-  r.risks.forEach(x=>{text("["+KIND_PILL[x.kind][1]+"] "+x.title,{bold:true});text(x.text,{x:12});text("Triggered by your answer: "+x.trigger.map(t=>t.question+" "+t.answer).join("; "),{x:12,size:9,color:mute});
-    const au=(x.authorities||[]).map(s=>{const [k,v]=s.split(/:(.+)/);const rr=k==="rule"&&RULES.find(z=>z.id===v);return rr?rr.short:v});if(au.length)text("Authority: "+au.join("; "),{x:12,size:9,color:mute});y+=3});
-  head("Part by part");r.parts.forEach(p=>{text(p.label+": "+p.level.toUpperCase(),{bold:true});text(p.reason,{x:12})});
-  head("Suggestions for using AI");r.suggestions.forEach(s=>text("- "+s,{x:6}));
-  head("What would lower your risk");if(!D.fixes.length)text("Your answers already give the lowest risk for the uses you selected.");
-  D.fixes.forEach((f,i)=>text((i+1)+". "+f.label+". "+(f.sameLevel?(f.clearsHard?"This clears a hard stop. Overall risk would stay "+f.overall+" until the other hard stop is cleared too.":"Overall risk would stay "+f.overall+", but this lowers the risk points behind it."):"Overall risk would drop to "+f.overall+"."),{x:6}));
-  head("Before you file");r.checklist.forEach(t=>{need(16);doc.setDrawColor(...ink);doc.rect(M,y-8,8,8);text(t,{x:16})});
-  y+=10;text("This report is general information to support your professional judgment, not legal advice. You remain responsible for the accuracy of every filing.",{italic:true,size:9,color:mute});
-  const n=doc.getNumberOfPages();for(let i=1;i<=n;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(...mute);doc.text("Motion Advisor report - not legal advice - page "+i+" of "+n,W-M,792-28,{align:"right"})}
-  saveFile("motion-advisor-report-"+String(D.created).slice(0,10)+".pdf",doc.output("blob"))}
-
-/* home page card: the latest report (this browser session only) */
+function resultHTML(r){
+  const A=adv.answers;
+  const lv=l=>l==="Low"?"ok":l==="Moderate"?"warn":"bad";
+  return `<div class="verdict ${r.cls}"><div><div class="eyebrow">Your result · ${r.date.toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})}</div><h2>${r.verdict}</h2><p style="max-width:62ch">${esc(r.summary)}</p></div><div class="gauge"><div class="num" style="color:var(--${r.cls})">${r.index}</div><div class="muted" style="font-size:.8rem">Risk index / 100</div><div class="meter" style="margin-top:8px"><i style="width:${r.index}%;background:var(--${r.cls})"></i></div></div></div>
+  ${r.overrides.length?`<div class="override"><h4>Automatic stop conditions</h4><ul>${r.overrides.map(o=>`<li>${esc(o)}</li>`).join("")}</ul></div>`:""}
+  <div class="res-grid">
+    <div class="card"><h3>Key factors</h3>${r.factors.map(f=>`<div class="factor"><div class="fh"><h4>${f.title}</h4><span class="pill ${lv(f.level)}">${f.level}</span></div><div class="meter"><i style="width:${Math.max(4,Math.round(f.ratio*100))}%;background:var(--${lv(f.level)})"></i></div>${f.notes.map(n=>`<p>${esc(n)}</p>`).join("")}</div>`).join("")}</div>
+    <div style="display:grid;gap:20px;align-content:start">
+      <div class="card"><h3>Recommended workflow</h3><ol class="flow">${workflow(A).map(s=>`<li>${esc(s)}</li>`).join("")}</ol></div>
+      <div class="card"><h3>Verification checklist</h3><ul class="checklist">${CHECKLIST.map((c,i)=>`<li><label><input type="checkbox" id="chk-${i}"><span>${esc(c)}</span></label></li>`).join("")}</ul><p style="margin-top:12px;font-size:.88rem"><a href="#citations">Open the Citation Toolkit →</a></p></div>
+    </div>
+    <div class="card"><h3>Rules to check</h3><div class="rules">${rulesFor(A.jurisdiction).map(([a,b])=>`<div><b>${esc(a)}</b><span class="muted">${esc(b)}</span></div>`).join("")}</div><p style="margin-top:12px;font-size:.88rem"><a href="#rules">See every source on the Rules &amp; Sources page →</a></p></div>
+    <div class="card faq"><h3>FAQ</h3>${FAQ.map(([q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</div>
+  </div>
+  <div class="cmp-cta no-print"><div><b>Want to see your options side by side?</b><p>Compare four ways of using AI on this motion, built from the same answers.</p></div><button class="btn primary" id="adv-compare">Compare your options →</button></div>
+  <div class="res-actions"><button class="btn primary" id="adv-pdf">Download PDF report</button><button class="btn" id="adv-edit">Review or change answers</button><button class="btn ghost" id="adv-restart">Start over</button></div>
+  <p class="muted" style="font-size:.84rem;margin-top:12px">Not legal advice. This result depends on your answers and does not replace attorney judgment or final review.</p>`;
+}
+function bindResult(){
+  $("#adv-pdf").addEventListener("click",()=>makePDF(compute()));
+  $("#adv-compare").addEventListener("click",()=>{OR_STATE.tab=0;location.hash="#compare";renderOR();setTimeout(()=>{const h=$("#v-compare h1");if(h){h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}},40)});
+  $("#adv-edit").addEventListener("click",()=>{adv.step=STEP_REVIEW;renderAdvisor();scrollTop()});
+  $("#adv-restart").addEventListener("click",()=>{adv.answers={};adv.at=null;adv.step=-1;adv.ack=false;renderAdvisor();scrollTop()});
+}
+/* ---- Last run report on the home page (saved only in this browser) ---- */
+const LAST_KEY="motionAdvisor.lastReport";let lastMem=null;
+const JSHORT={ma:"Mass. state court",dmass:"D. Mass.",fed:"Federal court",state:"State court"};
+function saveLast(r){const rec={at:r.date.toISOString(),verdict:r.verdict,cls:r.cls,index:r.index,overrides:r.overrides.length,factors:r.factors.map(f=>({title:f.title,level:f.level,ratio:f.ratio})),answers:{...adv.answers}};lastMem=rec;try{localStorage.setItem(LAST_KEY,JSON.stringify(rec))}catch(e){}renderLastReport()}
+function loadLast(){try{const s=localStorage.getItem(LAST_KEY);if(s){const r=JSON.parse(s);if(r&&r.factors&&r.answers)return r}}catch(e){}return lastMem}
+function clearLast(){lastMem=null;try{localStorage.removeItem(LAST_KEY)}catch(e){}renderLastReport();toast("Last report cleared from this browser.")}
 function renderLastReport(){
-  const el=$("#last-report");if(!el)return;
-  if(!(Q.done&&ENG.qComplete(Q.ans))){el.innerHTML=`<div class="sr-head"><span class="eyebrow">Your last report</span><span class="mono muted" style="font-size:.78rem">None yet</span></div><div class="sr-body"><div class="verdict-line"><strong>No report yet</strong></div><p class="muted" style="font-size:.92rem">Take the assessment and your latest report appears here: the overall risk level and the risk for each part of the motion.</p><div><a class="btn primary sm" href="#advisor">Start the assessment</a></div></div><div class="sr-foot">Kept only for this browser session. Nothing is sent anywhere.</div>`;return}
-  const r=ENG.assess(Q.ans);
-  el.innerHTML=`<div class="sr-head"><span class="eyebrow">Your last report</span><span class="mono muted" style="font-size:.78rem">${Q.created?new Date(Q.created).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}):""}</span></div>
-  <div class="sr-body"><div class="verdict-line"><strong>${esc(ENG.qLabel("motion",Q.ans.motion))}</strong></div>
-  <p><span class="pill ${LV_CLASS[r.overall]}">${esc(r.overall)} risk</span></p>
-  <ul class="mini-parts">${r.parts.slice(0,5).map(p=>`<li><span>${esc(p.label)}</span><span class="pill ${LV_CLASS[p.level]}">${esc(p.level)}</span></li>`).join("")}${r.parts.length>5?`<li class="muted">+${r.parts.length-5} more</li>`:""}</ul>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn primary sm" id="last-open">Open your report</button><button type="button" class="btn ghost sm" id="last-clear">Clear</button></div></div>
-  <div class="sr-foot">Kept only for this browser session. Nothing is sent anywhere.</div>`;
-  $("#last-open").addEventListener("click",()=>{Q.view="report";qPersist();location.hash="#advisor";renderQ(true)});
-  $("#last-clear").addEventListener("click",()=>{Q=freshQ();qPersist();renderLastReport();renderQ();toast("Last report cleared.")});
+  const el=$("#last-report");if(!el)return;const r=loadLast();
+  if(!r){el.innerHTML=`<div class="sr-head"><span class="eyebrow">Your last report</span><span class="mono muted" style="font-size:.78rem">None yet</span></div><div class="sr-body"><div class="verdict-line"><strong>No report yet</strong></div><p class="muted" style="font-size:.92rem">Finish the AI Drafting Advisor and your latest result appears here: the verdict, the risk index and how each of the six areas scored.</p><div><a class="btn primary sm" href="#advisor">Start the assessment</a></div></div><div class="sr-foot">Saved only in this browser. Nothing is sent anywhere.</div>`;return}
+  const lv=l=>l==="Low"?"ok":l==="Moderate"?"warn":"bad";
+  const mo=optOf("motionType",r.answers.motionType),mt=mo?mo.label.split(" (")[0]:"Motion";
+  const d=new Date(r.at);
+  el.innerHTML=`<div class="sr-head"><span class="eyebrow">Your last report</span><span class="mono muted" style="font-size:.78rem">${esc(mt)} · ${esc(JSHORT[r.answers.jurisdiction]||"")}</span></div>
+  <div class="sr-body"><div class="verdict-line"><strong>${esc(r.verdict)}</strong><span class="pill ${r.cls}">Risk index ${r.index} / 100</span></div>
+  ${r.overrides?`<p style="font-size:.86rem;color:var(--bad);font-weight:600">${r.overrides} automatic stop condition${r.overrides>1?"s":""}</p>`:""}
+  ${r.factors.map(f=>`<div class="factor-row"><span>${esc(f.title==="Client communication"?"Client comms":f.title)}</span><div class="meter"><i style="width:${Math.max(4,Math.round(f.ratio*100))}%;background:var(--${lv(f.level)})"></i></div><span class="pill ${lv(f.level)}">${esc(f.level)}</span></div>`).join("")}
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary sm" id="last-open">Open full report</button><button class="btn ghost sm" id="last-clear">Clear</button></div></div>
+  <div class="sr-foot">Run ${d.toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"})} at ${d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})}. Saved only in this browser.</div>`;
+  $("#last-open").addEventListener("click",()=>{adv.answers={...r.answers};adv.at=r.at;adv.ack=true;adv.step=STEP_RESULT;renderAdvisor();location.hash="#advisor"});
+  $("#last-clear").addEventListener("click",clearLast);
+}
+function makePDF(r){
+  if(!window.jspdf){toast("The PDF library didn’t load. Check your connection and reload.");return}
+  const {jsPDF}=window.jspdf; const doc=new jsPDF({unit:"pt",format:"letter"});
+  const W=612,M=54,CW=W-2*M; let y=M;
+  const ink=[35,56,59],mute=[107,94,78];
+  const col={ok:[85,107,47],warn:[160,74,12],bad:[192,56,44]};
+  function need(h){if(y+h>792-M){doc.addPage();y=M}}
+  function text(t,{size=10,bold=false,color=ink,indent=0,gap=4,font="helvetica"}={}){doc.setFont(font,bold?"bold":"normal");doc.setFontSize(size);doc.setTextColor(...color);const lines=doc.splitTextToSize(t,CW-indent);lines.forEach(l=>{need(size*1.35);doc.text(l,M+indent,y+size);y+=size*1.35});y+=gap}
+  function h(t){y+=8;need(30);doc.setDrawColor(214,201,166);doc.line(M,y,W-M,y);y+=10;text(t,{size:13,bold:true,font:"times",gap:6})}
+  const A=adv.answers;
+  text("MOTION ADVISOR",{size:9,bold:true,color:mute,gap:2});
+  text("AI Drafting Assessment Report",{size:22,font:"times",gap:4});
+  text("Generated "+r.date.toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"}),{size:10,color:mute,gap:10});
+  doc.setFillColor(247,227,204);const dis="Disclaimer: This report is educational decision support, not legal advice. It is based on self-reported answers and does not replace attorney judgment, supervisor review, or the rules and standing orders of your court. A low-risk result never means a filing can skip attorney review.";
+  doc.setFontSize(9);const dl=doc.splitTextToSize(dis,CW-20);doc.rect(M,y,CW,dl.length*12+14,"F");doc.setTextColor(...ink);doc.setFont("helvetica","normal");dl.forEach((l,i)=>doc.text(l,M+10,y+16+i*12));y+=dl.length*12+26;
+  text("Overall result",{size:9,bold:true,color:mute,gap:2});
+  text(r.verdict,{size:20,bold:true,color:col[r.cls],font:"times",gap:2});
+  text("Risk index: "+r.index+" / 100",{size:11,bold:true,gap:4});
+  text(r.summary,{size:10,gap:6});
+  if(r.overrides.length){text("Automatic stop conditions:",{size:10,bold:true,color:col.bad,gap:2});r.overrides.forEach(o=>text("•  "+o,{size:10,indent:10,gap:2}));y+=4}
+  h("Key factors");
+  r.factors.forEach(f=>{text(f.title+" — "+f.level+" risk",{size:10.5,bold:true,color:f.level==="Low"?col.ok:f.level==="Moderate"?col.warn:col.bad,gap:2});f.notes.forEach(n=>text(n,{size:9.5,indent:10,gap:2}));y+=4});
+  h("Recommended workflow");
+  workflow(A).forEach((s,i)=>text((i+1)+".  "+s,{size:10,indent:4,gap:3}));
+  h("Verification checklist");
+  CHECKLIST.forEach(c=>{need(16);doc.setDrawColor(...ink);doc.rect(M+2,y+1,9,9);text(c,{size:10,indent:18,gap:3})});
+  h("Rules and authorities to check");
+  rulesFor(A.jurisdiction).forEach(([a,b])=>{text(a,{size:10,bold:true,gap:1});text(b,{size:9.5,color:mute,gap:5})});
+  h("Your answers");
+  QUESTIONS.forEach(q=>{text(q.text,{size:9,color:mute,gap:1});text(optOf(q.id,A[q.id]).label,{size:10,gap:5})});
+  h("FAQ");
+  FAQ.forEach(([q,a])=>{text(q,{size:10,bold:true,gap:1});text(a,{size:9.5,gap:6})});
+  y+=6;text("Not legal advice. Motion Advisor · Shivani Dahya · Suffolk Law School.",{size:8.5,color:mute});
+  const n=doc.getNumberOfPages();for(let i=1;i<=n;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(...mute);doc.text("Motion Advisor report · page "+i+" of "+n,W-M,792-28,{align:"right"})}
+  const blob=doc.output("blob");
+  saveFile("motion-advisor-report-"+r.date.toISOString().slice(0,10)+".pdf",blob);
 }
 
-/* Motions 101 "Start an assessment" pre-fills Q2 */
-function assessMotion(name){
-  const c=QF.motion.choices.find(x=>x.libraryName===name)||QF.motion.choices.find(x=>x.v==="other");
-  Q.ans.motion=c.v;if(c.dispositive){Q.ans.dispositive=c.dispositive;Q.autoDisp=true}else{delete Q.ans.dispositive;Q.autoDisp=false}
-  Q.fromMotion=c.libraryName?name:name+" (listed as “Other”)";Q.view="q";Q.step=0;qPersist();
-  location.hash="#advisor";renderQ(true)}
 
 /* ======================================================
-   COMPARE YOUR OPTIONS (optional choice matrix)
+   OPTIONS REPORT (optional): four ways of using AI, rated on the same six
+   sections from the same answers. Rules live in config.js (optionsReport).
    ====================================================== */
-function ansKey(){return JSON.stringify(Q.ans)}
-/* Fill the matrix from the questionnaire whenever a finished report is newer than it */
-function syncCompare(){
-  if(Q.done&&ENG.qComplete(Q.ans)&&(A.source!=="report"||A.ansKey!==ansKey())){A=freshAdv(ENG.framingFromAnswers(Q.ans));A.ready=true;A.source="report";A.ansKey=ansKey();persist()}
-  renderCompare()}
-function openCompareFromReport(){location.hash="#compare";syncCompare();setTimeout(()=>{const h=$("#v-compare h1");if(h){h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}},60)}
-function renderCompare(){
+const ORC=CFG.optionsReport;
+const OR_STATE={weights:null,tab:0,advOpen:false};
+const LV_CHIP={Low:["ok","✓","Low risk"],Moderate:["warn","▲","Moderate risk"],High:["bad","✕","High risk"]};
+function orAnswers(){if(allComplete())return adv.answers;const r=loadLast();return r&&r.answers?r.answers:null}
+function orWeights(){return OR_STATE.weights||ENG.defaultWeights()}
+function orChanged(){const d=ENG.defaultWeights(),w=orWeights();return Object.keys(d).some(k=>d[k]!==w[k])}
+function chip(level){const [c,ic,t]=LV_CHIP[level];return `<span class="rchip ${c}"><span class="ic" aria-hidden="true">${ic}</span>${t}</span>`}
+function orNum(o){return ORC.options.findIndex(x=>x.id===o.id)+1}
+function barHTML(o){const c=LV_CHIP[o.band][0];return `<div class="or-bar" role="img" aria-label="Overall: ${o.band} risk"><span class="track"><i class="${c}" style="width:${Math.max(4,o.index)}%"></i></span><span class="bl">${o.band} overall</span></div>`}
+function orBottomHTML(R){
+  const b=R.bottom,others=[];
+  const why=b.noAI?(R.options.filter(o=>!o.noAI).every(o=>o.blocked)?"Every way of using AI is blocked by an automatic stop from your answers.":"Every way of using AI that isn’t blocked carries high overall risk for this motion.")
+    :`It’s the lowest-risk way to get help from AI on this motion (${b.band.toLowerCase()} overall risk).`;
+  if(R.runnerUp)others.push(`<li><b>Runner-up:</b> ${esc(R.runnerUp.name)} <span class="muted">(${R.runnerUp.band} overall risk)</span></li>`);
+  R.blocked.forEach(o=>others.push(`<li class="or-blk"><span class="lock-ic" aria-hidden="true"></span><span><b>${esc(o.name)}</b> is blocked because: ${esc(o.blockedBy.join(" "))}</span></li>`));
+  return `<p class="or-lead">${esc(ORC.bottomLine)}</p>
+    <div class="or-best lv-${LV_CHIP[b.band][0]}"><span class="or-num">Option ${orNum(b)}</span><strong>${esc(b.name)}</strong><p>${esc(b.desc)}</p>${barHTML(b)}</div>
+    <p class="or-why">${esc(why)}</p>${others.length?`<ul class="or-also">${others.join("")}</ul>`:""}`}
+function renderOR(){
   const root=$("#cmp-root");if(!root)return;
-  if(!A.ready){root.innerHTML=`<div class="card cmp-empty"><h2>Take the assessment first</h2><p>Compare Your Options works best with your own answers: it fills in every rating from them and greys out the options a hard stop rules out.</p><div class="ctas"><a class="btn primary" href="#advisor">Take the assessment</a><button type="button" class="btn" id="cmp-sample">Explore with sample data</button></div></div>`;return}
-  const fromReport=A.source==="report";
-  root.innerHTML=`<div class="cmp-top">${Q.done&&ENG.qComplete(Q.ans)?`<button type="button" class="btn" data-backreport>← Back to your report</button>`:""}
-    <p class="cmp-source">${fromReport?"Filled in from your assessment answers. Options ruled out by a hard stop are greyed out with a lock.":`Showing sample data. <a href="#advisor">Take the assessment</a> to compare options for your own motion.`}</p></div>
-    <div class="howto"><h2>How to read this</h2><ul>
-      <li>The ranking shows which way of using AI scores best, given how much each factor matters to you.</li>
-      <li>In the matrix, each column is a way of using AI and each row a factor. Ratings run from 1 to 5, and 5 is always best for you. Select a cell to see why it has its rating.</li>
-      <li>Move the weights (0 to 10) to change how much each factor counts. Locked columns can’t be reopened by weights.</li></ul></div>
-    ${stage3()}`;
-  bindCompare();updateLive()}
-function bindCompare(){
+  const a=orAnswers();
+  if(!a){root.innerHTML=`<div class="card cmp-empty"><h2>Take the assessment first</h2><p>The Options Report is built from your assessment answers. Finish the AI Drafting Advisor, then choose “Compare your options” on your result.</p><div class="ctas"><a class="btn primary" href="#advisor">Start the assessment</a></div></div>`;return}
+  const R=ENG.optionsReport(a,orWeights()),secs=CFG.assessment.sections;
+  const head=`<th scope="col">Risk area</th>`+R.options.map(o=>`<th scope="col" class="or-oh${o.blocked?" blocked":""}"><span class="or-num">Option ${orNum(o)}</span><span class="or-on">${esc(o.name)}</span><span class="or-od">${esc(o.desc)}</span>${o.blocked?`<span class="or-bb"><span class="lock-ic" aria-hidden="true"></span>Blocked because: ${esc(o.blockedBy.join(" "))}</span>`:""}</th>`).join("");
+  const rows=secs.map(s=>`<tr><th scope="row">${esc(s.title)}</th>${R.options.map(o=>{const c=o.cells.find(x=>x.id===s.id);
+      return o.blocked?`<td class="blocked"><span class="lock-ic" aria-hidden="true"></span><span class="sr-only">Blocked</span></td>`:`<td><button type="button" class="or-cell" data-oc="${o.id}" data-os="${s.id}" aria-label="${esc(o.name)}, ${esc(s.title)}: ${c.level} risk. Show details.">${chip(c.level)}</button></td>`}).join("")}</tr>`).join("");
+  const foot=`<tr><th scope="row">Overall</th>${R.options.map(o=>`<td data-orbar="${o.id}">${o.blocked?`<span class="muted">Blocked</span>`:barHTML(o)}</td>`).join("")}</tr>`;
+  const tabs=R.options.map((o,i)=>`<button type="button" role="tab" id="ort-${i}" aria-controls="orp-${i}" aria-selected="${OR_STATE.tab===i}" tabindex="${OR_STATE.tab===i?0:-1}" data-ortab="${i}">${o.blocked?'<span class="lock-ic" aria-hidden="true"></span>':""}Option ${i+1}</button>`).join("");
+  const panels=R.options.map((o,i)=>`<div class="or-mcard${o.blocked?" blocked":""}" role="tabpanel" id="orp-${i}" aria-labelledby="ort-${i}" ${OR_STATE.tab===i?"":"hidden"}>
+      <span class="or-num">Option ${i+1}</span><h3>${esc(o.name)}</h3><p class="or-od">${esc(o.desc)}</p>
+      ${o.blocked?`<p class="or-bb"><span class="lock-ic" aria-hidden="true"></span>Blocked because: ${esc(o.blockedBy.join(" "))}</p>`:
+      `<ul class="or-mrows">${secs.map(s=>{const c=o.cells.find(x=>x.id===s.id);return `<li><span>${esc(s.title)}</span><button type="button" class="or-cell" data-oc="${o.id}" data-os="${s.id}" aria-label="${esc(s.title)}: ${c.level} risk. Show details.">${chip(c.level)}</button></li>`}).join("")}</ul><div data-orbar-m="${o.id}">${barHTML(o)}</div>`}</div>`).join("");
+  const W=ORC.weightRange,w=orWeights();
+  root.innerHTML=`<div class="or-nav no-print"><button type="button" class="btn" id="or-back">← Back to my result</button><button type="button" class="btn primary" id="or-pdf">Download options report (PDF)</button><button type="button" class="btn" id="or-edit">Edit answers</button></div>
+    <section class="or-bottom" id="or-bottom" aria-live="polite">${orBottomHTML(R)}</section>
+    <div class="howto"><h2>How to read this</h2><ul><li>Rows are the risk areas from your assessment.</li><li>Columns are ways you could use AI.</li><li>Lower risk is better; click any cell for details.</li></ul></div>
+    <div class="or-grid-wrap"><table class="or-grid"><caption class="sr-only">Options Report: risk level for each way of using AI in each risk area</caption><thead><tr>${head}</tr></thead><tbody>${rows}</tbody><tfoot>${foot}</tfoot></table></div>
+    <div class="or-mobile"><div class="or-tabs" role="tablist" aria-label="Options">${tabs}</div>${panels}</div>
+    <details class="or-adv" id="or-adv" ${OR_STATE.advOpen?"open":""}><summary>Adjust what matters to you</summary>
+      <p class="card-sub">Each risk area counts as much as it did in your assessment: 1.5× for Confidentiality and Verification, 1× for the rest. Change how much each area counts and the overall bars and bottom line update. The rating in each cell doesn’t change.</p>
+      ${secs.map(s=>`<div class="or-w"><label for="orw-${s.id}">${esc(s.title)}</label><input type="range" id="orw-${s.id}" data-orw="${s.id}" min="${W.min}" max="${W.max}" step="${W.step}" value="${w[s.id]}"><output id="orwo-${s.id}" for="orw-${s.id}">${w[s.id]}×</output></div>`).join("")}
+      <button type="button" class="btn sm" id="or-reset" ${orChanged()?"":"hidden"}>Reset to default</button></details>
+    <p class="rp-disc">This report is general information to support your professional judgment, not legal advice. You remain responsible for the accuracy of every filing.</p>`;
+  bindOR();
+}
+function paintOR(){ /* live update after a weight change, without redrawing the sliders */
+  const a=orAnswers();if(!a)return;const R=ENG.optionsReport(a,orWeights());
+  $("#or-bottom").innerHTML=orBottomHTML(R);
+  R.options.forEach(o=>{if(o.blocked)return;const t=$(`[data-orbar="${o.id}"]`),m=$(`[data-orbar-m="${o.id}"]`);if(t)t.innerHTML=barHTML(o);if(m)m.innerHTML=barHTML(o)});
+  const r=$("#or-reset");if(r)r.hidden=!orChanged()}
+function bindOR(){
   const root=$("#cmp-root");
-    $$("[data-w]",root).forEach(r=>r.addEventListener("input",()=>{ENG.setWeight(st(),r.dataset.w,+r.value);A.record=null;persist();updateLive()}));
-    $("#wt-reset").addEventListener("click",()=>{ENG.resetWeights(st());persist();renderCompare();toast("Weights reset to the suggested values.")});
-    $("#fac-add-t").addEventListener("click",()=>{A.showFacAdd=!A.showFacAdd;renderCompare();if(A.showFacAdd)$("#fac-name").focus()});
-    const fa=$("#fac-add");if(fa)fa.addEventListener("click",()=>{const n=$("#fac-name").value.trim();if(!n){$("#fac-name").focus();return}
-      const w=Math.max(0,Math.min(10,parseInt($("#fac-w").value,10)||5));ENG.addFactor(st(),n,w);A.showFacAdd=false;A.record=null;persist();renderCompare();toast("Added “"+n+"”. Every option starts at 3; rate each one.")});
-    $$("[data-rmfac]",root).forEach(b=>b.addEventListener("click",()=>{ENG.removeFactor(st(),b.dataset.rmfac);A.record=null;persist();renderCompare()}));
-    $("#blind-t").addEventListener("change",e=>{st().blind=e.target.checked;A.record=null;persist();renderCompare();toast(e.target.checked?"Suggestions hidden. Rate each cell yourself.":"Suggestions are showing again.")});
-    $("#opt-ed-t").addEventListener("click",()=>{A.showOptEd=!A.showOptEd;renderCompare();if(A.showOptEd)$("[data-rename]").focus()});
-    $("#ovr-reset").addEventListener("click",()=>{st().overrides={};A.review=false;A.record=null;persist();updateLive();toast("All ratings reset to the suggestions.")});
-    $$("[data-rename]",root).forEach(i=>i.addEventListener("change",()=>{const o=optById(i.dataset.rename),v=i.value.trim();if(!v){i.value=o.name;return}o.name=v;o.short=v.length>28?v.slice(0,26)+"…":v;A.record=null;persist();renderCompare();const n=$(`[data-rename="${o.id}"]`);if(n)n.focus()}));
-    $$("[data-rmopt]",root).forEach(b=>b.addEventListener("click",()=>{if(st().options.length<2)return;ENG.removeOption(st(),b.dataset.rmopt);if(A.choice===b.dataset.rmopt)A.choice=null;A.record=null;persist();renderCompare()}));
-    const oa=$("#opt-add");if(oa)oa.addEventListener("click",()=>{const n=$("#opt-name").value.trim();if(!n){$("#opt-name").focus();return}ENG.addOption(st(),n,$("#opt-base").value);A.record=null;persist();renderCompare();toast("Added “"+n+"”.")});
-    const or=$("#opt-restore");if(or)or.addEventListener("click",()=>{const fresh=ENG.newState(st().framing);st().options=fresh.options;Object.keys(st().overrides).forEach(k=>{if(!fresh.options.some(o=>o.id===k.split("|")[0]))delete st().overrides[k]});A.record=null;persist();renderCompare()});
-    const od=$("#opt-done");if(od)od.addEventListener("click",()=>{A.showOptEd=false;renderCompare();$("#opt-ed-t").focus()});
-    $("#unc-t").addEventListener("change",e=>{st().uncertainty.enabled=e.target.checked;A.record=null;persist();renderCompare()});
-    [["u-err","errorChance","uo-err"],["u-dis","disclosureChance","uo-dis"]].forEach(([id,k,o])=>$("#"+id).addEventListener("input",e=>{st().uncertainty[k]=+e.target.value;st().uncertainty.touched=true;$("#"+o).textContent=e.target.value+"%";A.record=null;persist();updateLive()}));
+  $("#or-back").addEventListener("click",()=>{orToResult(STEP_RESULT)});
+  $("#or-edit").addEventListener("click",()=>{orToResult(STEP_REVIEW)});
+  $("#or-pdf").addEventListener("click",()=>orPDF());
+  $$("[data-orw]",root).forEach(r=>r.addEventListener("input",()=>{const w=Object.assign({},orWeights());w[r.dataset.orw]=+r.value;OR_STATE.weights=w;$("#orwo-"+r.dataset.orw).textContent=r.value+"×";paintOR()}));
+  $("#or-reset").addEventListener("click",()=>{OR_STATE.weights=null;renderOR();const d=$("#or-adv");if(d)d.open=true;toast("Weights reset to the assessment’s defaults.")});
+  $("#or-adv").addEventListener("toggle",e=>{OR_STATE.advOpen=e.target.open});
+  const tabs=$$("[data-ortab]",root);
+  const sel=i=>{OR_STATE.tab=i;tabs.forEach((t,j)=>{t.setAttribute("aria-selected",String(j===i));t.tabIndex=j===i?0:-1;$("#orp-"+j).hidden=j!==i})};
+  tabs.forEach((t,i)=>{t.addEventListener("click",()=>sel(i));t.addEventListener("keydown",e=>{const n=tabs.length;let j=null;if(e.key==="ArrowRight")j=(i+1)%n;else if(e.key==="ArrowLeft")j=(i-1+n)%n;else if(e.key==="Home")j=0;else if(e.key==="End")j=n-1;if(j!=null){e.preventDefault();sel(j);tabs[j].focus()}})});
+  /* swipe between option cards on touch screens */
+  const mob=$(".or-mobile",root);let x0=null;
+  mob.addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});
+  mob.addEventListener("touchend",e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)<50)return;const n=tabs.length;sel((OR_STATE.tab+(dx<0?1:-1)+n)%n)},{passive:true});
 }
+function orToResult(step){
+  if(!allComplete()){const r=loadLast();if(r){adv.answers={...r.answers};adv.at=r.at;adv.ack=true}}
+  adv.step=step;location.hash="#advisor";renderAdvisor();setTimeout(scrollTop,30)}
+function orCell(oid,sid){
+  const a=orAnswers();const R=ENG.optionsReport(a,orWeights());const o=R.options.find(x=>x.id===oid),c=o.cells.find(x=>x.id===sid);
+  const optCfg=ORC.options.find(x=>x.id===oid);
+  let body;
+  if(o.noAI)body=`<p>${chip("Low")}</p><p>No AI tool is involved in this option, so this risk doesn’t arise.</p>`;
+  else{
+    const lines=c.lines.filter(l=>!(sid==="juris"&&l.q==="jurisdiction")).map(l=>{
+      let adj="";
+      if(l.replaced)adj=`For this option it is scored as “${esc(ENG.optOf("aiTask",l.asAnswer).label)}”.`;
+      else if(l.mult===0)adj="Not counted for this option: it adds no citations to the motion.";
+      else if(l.mult===0.5)adj="Counted at half: you supply the authorities, but AI summaries can still misstate them.";
+      return `<li><span class="muted">${esc(l.question)}</span><br><b>Your answer:</b> ${esc(l.answer)}${adj?`<br><em>${adj}</em>`:""}${l.mult!==0&&!l.replaced?`<br>${esc(l.note)}`:l.replaced?`<br>${esc(ENG.optOf("aiTask",l.asAnswer).note)}`:""}</li>`}).join("");
+    body=`<p>${chip(c.level)}</p><div><h3>Why this rating</h3><p>Rated ${c.level.toLowerCase()} risk from your answers in this area${optCfg.taskAs?", applied to this way of using AI":""}.</p></div><div><h3>Answers behind it</h3><ul>${lines}</ul></div>`}
+  body+=`<div><h3>The rule behind it</h3>${authHTML(CFG.assessment.authorities[sid])}</div>`;
+  drawerCell=null;openDrawer(o.name+": "+c.title,body)}
 
-/* ---------- Stage 3: matrix ---------- */
-function stage3(){
-  const S=st(),g=ENG.gates(S),sw=ENG.suggestedWeights(S.framing).weights;
-  const weights=`<section class="card a-w" aria-labelledby="wt-h"><h2 id="wt-h">How much does each factor matter?</h2>
-    <p class="card-sub">0 means it doesn’t matter to you; 10 means it matters most. Starting weights reflect your answers. Move them to match your own priorities.</p>
-    <div id="bias-top"></div>
-    <div class="wt-list">${S.factors.map(f=>{const c=ENG.cfgFactor(f.id),w=S.weights[f.id]||0;return `<div class="wt-row">
-      <div class="txt"><label for="w-${f.id}">${esc(f.name)}</label><p class="why-line">${esc(c?c.why:f.why)}</p></div>
-      <div class="ctl"><input type="range" min="0" max="10" step="1" id="w-${f.id}" data-w="${f.id}" value="${w}" aria-describedby="wo-${f.id}"></div>
-      <output id="wo-${f.id}" for="w-${f.id}">${w}</output>
-      <div class="end">${c?`<span class="sug" data-wsug="${f.id}">${S.weightsTouched[f.id]&&w!==sw[f.id]?"suggested "+sw[f.id]:""}</span>`:`<button type="button" class="icon-x" data-rmfac="${f.id}" aria-label="Remove factor ${esc(f.name)}">×</button>`}</div></div>`}).join("")}</div>
-    <div class="row-actions"><button type="button" class="btn sm" id="wt-reset">Reset weights to suggested</button><button type="button" class="btn sm ghost" id="fac-add-t" aria-expanded="${A.showFacAdd}">+ Add your own factor</button></div>
-    ${A.showFacAdd?`<div class="inline-form"><label>Factor name<input type="text" id="fac-name" maxlength="50" placeholder="e.g. Supervising partner’s comfort"></label><label style="flex:0 1 110px">Weight (0–10)<input type="text" inputmode="numeric" id="fac-w" value="5" maxlength="2"></label><button type="button" class="btn sm primary" id="fac-add">Add factor</button><p class="hint">Name a consideration, not a fact about the case. Every option starts at 3 for a factor you add; rate each one yourself.</p></div>`:""}
-  </section>`;
-  const tops=ENG.score(S).top;
-  const table=`<table class="mx"><caption class="sr-only">Choice matrix: options in columns, factors in rows. Select a cell to see why it has its rating or to change it.</caption>
-    <thead><tr><th scope="col">Factor <span class="wchip">(weight)</span></th>${S.options.map(o=>{const b=g.blocked[o.id];return `<th scope="col" class="opt-h${b?" blocked":""}${tops&&tops.id===o.id&&!(S.blind&&!ENG.blindProgress(S).complete)?" top":""}" data-oh="${o.id}"><span class="oid">${o.custom?"Yours":o.id}</span><span class="oname">${esc(o.short)}</span>${b?`<button type="button" class="lock-why" data-why="${o.id}"><span class="lock-ic" aria-hidden="true"></span>Why?</button>`:""}</th>`}).join("")}</tr></thead>
-    <tbody>${S.factors.map(f=>`<tr><th scope="row"><span class="fname">${esc(f.name)}</span><span class="wchip" data-wchip="${f.id}">×${S.weights[f.id]||0}</span></th>${S.options.map(o=>g.blocked[o.id]?`<td class="blocked"><span class="sr-only">Blocked</span><span aria-hidden="true">—</span></td>`:`<td><button type="button" class="cell" data-o="${o.id}" data-f="${f.id}"><span class="cv"></span></button></td>`).join("")}</tr>`).join("")}</tbody>
-    <tfoot><tr><th scope="row">Weighted score <span class="wchip">(0–100)</span></th>${S.options.map(o=>`<td data-total="${o.id}">${g.blocked[o.id]?"—":""}</td>`).join("")}</tr><tr><th scope="row">Rank</th>${S.options.map(o=>`<td data-rank="${o.id}">${g.blocked[o.id]?'<span class="lock-ic" aria-label="Blocked"></span>':""}</td>`).join("")}</tr></tfoot></table>`;
-  const opted=A.showOptEd?`<div class="opt-editor"><b>Edit options</b><p class="hint">Rename, remove or add options. Describe the approach, not the case: no client or case details. Each option you add is rated, and gated, starting from the preset it is closest to.</p>
-    ${S.options.map(o=>`<div class="opt-edit"><span class="oid">${o.custom?"+":o.id}</span><input type="text" maxlength="60" value="${esc(o.name)}" data-rename="${o.id}" aria-label="Name of ${esc(o.custom?"your option":"option "+o.id)}"><button type="button" class="icon-x" data-rmopt="${o.id}" aria-label="Remove ${esc(o.name)}" ${S.options.length<2?"disabled":""}>×</button>${o.custom?`<small>Based on Option ${o.basedOn}: ${esc(CFG.options.find(x=>x.id===o.basedOn).short)}</small>`:""}</div>`).join("")}
-    <div class="inline-form" style="margin-top:4px"><label>New option<input type="text" id="opt-name" maxlength="60" placeholder="e.g. AI outline only, I write every sentence"></label><label>Closest preset<select id="opt-base">${CFG.options.map(o=>`<option value="${o.id}" ${o.id==="D"?"selected":""}>${o.id}: ${esc(o.short)}</option>`).join("")}</select></label><button type="button" class="btn sm primary" id="opt-add">Add option</button></div>
-    <div class="row-actions" style="margin-top:0"><button type="button" class="btn sm ghost" id="opt-restore">Restore the five default options</button><button type="button" class="btn sm" id="opt-done">Done</button></div></div>`:"";
-  const matrix=`<section class="card a-m" aria-labelledby="mx-h"><h2 id="mx-h">How well does each option do on each factor?</h2>
-    <p class="card-sub">1 is very poor and 5 is very good <em>for you</em> on that factor; for risk factors, 5 means least risk. ${S.blind?"Suggestions are hidden: rate each cell yourself.":"Cells start at a suggested rating."} Select any cell to see the reasoning, change it, or reset it. Tip: focus a cell and press 1–5 to rate it.</p>
-    <div id="bias-mx"></div>
-    <div class="mx-toolbar"><label class="switch"><input type="checkbox" id="blind-t" ${S.blind?"checked":""}>Rate without suggestions</label><button type="button" class="btn sm" id="opt-ed-t" aria-expanded="${A.showOptEd}">Edit options</button><button type="button" class="btn sm ghost" id="ovr-reset">Reset all ratings</button></div>
-    <p class="blind-progress" id="blind-prog" ${S.blind?"":"hidden"}></p>
-    <div class="mx-scroll" role="region" aria-label="Choice matrix" tabindex="0">${table}</div>
-    <div class="mx-legend"><span><span class="lg-ovr"></span>Your rating (differs from the suggestion)</span><span>≈ adjusted for uncertainty</span><span><span class="lock-ic" aria-hidden="true"></span> Blocked by a hard stop</span></div>
-    ${opted}</section>`;
-  const rank=`<aside class="card a-r" aria-labelledby="rk-h"><h2 id="rk-h">Ranking</h2><div id="rank-box" aria-live="polite"></div></aside>`;
-  const U=CFG.uncertainty,u=S.uncertainty;
-  const unc=`<details class="card a-u ${u.enabled?"":"unc-off"}" id="unc-det" ${A.uncOpen||u.enabled?"open":""}><summary class="det-sum"><h2 id="unc-h">What if something goes wrong?</h2><span class="det-hint">Optional uncertainty panel</span></summary><div class="unc-head"><label class="switch"><input type="checkbox" id="unc-t" ${u.enabled?"checked":""}>Factor in uncertainty</label></div>
-    <p class="card-sub">Estimate two chances. When this is on, each one lowers the ratings it affects, more for options that put more AI-written content into the filing. Starting estimates come from your answers; they are illustrations, not measured rates.</p>
-    <div class="unc-sl"><label for="u-err">${esc(U.errorChance.label)}</label><input type="range" id="u-err" min="${U.errorChance.min}" max="${U.errorChance.max}" step="${U.errorChance.step}" value="${u.errorChance}" ${u.enabled?"":"disabled"}><output id="uo-err" for="u-err">${u.errorChance}%</output><p class="why-line">Lowers Accuracy by the option’s AI exposure × (chance ÷ 10): B ×0.5, C ×0.1, D ×1, E ×1.5. At 10%, Option D loses 1 point.</p></div>
-    <div class="unc-sl"><label for="u-dis">${esc(U.disclosureChance.label)}</label><input type="range" id="u-dis" min="${U.disclosureChance.min}" max="${U.disclosureChance.max}" step="${U.disclosureChance.step}" value="${u.disclosureChance}" ${u.enabled?"":"disabled"}><output id="uo-dis" for="u-dis">${u.disclosureChance}%</output><p class="why-line">Lowers Compliance by up to 1 point (D, E), 0.5 (C) or 0.25 (B) when disclosure is certain, in proportion to the chance.</p></div>
-    <div id="unc-msg" aria-live="polite"></div></details>`;
-  return `<div class="mx-layout">${rank}${weights}${matrix}${unc}</div>
-    ${Q.done&&ENG.qComplete(Q.ans)?`<div class="nav-btns no-print"><button type="button" class="btn" data-backreport>← Back to your report</button></div>`:""}`}
+function orPDF(){
+  if(!window.jspdf){toast("The PDF library didn’t load. Check your connection and reload.");return}
+  const a=orAnswers();if(!a)return;const R=ENG.optionsReport(a,orWeights()),secs=CFG.assessment.sections;
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"pt",format:"letter",orientation:"landscape"});
+  const W=792,H=612,M=44,ink=[35,56,59],mute=[107,94,78],col={Low:[85,107,47],Moderate:[160,74,12],High:[192,56,44]};let y=M;
+  const clean=s=>String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,"-").replace(/[→←✓▲✕]/g,"");
+  const need=h=>{if(y+h>H-M){doc.addPage();y=M}};
+  const text=(s,o={})=>{doc.setFont("helvetica",o.bold?"bold":"normal");doc.setFontSize(o.size||10);doc.setTextColor(...(o.color||ink));doc.splitTextToSize(clean(s),o.w||(W-2*M-(o.x||0))).forEach(l=>{need((o.size||10)*1.4);doc.text(l,M+(o.x||0),y+(o.size||10));y+=(o.size||10)*1.4});y+=o.gap==null?3:o.gap};
+  text("MOTION ADVISOR",{size:9,bold:true,color:mute,gap:1});text("Options Report",{size:20,bold:true,gap:2});
+  text("Generated "+new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})+(orChanged()?" · Weights adjusted by you":""),{size:9,color:mute,gap:10});
+  text(ORC.bottomLine,{size:11,gap:2});text("Option "+orNum(R.bottom)+": "+R.bottom.name+" ("+R.bottom.band+" overall risk)",{size:14,bold:true,color:col[R.bottom.band],gap:2});text(R.bottom.desc,{size:10,gap:6});
+  if(R.runnerUp)text("Runner-up: "+R.runnerUp.name+" ("+R.runnerUp.band+" overall risk)",{size:10});
+  R.blocked.forEach(o=>text("Blocked: "+o.name+". Blocked because: "+o.blockedBy.join(" "),{size:10,color:col.High}));
+  y+=8;const c0=150,cw=(W-2*M-c0)/R.options.length;need(60);
+  doc.setFont("helvetica","bold");doc.setFontSize(9);doc.setTextColor(...mute);doc.text("Risk area",M,y+10);
+  let hmax=0;R.options.forEach((o,i)=>{const l=doc.splitTextToSize("Option "+(i+1)+": "+o.name+(o.blocked?" (blocked)":""),cw-8);doc.setTextColor(...(o.blocked?mute:ink));l.forEach((t,k)=>doc.text(t,M+c0+i*cw,y+10+k*11));hmax=Math.max(hmax,l.length)});
+  y+=14+hmax*11;doc.setDrawColor(214,201,166);doc.line(M,y-4,W-M,y-4);
+  secs.concat([{id:"_overall",title:"Overall"}]).forEach(s=>{need(18);doc.setFont("helvetica",s.id==="_overall"?"bold":"normal");doc.setFontSize(10);doc.setTextColor(...ink);doc.text(s.title,M,y+10);
+    R.options.forEach((o,i)=>{let t,cl;if(o.blocked){t="Blocked";cl=mute}else if(s.id==="_overall"){t=o.band+" overall";cl=col[o.band]}else{const c=o.cells.find(x=>x.id===s.id);t=c.level+" risk";cl=col[c.level]}
+      doc.setTextColor(...cl);doc.setFont("helvetica","bold");doc.text(t,M+c0+i*cw,y+10)});y+=18;doc.line(M,y-4,W-M,y-4)});
+  y+=8;text("Ratings come from your assessment answers and the rules in Motion Advisor’s configuration file. This report is general information to support your professional judgment, not legal advice. You remain responsible for the accuracy of every filing.",{size:8.5,color:mute});
+  const n=doc.getNumberOfPages();for(let i=1;i<=n;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(...mute);doc.text("Motion Advisor options report - page "+i+" of "+n,W-M,H-24,{align:"right"})}
+  saveFile("motion-advisor-options-report-"+new Date().toISOString().slice(0,10)+".pdf",doc.output("blob"))}
 
-function biasNote(b,actions){return `<div class="bias-note${b.info?" info":""}" role="status"><div><span class="bn-k">${b.k}</span>${esc(b.text)}</div>${b.info?"<span></span>":`<button type="button" class="icon-x" data-dismiss="${b.id}" aria-label="Dismiss this prompt">×</button>`}${actions?`<div class="bn-act">${actions}</div>`:""}</div>`}
-const BIAS_K={deadline:"Deadline pressure",automation:"Automation bias",overconfidence:"Overconfidence check",anchoring:"Rating without suggestions"};
-function biasHTML(where){
-  const S=st(),list=ENG.biasChecks(S).filter(b=>!A.dismissed[b.id]);let h="";
-  list.forEach(b=>{const k=BIAS_K[b.id];
-    if(where==="top"&&b.id==="deadline")h+=biasNote({id:b.id,k,text:b.text});
-    if(where==="mx"&&b.id==="automation")h+=biasNote({id:b.id,k,text:b.text});
-    if(where==="mx"&&b.id==="overconfidence")h+=biasNote({id:b.id,k,text:b.text},`<button type="button" class="btn sm" id="review-ovr">${A.review?"Stop highlighting":"Highlight my changes"}</button>`)});
-  if(where==="mx"&&S.blind)h+=biasNote({id:"anchoring",k:BIAS_K.anchoring,text:CFG.bias.anchoring.text,info:true});
-  return h}
-
-function updateLive(){
-  const S=st(),g=ENG.gates(S),sc=ENG.score(S,{gates:g}),bp=ENG.blindProgress(S),hide=S.blind&&!bp.complete;
-  $$("button.cell").forEach(b=>{const o=optById(b.dataset.o),f=b.dataset.f;if(!o)return;const c=ENG.cell(S,o,f);
-    const rated=ENG.key(o.id,f) in S.overrides,unrated=S.blind&&!rated;
-    const ovr=rated&&!S.blind&&c.entered!==c.suggested;
-    b.querySelector(".cv").textContent=unrated?"?":fmtR(ENG.round(c.value,1));
-    b.dataset.v=unrated?"":String(Math.round(c.value));
-    b.classList.toggle("ovr",ovr);b.classList.toggle("unrated",unrated);b.classList.toggle("unc",!unrated&&c.shift!==0);
-    b.classList.toggle("review",!!A.review&&ovr);
-    b.setAttribute("aria-label",`${oLabel(o)}. ${facById(f).name}: ${unrated?"not rated yet":"rated "+fmtR(ENG.round(c.value,1))+" of 5"}${ovr?", your rating (suggested "+c.suggested+")":""}${!unrated&&c.shift?", adjusted for uncertainty":""}. Open details.`)});
-  S.factors.forEach(f=>{const w=S.weights[f.id]||0,ch=$(`[data-wchip="${f.id}"]`);if(ch)ch.textContent="×"+w;const out=$("#wo-"+f.id);if(out)out.textContent=w;
-    const sg=$(`[data-wsug="${f.id}"]`);if(sg){const sw=ENG.suggestedWeights(S.framing).weights[f.id];sg.textContent=S.weightsTouched[f.id]&&w!==sw?"suggested "+sw:""}});
-  sc.rows.forEach(r=>{const t=$(`[data-total="${r.id}"]`),k=$(`[data-rank="${r.id}"]`);if(r.blocked)return;
-    if(t)t.textContent=hide?"…":fmt(r.score);if(k)k.textContent=hide?"…":"#"+r.rank;const h=$(`[data-oh="${r.id}"]`);if(h)h.classList.toggle("top",!hide&&sc.top&&sc.top.id===r.id)});
-  const prog=$("#blind-prog");if(prog){prog.hidden=!S.blind;prog.textContent=`You’ve rated ${bp.done} of ${bp.need} open cells.${bp.complete?" All rated: totals and ranking are showing.":" Totals and the ranking appear when every open cell is rated."}`}
-  /* ranking */
-  const box=$("#rank-box");
-  if(box){if(hide){box.innerHTML=`<p class="card-sub">Hidden while you rate without suggestions, so the ranking doesn’t steer your ratings. ${bp.done} of ${bp.need} cells rated.</p>`}
-    else if(!sc.top){box.innerHTML=`<p class="card-sub">Every option is blocked by a hard stop. Your report explains what would clear them.</p>`}
-    else{const sens=ENG.sensitivity(S);
-      box.innerHTML=`<ol class="rank-list">${sc.ranked.map(r=>`<li class="${r.rank===1?"first":""}"><span class="rk">${r.rank}</span><span class="nm">${esc(r.short)}${optById(r.id).custom?"":" <span class='muted mono' style='font-size:.76rem'>("+r.id+")</span>"}</span><span class="sc">${fmt(r.score)}</span><span class="bar" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,r.score))}%"></i></span></li>`).join("")}${sc.rows.filter(r=>r.blocked).map(r=>`<li class="blk"><span class="rk"><span class="lock-ic" aria-hidden="true"></span></span><span class="nm">${esc(r.short)} <span class="mono" style="font-size:.76rem">blocked</span></span><span class="sc">—</span><span class="bar" aria-hidden="true"></span></li>`).join("")}</ol>
-      <p class="margin-line">${sc.runnerUp?`<b>${esc(sc.top.short)}</b> leads <b>${esc(sc.runnerUp.short)}</b> by <b>${fmt(sc.margin)}</b> points.${sc.closeCall?` <span class="pill warn">Close call</span><br><span class="muted" style="font-size:.86rem">Under ${CFG.closeCallPoints} points: a small change in one weight or rating could swap them.</span>`:""}`:`Only one option is open.`}</p>
-      <details class="sens" id="sens-det" ${A.sensOpen?"open":""}><summary>What would change the result?</summary>${sens.length?`<ul>${sens.map(s=>`<li>${esc(s.text)}</li>`).join("")}</ul>`:`<p class="muted" style="margin-top:6px">No single weight change from 0 to 10 changes the top option. The result is stable against any one weight.</p>`}</details>`}}
-  /* uncertainty */
-  const um=$("#unc-msg");if(um){const r=S.uncertainty.enabled&&sc.top&&!hide?ENG.uncertaintyRange(S):null;um.innerHTML=r?`<p class="unc-msg">${esc(r.text)}</p>`:""}
-  /* bias prompts */
-  const bt=$("#bias-top");if(bt)bt.innerHTML=biasHTML("top");
-  const bm=$("#bias-mx");if(bm)bm.innerHTML=biasHTML("mx");
-  if(drawerCell)drawCell(drawerCell.o,drawerCell.f,true);
-}
-
-/* ---------- side panel ---------- */
+/* Side panel used for cell details */
 let drawerCell=null,drawerReturn=null;
 function openDrawer(title,html,ret){
   drawerReturn=ret||document.activeElement;
   $("#cd-title").textContent=title;$("#cd-body").innerHTML=html;$("#cell-drawer").hidden=false;$("#cell-scrim").hidden=false;
-  setTimeout(()=>{const f=$("#cell-drawer [aria-checked='true']")||$("#cell-drawer button");if(f)f.focus()},20)}
-function closeDrawer(restore=true){const d=$("#cell-drawer");if(!d||d.hidden)return;d.hidden=true;$("#cell-scrim").hidden=true;
-  $$("button.cell.sel").forEach(b=>b.classList.remove("sel"));
-  const ret=drawerCell?$(`button.cell[data-o="${drawerCell.o}"][data-f="${drawerCell.f}"]`):drawerReturn;drawerCell=null;
-  if(restore&&ret&&document.body.contains(ret))ret.focus()}
-function drawCell(oid,fid,refresh){
-  const S=st(),o=optById(oid),f=facById(fid);if(!o||!f){closeDrawer(false);return}
-  const c=ENG.cell(S,o,fid),cf=ENG.cfgFactor(fid),sug=c.suggestion,rated=ENG.key(oid,fid) in S.overrides,hideSug=S.blind&&!rated;
-  const lbl=CFG.scale.labels;
-  const html=`<div><h3>Your rating</h3><div class="rate-seg" role="radiogroup" aria-label="Rating for ${esc(o.short)} on ${esc(f.name)}">${[1,2,3,4,5].map(v=>{const on=(rated||!S.blind)&&c.entered===v;
-      return `<button type="button" role="radio" aria-checked="${on}" tabindex="${on||(!rated&&S.blind&&v===3)?0:-1}" data-rate="${v}" class="${!hideSug&&sug.value===v?"is-sug":""}"><b>${v}</b><small>${lbl[v]}</small></button>`}).join("")}</div>
-    <div class="rate-meta"><span>${hideSug?"The suggestion appears after you rate.":"Suggested: <b>"+sug.value+"</b> (underlined)"+(rated&&c.entered!==sug.value?" · you changed it":"")}</span><button type="button" class="btn sm" data-resetcell ${rated?"":"disabled"}>Reset to suggested</button></div>
-    ${cf?`<p class="why-line" style="margin-top:8px">${esc(cf.scaleNote)}.</p>`:""}</div>
-    ${c.shift?`<div><h3>Uncertainty adjustment</h3><p>Your rating of ${c.entered} becomes <b>${fmt(c.value,2)}</b> in the score (${fmt(c.shift,2)}), because the uncertainty panel is on.</p></div>`:""}
-    ${hideSug?`<div><h3>Why this matters</h3><p>${esc(cf?cf.why:f.why)}</p></div>`:`<div><h3>Why ${sug.value}?</h3><p>${esc(sug.reason)}</p>${sug.adjustments.length?`<ul class="adj-list" style="margin-top:8px">${sug.adjustments.map(a=>`<li><span class="d ${a.delta>0?"up":"dn"}">${a.delta>0?"+":"−"}${Math.abs(a.delta)}</span><span>${esc(a.reason)}</span></li>`).join("")}</ul><p class="why-line" style="margin-top:6px">Starts at ${sug.base}; adjusted for your Stage 1 answers.</p>`:""}</div>`}
-    <div><h3>Relevant authority</h3>${cf?authHTML(cf.authorities):'<p class="muted">You added this factor, so no authority is attached.</p>'}</div>
-    <div><h3>Related part of a motion</h3><span class="auth-chips">${partLinks(o)}</span><p class="why-line" style="margin-top:6px">${esc(ENG.baseOf(o).desc)}</p></div>`;
-  drawerCell={o:oid,f:fid};
-  $$("button.cell.sel").forEach(b=>b.classList.remove("sel"));const cb=$(`button.cell[data-o="${oid}"][data-f="${fid}"]`);if(cb)cb.classList.add("sel");
-  if(refresh){const fo=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.rate:null;$("#cd-body").innerHTML=html;$("#cd-title").textContent=o.short+" × "+f.name;if(fo){const b=$(`#cd-body [data-rate="${fo}"]`);if(b)b.focus()}}
-  else openDrawer(o.short+" × "+f.name,html,cb)}
-function drawBlocked(oid){const S=st(),o=optById(oid),g=ENG.gates(S);drawerCell=null;
-  const html=`<p>${esc(oLabel(o))} is blocked by ${g.blocked[oid].length===1?"a hard stop":"these hard stops"} from your answers. Hard stops apply before any weighing, so weights and ratings can’t reopen it.</p>${g.blocked[oid].map(id=>{const x=CFG.gates.find(y=>y.id===id);return `<div><h3>${esc(x.title)}</h3><p>${esc(x.why)}</p><p style="margin-top:6px"><b>What would clear it:</b> ${esc(x.clears)}</p><div style="margin-top:8px">${authHTML(x.authorities)}</div></div>`}).join("")}${Q.done&&ENG.qComplete(Q.ans)?`<div><button type="button" class="btn sm primary" data-gotoreport>See the risks in your report →</button></div>`:""}`;
-  openDrawer("Why "+o.short+" is blocked",html)}
-function setRating(oid,fid,v){ENG.setOverride(st(),oid,fid,v);A.record=null;persist();updateLive()}
-
-function initCompare(){
-  const root=$("#cmp-root");
-  root.addEventListener("click",e=>{
-    const r=e.target.closest("[data-rule]");if(r){e.preventDefault();openRule(r.dataset.rule);return}
-    const p=e.target.closest("[data-part]");if(p){e.preventDefault();location.hash="#motions";setTimeout(()=>openPart(p.dataset.part),80);return}
-    const c=e.target.closest("button.cell");if(c){drawCell(c.dataset.o,c.dataset.f);return}
-    const w=e.target.closest("[data-why]");if(w){drawBlocked(w.dataset.why);return}
-    const d=e.target.closest("[data-dismiss]");if(d){A.dismissed[d.dataset.dismiss]=true;persist();const n=d.closest(".bias-note");if(n)n.remove();return}
-    if(e.target.closest("#cmp-sample")){A=freshAdv();A.ready=true;A.source="sample";persist();renderCompare();toast("Showing sample data.");return}
-    if(e.target.closest("[data-backreport]")){Q.view="report";qPersist();location.hash="#advisor";renderQ(true);return}
-    if(e.target.closest("#review-ovr")){A.review=!A.review;updateLive();if(A.review){const f=$("button.cell.review");if(f)f.scrollIntoView({block:"center",behavior:"smooth"})}return}
-  });
-  root.addEventListener("toggle",e=>{if(e.target.id==="sens-det")A.sensOpen=e.target.open;if(e.target.id==="unc-det")A.uncOpen=e.target.open;persist()},true);
-  root.addEventListener("keydown",e=>{const c=e.target.closest&&e.target.closest("button.cell");if(!c)return;
-    if(/^[1-5]$/.test(e.key)){e.preventDefault();setRating(c.dataset.o,c.dataset.f,+e.key);toast(facById(c.dataset.f).name+": "+optById(c.dataset.o).short+" rated "+e.key,1400)}
-    else if((e.key==="Backspace"||e.key==="Delete")&&!st().blind){e.preventDefault();ENG.resetCell(st(),c.dataset.o,c.dataset.f);A.record=null;persist();updateLive()}});
-  const drawer=$("#cell-drawer");
+  setTimeout(()=>{const f=$("#cd-close");if(f)f.focus()},20)}
+function closeDrawer(restore=true){const d=$("#cell-drawer");if(!d||d.hidden)return;d.hidden=true;$("#cell-scrim").hidden=true;if(restore&&drawerReturn&&document.body.contains(drawerReturn))drawerReturn.focus()}
+function initOR(){
+  const root=$("#cmp-root"),drawer=$("#cell-drawer");
+  root.addEventListener("click",e=>{const c=e.target.closest("[data-oc]");if(c){orCell(c.dataset.oc,c.dataset.os)}});
   $("#cd-close").addEventListener("click",()=>closeDrawer());
   $("#cell-scrim").addEventListener("click",()=>closeDrawer());
-  drawer.addEventListener("click",e=>{
-    const rb=e.target.closest("[data-rate]");if(rb&&drawerCell){setRating(drawerCell.o,drawerCell.f,+rb.dataset.rate);const b=$(`#cd-body [data-rate="${rb.dataset.rate}"]`);if(b)b.focus();return}
-    if(e.target.closest("[data-resetcell]")&&drawerCell){ENG.resetCell(st(),drawerCell.o,drawerCell.f);A.record=null;persist();updateLive();return}
-    const r=e.target.closest("[data-rule]");if(r){e.preventDefault();closeDrawer(false);openRule(r.dataset.rule);return}
-    const p=e.target.closest("[data-part]");if(p){e.preventDefault();closeDrawer(false);location.hash="#motions";setTimeout(()=>openPart(p.dataset.part),80);return}
-    if(e.target.closest("[data-gotoreport]")){closeDrawer(false);Q.view="report";qPersist();location.hash="#advisor";renderQ();setTimeout(()=>{const h=$("#report-doc h3");if(h)h.scrollIntoView({block:"start"})},80)}});
+  drawer.addEventListener("click",e=>{const r=e.target.closest("[data-rule]");if(r){e.preventDefault();closeDrawer(false);openRule(r.dataset.rule)}});
   drawer.addEventListener("keydown",e=>{
     if(e.key==="Escape"){e.preventDefault();closeDrawer();return}
-    const rb=e.target.closest&&e.target.closest("[data-rate]");
-    if(rb&&["ArrowRight","ArrowDown","ArrowLeft","ArrowUp"].includes(e.key)&&drawerCell){e.preventDefault();const v=Math.max(1,Math.min(5,+rb.dataset.rate+(e.key==="ArrowRight"||e.key==="ArrowDown"?1:-1)));setRating(drawerCell.o,drawerCell.f,v);const b=$(`#cd-body [data-rate="${v}"]`);if(b)b.focus();return}
-    if(e.key==="Tab"){const f=$$("button,a[href],input,select,textarea",drawer).filter(x=>!x.disabled&&x.offsetParent!==null&&x.tabIndex>=0);if(!f.length)return;
+    if(e.key==="Tab"){const f=$$("button,a[href]",drawer).filter(x=>!x.disabled&&x.offsetParent!==null);if(!f.length)return;
       if(e.shiftKey&&document.activeElement===f[0]){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&document.activeElement===f[f.length-1]){e.preventDefault();f[0].focus()}}});
-  window.addEventListener("hashchange",()=>closeDrawer(false));
-  window.addEventListener("hashchange",()=>{if(location.hash==="#compare")syncCompare()});
-  syncCompare();
+  window.addEventListener("hashchange",()=>{closeDrawer(false);if(location.hash==="#compare")renderOR()});
+  renderOR();
 }
 
+/* authorities: "rule:<id>" opens the Rules & Sources card; "cite:<text>" is plain text */
+function authHTML(list){return `<span class="auth-chips">${(list||[]).map(a=>{const [k,v]=a.split(/:(.+)/);
+  if(k==="rule"){const r=RULES.find(x=>x.id===v);return r?`<a href="#rules" class="auth-chip" data-rule="${esc(v)}">${esc(r.short)}</a>`:""}
+  return `<span class="auth-chip plain">${esc(v)}</span>`}).join("")}</span>`}
 
-/* ---------------- HOW THIS WORKS (tables drawn from config.js, so they never drift) ---------------- */
+/* Motions 101 "Start an assessment" pre-fills the motion type */
+const MOTION_TYPE={"Motion to Dismiss":"pleading","Motion for More Definite Statement":"pleading","Motion to Strike":"pleading","Motion for Leave to Amend":"pleading","Motion to Transfer Venue":"pleading",
+  "Motion for Judgment on the Pleadings":"dispositive","Motion for Summary Judgment":"dispositive","Motion for Directed Verdict / JMOL":"dispositive","Renewed Motion for JMOL":"dispositive",
+  "Motion to Compel":"discovery","Motion for Protective Order":"discovery","Motion for Discovery Sanctions":"discovery",
+  "Temporary Restraining Order":"emergency","Motion for Preliminary Injunction":"emergency",
+  "Motion for New Trial":"post","Motion for Relief from Judgment":"post","Motion to Extend Time":"routine","Motion for Admission Pro Hac Vice":"routine"};
+function assessMotion(name){
+  const t=MOTION_TYPE[name];if(t)adv.answers.motionType=t;adv.fromMotion=t?name:null;
+  adv.step=-1;location.hash="#advisor";renderAdvisor();setTimeout(scrollTop,30)}
+
+/* ---------------- HOW THIS WORKS (tables drawn from config.js) ---------------- */
 function renderMethod(){
-  const RK=CFG.risk,pl=p=>ENG.qLabel("parts",p);
-  const h=$("#method-hard");if(h)h.innerHTML=`<div class="rec-scroll"><table class="rec-table"><thead><tr><th>Hard stop</th><th>Not recommended for</th></tr></thead><tbody>${RK.hardStops.map(x=>`<tr><td><b>${esc(x.title)}.</b> ${esc(x.text)}</td><td>${x.parts==="clientData"?"Every part that needs client facts: "+Object.keys(RK.parts).filter(p=>RK.parts[p].usesClientData).map(pl).join(", "):x.parts.map(pl).join(", ")}</td></tr>`).join("")}</tbody></table></div>`;
-  const f=$("#method-factors");if(f)f.innerHTML=`<div class="rec-scroll"><table class="rec-table"><thead><tr><th>Risk factor</th><th class="n">Points</th><th>Applies to</th></tr></thead><tbody>${RK.factors.map(x=>`<tr><td>${esc(x.title)}</td><td class="n">+${x.points}</td><td>${x.parts.map(pl).join(", ")}</td></tr>`).join("")}</tbody></table></div>`;
-  const p=$("#method-parts");if(p)p.innerHTML=`<div class="rec-scroll"><table class="rec-table"><thead><tr><th>Part of the motion</th><th class="n">Starting points</th></tr></thead><tbody>${Object.keys(RK.parts).map(k=>`<tr><td>${esc(pl(k))}</td><td class="n">${RK.parts[k].base}</td></tr>`).join("")}</tbody></table></div>`;
-  const s=$("#method-guards");if(s)s.innerHTML=`<ul>${RK.safeguards.map(x=>`<li>${esc(x.title)}: +${x.points}</li>`).join("")}</ul>`;
-  $$("[data-cfg='moderate']").forEach(e=>e.textContent=RK.partLevels.moderate);
-  $$("[data-cfg='high']").forEach(e=>e.textContent=RK.partLevels.high);
-  $$("[data-cfg='bump']").forEach(e=>e.textContent=RK.safeguardBump);
+  const AS=CFG.assessment;
+  const s=$("#method-sections");if(s)s.innerHTML=`<div class="rec-scroll"><table class="rec-table"><thead><tr><th>Section</th><th class="n">Questions</th><th class="n">Weight</th></tr></thead><tbody>${AS.sections.map(x=>`<tr><td>${esc(x.title)}</td><td class="n">${x.qs.length}</td><td class="n">${x.weight}×</td></tr>`).join("")}</tbody></table></div>`;
+  const st=$("#method-stops");if(st)st.innerHTML=`<ul>${AS.stops.map(x=>`<li>${esc(x.text)}</li>`).join("")}</ul>`;
+  const o=$("#method-options");if(o)o.innerHTML=`<div class="rec-scroll"><table class="rec-table"><thead><tr><th>Option</th><th>Blocked by</th></tr></thead><tbody>${ORC.options.map((x,i)=>`<tr><td><b>${i+1}. ${esc(x.name)}</b><br><span class="muted">${esc(x.desc)}</span></td><td>${x.noAI?"Never blocked":AS.stops.filter(z=>(ORC.blocks[z.id]||[]).includes(x.id)).map(z=>esc(z.text.split(".")[0])).join("; ")}</td></tr>`).join("")}</tbody></table></div>`;
 }
 
 /* ======================================================
@@ -2321,7 +2371,7 @@ renderRules();
 renderParts();
 $("#m-grid").addEventListener("click",e=>{const b=e.target.closest("[data-assess]");if(b)assessMotion(MOTIONS[+b.dataset.assess].n)});
 $("#ap-real").addEventListener("click",e=>{e.preventDefault();openMotion(MOTIONS.findIndex(m=>m.n==="Motion to Strike"))});
-renderQ(); initCompare(); renderLastReport(); renderMethod(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route(); initRuleLinks();
+renderAdvisor(); renderLastReport(); initOR(); renderMethod(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route(); initRuleLinks();
 })();
 </script>
 </body></html>
