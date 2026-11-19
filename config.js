@@ -64,7 +64,7 @@
 
       /* Sections, questions, answer scores and the note shown for each answer.
          Sources: Model Rules 1.1 (cmt. 8), 1.4, 1.5, 1.6, 3.3, 5.1, 5.3; ABA Formal
-         Op. 512; Fed. R. Civ. P. 11; Mass. R. Civ. P. 11; sanction cases (Mata,
+         Opinion 512; Fed. R. Civ. P. 11; Mass. R. Civ. P. 11; sanction cases (Mata,
          Park, Smith v. Farwell). Scores are the developer's judgments.  REVIEW */
       sections: [
  {id:"task",title:"Task",weight:1,qs:[
@@ -95,7 +95,7 @@
     {v:"unsure",label:"Not sure",score:3,note:"Not knowing the tool’s data terms is itself a risk under Rule 1.6."}]}
  ]},
  {id:"conf",title:"Confidentiality",weight:1.5,qs:[
-  {id:"clientInfo",type:"choice",text:"Would client-identifying or privileged information be entered into the tool?",why:"Rule 1.6 requires reasonable efforts to prevent unauthorized disclosure. ABA Formal Op. 512 says informed client consent is needed before confidential information goes into a self-learning tool.",options:[
+  {id:"clientInfo",type:"choice",text:"Would client-identifying or privileged information be entered into the tool?",why:"Rule 1.6 requires reasonable efforts to prevent unauthorized disclosure. ABA Formal Opinion 512 says informed client consent is needed before confidential information goes into a self-learning tool.",options:[
     {v:"no",label:"No. Everything will be anonymized or generic",score:0,note:"Anonymized prompts keep confidential information out of the tool."},
     {v:"limited",label:"Yes, limited facts that are necessary to the task",score:2,note:"Even limited client facts in prompts trigger Rule 1.6 duties."},
     {v:"substantial",label:"Yes, substantial privileged facts or strategy",score:4,note:"Privileged facts or strategy in a prompt risk waiver and disclosure."},
@@ -112,7 +112,7 @@
     {v:"low",label:"Little or none",score:4,note:"Low familiarity with AI limits is a Rule 1.1 competence gap."}],
    // a learning link shown below the options for these answers; it never changes the answer or the score
    learn:{showFor:["some","low"],lead:"New to AI’s limits?",linkText:"Learn how AI tools can go wrong",url:"https://www.ncsc.org/resources-courts/legal-practitioners-guide-ai-hallucinations",ariaLabel:"Learn how AI tools can go wrong (opens in new tab)"}},
-  {id:"guidance",type:"choice",text:"Have you read ABA Formal Op. 512 and your jurisdiction’s AI guidance?",why:"Guidance differs by bar and court and is changing quickly. Reading it is the baseline for competent use.",options:[
+  {id:"guidance",type:"choice",text:"Have you read the ABA Formal Opinion 512 or your jurisdiction’s AI guidance?",why:"Guidance differs by bar and court and is changing quickly. Reading it is the baseline for competent use.",options:[
     {v:"yes",label:"Yes",score:0,note:"You have read the governing guidance."},
     {v:"partly",label:"Partly",score:1,note:"Finish reading the guidance before relying on AI for this motion."},
     {v:"no",label:"No",score:2,note:"Read ABA 512 and your bar’s guidance before you start."}]}
