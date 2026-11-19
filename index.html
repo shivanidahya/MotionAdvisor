@@ -952,6 +952,17 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
 .or-w input{width:100%;accent-color:var(--accent)}
 .or-w output{font-family:var(--f-mono);font-weight:600;text-align:right}
 @media (max-width:760px){.or-grid-wrap{display:none}.or-mobile{display:block}.or-w{grid-template-columns:1fr 48px}.or-w label{grid-column:1/-1}.or-best strong{font-size:1.35rem}}
+/* ==== Start-a-new-assessment dialog + results note ==== */
+.ma-modal-scrim{position:fixed;inset:0;background:rgba(10,12,30,.45);z-index:90}
+.ma-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:91;width:min(480px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 60px rgba(10,20,40,.3);padding:24px 24px 20px}
+.ma-modal[hidden],.ma-modal-scrim[hidden]{display:none!important}
+.ma-modal h2{font-size:1.5rem;margin:0 0 8px}
+.ma-modal p{margin:0;color:var(--ink-2)}
+.ma-modal-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-top:20px}
+body.modal-open{overflow:hidden}
+@media (max-width:480px){.ma-modal-actions{flex-direction:column-reverse}.ma-modal-actions .btn{width:100%;justify-content:center}}
+.info-note{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;font-size:.86rem;color:var(--muted)}
+.info-note .ic{flex-shrink:0;display:inline-grid;place-items:center;width:18px;height:18px;margin-top:1px;border-radius:50%;border:1.5px solid currentColor;font-family:var(--f-ui);font-size:.7rem;font-weight:700;font-style:italic}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -959,7 +970,7 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
   <div class="wrap row">
     <a class="brand" href="#home" aria-label="Motion Advisor home"><span class="brand-mark">§</span><b>Motion Advisor</b></a>
     <div class="top-right">
-      <div class="cta"><a class="btn sm" href="#advisor">Start assessment</a></div>
+      <div class="cta"><a class="btn sm" href="#advisor" data-start-assessment>Start assessment</a></div>
       <button class="menu-btn" id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav"><span class="bars" aria-hidden="true"></span></button>
     </div>
   </div>
@@ -992,7 +1003,7 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
       <p class="lede">Motion Advisor helps you decide whether it is worth using AI when drafting your motion.</p>
       <p class="lede">Complete a short assessment, and Motion Advisor will calculate the risks and give you a report with those risks and suggestions for using AI safely.</p>
       <div class="ctas hero-cta">
-        <a class="btn primary btn-xl" href="#advisor">Start the assessment <span aria-hidden="true">→</span></a>
+        <a class="btn primary btn-xl" href="#advisor" data-start-assessment>Start the assessment <span aria-hidden="true">→</span></a>
         <a class="btn ghost" href="#method">How It Works</a>
       </div>
       <p class="search-purpose" id="search-purpose">Look up a motion or rule to see the risks of using AI to draft it.</p>
@@ -1009,7 +1020,7 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
   <div class="band"><div class="wrap">
     <div class="band-head"><div><div class="eyebrow">The portal</div><h2>Four tools, one drafting decision</h2></div><p>The assessment reports whether and how to use AI. The other three tools help you build the skills: a citation checklist, learn what information is sensitive information, and learn which motion you are drafting.</p></div>
     <div class="feature-grid">
-      <a class="feature" href="#advisor"><span class="eyebrow">Assessment</span><h3>Drafting Advisor</h3><p>Answer a few questions about your motion and AI tool, and get a report on the risks and how to use AI safely.</p><div class="tags"><span class="tag">7 questions</span><span class="tag">Risk level</span><span class="tag">Your Report</span></div><span class="go">Start assessment →</span></a>
+      <a class="feature" href="#advisor" data-start-assessment><span class="eyebrow">Assessment</span><h3>Drafting Advisor</h3><p>Answer a few questions about your motion and AI tool, and get a report on the risks and how to use AI safely.</p><div class="tags"><span class="tag">7 questions</span><span class="tag">Risk level</span><span class="tag">Your Report</span></div><span class="go">Start assessment →</span></a>
       <a class="feature" href="#citations"><span class="eyebrow">Verification</span><h3>Citation Toolkit</h3><p>Paste your draft, and Motion Advisor will list every case and statute for you to verify.</p><div class="tags"><span class="tag">Bluebook checks</span><span class="tag">Fabrication flags</span><span class="tag">CSV export</span></div><span class="go">Check a draft →</span></a>
       <a class="feature" href="#redaction"><span class="eyebrow">Confidentiality</span><h3>Redaction Game</h3><p>Practice blacking out information that shouldn’t be filed or entered into an AI tool.</p><div class="tags"><span class="tag">3 rounds</span><span class="tag">Scored</span><span class="tag">Rule explanations</span></div><span class="go">Play a round →</span></a>
       <a class="feature" href="#motions"><span class="eyebrow">Learn</span><h3>Motions 101</h3><p>Learn what your motion is, its parts and how it moves through court, with a library of common motions.</p><div class="tags"><span class="tag">20 motions</span><span class="tag">Federal &amp; Mass.</span><span class="tag">Quiz</span></div><span class="go">Open the library →</span></a>
@@ -1258,6 +1269,12 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
     <div class="legal">Not legal advice. Results depend on self-reported answers and do not replace attorney judgment, supervisor review, or the rules and standing orders of your court. Content reviewed November 2026. Bar guidance changes, so check current rules.</div>
   </div>
 </footer>
+<div class="ma-modal-scrim" id="newa-scrim" hidden></div>
+<div class="ma-modal" id="newa-dlg" role="dialog" aria-modal="true" aria-labelledby="newa-title" aria-describedby="newa-text" hidden>
+  <h2 id="newa-title">Start a new assessment?</h2>
+  <p id="newa-text">Your current result will be deleted. Download the PDF first if you want to keep it.</p>
+  <div class="ma-modal-actions"><button type="button" class="btn" id="newa-pdf">Download PDF</button><button type="button" class="btn" id="newa-cancel">Cancel</button><button type="button" class="btn primary" id="newa-go">Start new</button></div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="config.js"></script>
@@ -1452,14 +1469,60 @@ function resultHTML(r){
     <div class="card faq"><h3>FAQ</h3>${FAQ.map(([q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</div>
   </div>
   <div class="cmp-cta no-print"><div><b>Want to see your options side by side?</b><p>Compare four ways of using AI on this motion, built from the same answers.</p></div><button class="btn primary" id="adv-compare">Compare your options →</button></div>
-  <div class="res-actions"><button class="btn primary" id="adv-pdf">Download PDF report</button><button class="btn" id="adv-edit">Review or change answers</button><button class="btn ghost" id="adv-restart">Start over</button></div>
+  <div class="res-actions"><button class="btn primary" id="adv-pdf">Download PDF report</button><button class="btn" id="adv-edit">Review or change answers</button><button class="btn ghost" id="adv-restart" data-start-assessment>Start over</button></div>
+  <p class="info-note"><span class="ic" aria-hidden="true">i</span>Starting a new assessment will delete this result. Download the PDF first if you want to keep it.</p>
   <p class="muted" style="font-size:.84rem;margin-top:12px">Not legal advice. This result depends on your answers and does not replace attorney judgment or final review.</p>`;
 }
 function bindResult(){
   $("#adv-pdf").addEventListener("click",()=>makePDF(compute()));
   $("#adv-compare").addEventListener("click",()=>{OR_STATE.tab=0;location.hash="#compare";renderOR();setTimeout(()=>{const h=$("#v-compare h1");if(h){h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}},40)});
   $("#adv-edit").addEventListener("click",()=>{adv.step=STEP_REVIEW;renderAdvisor();scrollTop()});
-  $("#adv-restart").addEventListener("click",()=>{adv.answers={};adv.at=null;adv.step=-1;adv.ack=false;renderAdvisor();scrollTop()});
+}
+
+/* ---- "Start assessment": always a fresh start; confirm before deleting a result ---- */
+function hasResult(){return !!loadLast()||adv.step===STEP_RESULT}
+function goToIntro(after){
+  if(after)after();
+  adv.step=-1;location.hash="#advisor";renderAdvisor();
+  setTimeout(()=>{const el=$("#v-advisor");window.scrollTo({top:Math.max(0,el.offsetTop-70),behavior:"auto"});const f=$("#adv-ack");if(f)f.focus({preventScroll:true})},30)}
+function startAssessment(trigger,after){
+  if(!hasResult()){goToIntro(after);return}   /* nothing to delete: open the intro directly */
+  openNewDialog(trigger,after)}
+function currentResultForPDF(){
+  if(allComplete()&&adv.step===STEP_RESULT)return {r:compute(),answers:adv.answers};
+  const last=loadLast();if(last){const r=ENG.assess(last.answers);r.date=new Date(last.at);return {r,answers:last.answers}}
+  if(allComplete())return {r:compute(),answers:adv.answers};
+  return null}
+let newDlg={trigger:null,after:null};
+function openNewDialog(trigger,after){
+  newDlg={trigger:trigger||document.activeElement,after};
+  $("#newa-scrim").hidden=false;$("#newa-dlg").hidden=false;document.body.classList.add("modal-open");
+  $("#newa-cancel").focus()}
+function closeNewDialog(restore=true){
+  $("#newa-scrim").hidden=true;$("#newa-dlg").hidden=true;document.body.classList.remove("modal-open");
+  const t=newDlg.trigger;newDlg={trigger:null,after:null};
+  if(restore&&t&&document.body.contains(t)&&t.offsetParent!==null)t.focus()}
+function startNew(){
+  const after=newDlg.after;closeNewDialog(false);
+  lastMem=null;try{localStorage.removeItem(LAST_KEY)}catch(e){}
+  adv.answers={};adv.at=null;adv.ack=false;adv.showErr=false;adv.fromReview=false;adv.fromMotion=null;
+  OR_STATE.weights=null;OR_STATE.tab=0;
+  renderLastReport();goToIntro(after);toast("Previous result deleted. New assessment started.")}
+function initStartAssessment(){
+  document.addEventListener("click",e=>{const b=e.target.closest("[data-start-assessment]");if(!b)return;e.preventDefault();
+    if(b.closest("#main-nav"))setMenu(false);startAssessment(b)});
+  $("#newa-cancel").addEventListener("click",()=>closeNewDialog());
+  $("#newa-scrim").addEventListener("click",()=>closeNewDialog());
+  $("#newa-go").addEventListener("click",startNew);
+  $("#newa-pdf").addEventListener("click",()=>{const x=currentResultForPDF();if(!x){toast("There’s no result to download.");return}
+    const keep=adv.answers;adv.answers=x.answers;try{makePDF(x.r)}finally{adv.answers=keep}$("#newa-pdf").focus()});
+  const dlg=$("#newa-dlg");
+  dlg.addEventListener("keydown",e=>{
+    if(e.key==="Escape"){e.preventDefault();closeNewDialog();return}
+    if(e.key==="Tab"){const f=$$("button",dlg);const i=f.indexOf(document.activeElement);
+      if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}});
+  /* keep focus inside while open */
+  document.addEventListener("focusin",e=>{if(!dlg.hidden&&!dlg.contains(e.target))$("#newa-cancel").focus()});
 }
 /* ---- Last run report on the home page (saved only in this browser) ---- */
 const LAST_KEY="motionAdvisor.lastReport";let lastMem=null;
@@ -1469,7 +1532,7 @@ function loadLast(){try{const s=localStorage.getItem(LAST_KEY);if(s){const r=JSO
 function clearLast(){lastMem=null;try{localStorage.removeItem(LAST_KEY)}catch(e){}renderLastReport();toast("Last report cleared from this browser.")}
 function renderLastReport(){
   const el=$("#last-report");if(!el)return;const r=loadLast();
-  if(!r){el.innerHTML=`<div class="sr-head"><span class="eyebrow">Your last report</span><span class="mono muted" style="font-size:.78rem">None yet</span></div><div class="sr-body"><div class="verdict-line"><strong>No report yet</strong></div><p class="muted" style="font-size:.92rem">Finish the AI Drafting Advisor and your latest result appears here: the verdict, the risk index and how each of the six areas scored.</p><div><a class="btn primary sm" href="#advisor">Start the assessment</a></div></div><div class="sr-foot">Saved only in this browser. Nothing is sent anywhere.</div>`;return}
+  if(!r){el.innerHTML=`<div class="sr-head"><span class="eyebrow">Your last report</span><span class="mono muted" style="font-size:.78rem">None yet</span></div><div class="sr-body"><div class="verdict-line"><strong>No report yet</strong></div><p class="muted" style="font-size:.92rem">Finish the AI Drafting Advisor and your latest result appears here: the verdict, the risk index and how each of the six areas scored.</p><div><a class="btn primary sm" href="#advisor" data-start-assessment>Start the assessment</a></div></div><div class="sr-foot">Saved only in this browser. Nothing is sent anywhere.</div>`;return}
   const lv=l=>l==="Low"?"ok":l==="Moderate"?"warn":"bad";
   const mo=optOf("motionType",r.answers.motionType),mt=mo?mo.label.split(" (")[0]:"Motion";
   const d=new Date(r.at);
@@ -1546,7 +1609,7 @@ function orBottomHTML(R){
 function renderOR(){
   const root=$("#cmp-root");if(!root)return;
   const a=orAnswers();
-  if(!a){root.innerHTML=`<div class="card cmp-empty"><h2>Take the assessment first</h2><p>The Options Report is built from your assessment answers. Finish the AI Drafting Advisor, then choose “Compare your options” on your result.</p><div class="ctas"><a class="btn primary" href="#advisor">Start the assessment</a></div></div>`;return}
+  if(!a){root.innerHTML=`<div class="card cmp-empty"><h2>Take the assessment first</h2><p>The Options Report is built from your assessment answers. Finish the AI Drafting Advisor, then choose “Compare your options” on your result.</p><div class="ctas"><a class="btn primary" href="#advisor" data-start-assessment>Start the assessment</a></div></div>`;return}
   const R=ENG.optionsReport(a,orWeights()),secs=CFG.assessment.sections;
   const head=`<th scope="col">Risk area</th>`+R.options.map(o=>`<th scope="col" class="or-oh${o.blocked?" blocked":""}"><span class="or-num">Option ${orNum(o)}</span><span class="or-on">${esc(o.name)}</span><span class="or-od">${esc(o.desc)}</span>${o.blocked?`<span class="or-bb"><span class="lock-ic" aria-hidden="true"></span>Blocked because: ${esc(o.blockedBy.join(" "))}</span>`:""}</th>`).join("");
   const rows=secs.map(s=>`<tr><th scope="row">${esc(s.title)}</th>${R.options.map(o=>{const c=o.cells.find(x=>x.id===s.id);
@@ -1666,9 +1729,8 @@ const MOTION_TYPE={"Motion to Dismiss":"pleading","Motion for More Definite Stat
   "Motion to Compel":"discovery","Motion for Protective Order":"discovery","Motion for Discovery Sanctions":"discovery",
   "Temporary Restraining Order":"emergency","Motion for Preliminary Injunction":"emergency",
   "Motion for New Trial":"post","Motion for Relief from Judgment":"post","Motion to Extend Time":"routine","Motion for Admission Pro Hac Vice":"routine"};
-function assessMotion(name){
-  const t=MOTION_TYPE[name];if(t)adv.answers.motionType=t;adv.fromMotion=t?name:null;
-  adv.step=-1;location.hash="#advisor";renderAdvisor();setTimeout(scrollTop,30)}
+function assessMotion(name,trigger){
+  startAssessment(trigger,()=>{const t=MOTION_TYPE[name];if(t)adv.answers.motionType=t;adv.fromMotion=t?name:null})}
 
 /* ---------------- HOW THIS WORKS (tables drawn from config.js) ---------------- */
 function renderMethod(){
@@ -2077,7 +2139,7 @@ function renderFinal(){
   $("#game-doc").innerHTML=`<article class="doc"><div class="caption"><span>Final score</span><span>${ROUNDS.length} rounds</span></div><h3>${title}</h3><p style="text-align:center"><span class="score-big">${total}</span> <span class="muted">/ ${max} possible</span></p>
   ${ROUNDS.map((r,i)=>`<p style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:10px;font-family:var(--f-body);font-size:.95rem"><span>${esc(r.title)} <span class="muted">· ${esc(r.rule)}</span></span><b>${game.scores[i]}</b></p>`).join("")}
   <p style="font-family:var(--f-body);font-size:.95rem;margin-top:16px">What to remember: names identify people, so first, middle and last names come out along with the identifiers the court rules list. Over-redacting things like statutes, courts and deadlines hides what the reader needs. Rule 1.6 confidentiality is much broader: before anything goes into an AI tool, client identity, strategy, settlement authority and third-party health information all come out.</p></article>`;
-  $("#game-side").innerHTML=`<div class="card"><div class="eyebrow">Done</div><p style="margin-top:8px;font-size:.92rem">Play again, or check whether AI should touch the motion at all.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn primary" id="g-again">Play again</button><a class="btn" href="#advisor">Take the assessment</a></div></div>`;
+  $("#game-side").innerHTML=`<div class="card"><div class="eyebrow">Done</div><p style="margin-top:8px;font-size:.92rem">Play again, or check whether AI should touch the motion at all.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn primary" id="g-again">Play again</button><a class="btn" href="#advisor" data-start-assessment>Take the assessment</a></div></div>`;
   $("#g-again").addEventListener("click",()=>{game.round=0;game.scores=[];game.sel.clear();game.graded=false;renderGame()});
 }
 
@@ -2360,9 +2422,9 @@ $$("[data-jump]").forEach(b=>b.addEventListener("click",()=>{const el=$("#"+b.da
 $("#m-more-btn").addEventListener("click",e=>{const b=e.currentTarget,o=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",String(o));$("#m-more").hidden=!o;b.textContent=o?"Show less":"Read more"});
 renderRules();
 renderParts();
-$("#m-grid").addEventListener("click",e=>{const b=e.target.closest("[data-assess]");if(b)assessMotion(MOTIONS[+b.dataset.assess].n)});
+$("#m-grid").addEventListener("click",e=>{const b=e.target.closest("[data-assess]");if(b)assessMotion(MOTIONS[+b.dataset.assess].n,b)});
 $("#ap-real").addEventListener("click",e=>{e.preventDefault();openMotion(MOTIONS.findIndex(m=>m.n==="Motion to Strike"))});
-renderAdvisor(); renderLastReport(); initOR(); renderMethod(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route(); initRuleLinks();
+renderAdvisor(); renderLastReport(); initStartAssessment(); initOR(); renderMethod(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route(); initRuleLinks();
 })();
 </script>
 </body></html>
