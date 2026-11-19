@@ -118,7 +118,7 @@
     {v:"no",label:"No",score:2,note:"Read ABA 512 and your bar’s guidance before you start."}],
    // links never change the answer or the score
    textLinks:[
-     {match:"ABA Formal Opinion 512",href:"docs/view.html?file=aba-formal-opinion-512.pdf",badge:"(PDF)",ariaLabel:"ABA Formal Opinion 512 (opens in new tab)",resume:true},
+     {match:"ABA Formal Opinion 512",href:"docs/view.html?file=aba-formal-opinion-512.pdf",ariaLabel:"ABA Formal Opinion 512 (opens in new tab)",resume:true},
      {match:"jurisdiction’s AI guidance",href:"https://www.mass.gov/info-details/massachusetts-law-about-artificial-intelligence#government-issued-guidance",icon:"↗",ariaLabel:"Massachusetts government-issued AI guidance (opens in new tab)"}],
    learn:{showFor:["partly","no"],lead:"Haven’t read it yet?",linkText:"See the ABA’s summary of its first AI ethics guidance",url:"https://www.americanbar.org/news/abanews/aba-news-archives/2024/07/aba-issues-first-ethics-guidance-ai-tools/",ariaLabel:"ABA summary of its first AI ethics guidance (opens in new tab)"}}
  ]},
