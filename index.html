@@ -1702,6 +1702,7 @@ function cap(t){return t.charAt(0).toUpperCase()+t.slice(1)}
 function checklistFor(A){const c=courtOf(A);return CHECKLIST.map(x=>x.startsWith("Standing-order AI disclosure")&&c?`${cap(c.name)}’s rules and the judge’s standing orders checked; AI disclosure or certification added, if required`:x)}
 const CHECKLIST=["Every case pulled from Westlaw, Lexis or an official source and read in full","Each pincite supports the sentence it follows","Every quotation compared word for word with the source","Each authority checked for negative history (KeyCite / Shepard’s)","Statutes and rules checked against the current version","Record citations match the actual exhibits and transcript pages","No client identifiers left in prompts, chat history or uploaded files","Standing-order AI disclosure or certification added, if required","Personal identifiers redacted (Fed. R. Civ. P. 5.2 / SJC Rule 1:24)","Signing attorney reviewed the final version"];
 function rulesFor(j,A){const out=rulesBase(j),q=QUESTIONS.find(x=>x.followUp&&x.followUp.showFor===j);
+  {const lq=QUESTIONS.find(x=>x.id==="jurisdiction");if(lq&&lq.learn&&learnShows(lq,j))out.push([lq.learn.linkText,lq.learn.rule,lq.learn.url])}
   if(q&&A){const F=q.followUp,c=ENG.followUpOpt(q,ENG.normalize(A));
     if(c&&c.appellate)out.splice(2,0,["Massachusetts Rules of Appellate Procedure",F.appellateNote]);
     if(c&&c.bls)out.push(["BLS Bench Notes on AI use",F.bls.text,F.bls.url]);

@@ -185,6 +185,9 @@
     {v:"dmass",label:"U.S. District Court for the District of Massachusetts",score:0,note:"D. Mass. federal court."},
     {v:"fed",label:"Another federal court",score:0,note:"Another federal court."},
     {v:"state",label:"Another state court",score:0,note:"Another state court."}],
+   // a learning link for "Another state court"; it never changes the answer or the score
+   learn:{showFor:["state"],lead:"See how state courts are approaching AI:",linkText:"NCSC: AI and the state courts",url:"https://www.ncsc.org/resources-courts/ai-state-courts",ariaLabel:"National Center for State Courts: AI and the state courts (opens in new tab)",
+     rule:"National Center for State Courts resources on how state courts are handling AI, including court rules and orders."},
    /* Follow-up for Massachusetts state court. The court choice never changes the score. */
    followUp:{showFor:"ma",id:"maCourt",label:"Which Massachusetts court?",placeholder:"Choose a court…",
     options:[ // name: used in sentences ("Check the Superior Court’s rules…")
