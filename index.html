@@ -1666,7 +1666,7 @@ function workflow(A){
   SECTIONS[0].qs.find(q=>q.id==="aiTask").options.forEach(o=>{if(tasks.includes(o.v))steps.push(t[o.v])});
   const CQ=QUESTIONS.find(q=>q.id==="citeCheck"),CL=ENG.prepare(A).citeCheck;
   if(CL==="none"&&CQ&&CQ.ideas){steps.push("Set up a citation check before you file. Ideas:");CQ.ideas.items.forEach((it,i)=>steps.push("Citation idea "+(i+1)+": "+it.text))}
-  else{if(CL==="nocitator")steps.push("Add a citator check (KeyCite, Shepard’s or BCite) for every case: a case can exist and still be bad law.");
+  else{if(CL==="nocitator")steps.push("Add a citator check (KeyCite or Shepard’s) for every case: a case can exist and still be bad law.");
     steps.push("Treat every citation as unverified until pulled, read and checked for negative history. Run the draft through the Citation Toolkit.")}
   steps.push(A.finalReview==="signer"?"The signing attorney reads the entire final motion line by line before filing.":"Make the signing attorney, not the drafter, read the entire final motion before filing (Rules 5.1, 5.3; Fed. R. Civ. P. 11).");
   steps.push(A.standing==="none"?"Re-check the judge’s standing orders the week you file; they change.":"Check the judge’s standing orders and add any required AI disclosure or certification.");

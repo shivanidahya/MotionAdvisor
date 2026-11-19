@@ -193,7 +193,7 @@ test("14. Citation checking branches: Yes/No paths, the citator adjustment, the 
   const old = (v) => { ORIGINAL.adv.answers = Object.assign({}, base, { aiTask: base.aiTask[0], citeCheck: v }); return ORIGINAL.compute(); };
   const every = run({ citeProcess: "yes", citeMethods: ["keycite", "spreadsheet", "second"], citeScope: "every" });
   const some = run({ citeProcess: "yes", citeMethods: ["keycite"], citeScope: "some" });
-  const noCitator = run({ citeProcess: "yes", citeMethods: ["read", "pincites", "spreadsheet"], citeScope: "every" });
+  const noCitator = run({ citeProcess: "yes", citeMethods: ["pincites", "spreadsheet"], citeScope: "every" });
   const noIdeas = run({ citeProcess: "no", citeIdeas: "yes" }), noCont = run({ citeProcess: "no", citeIdeas: "no" });
   // levels and scores match the old answers
   assert.equal(every.lvl, "full"); assert.equal(every.r.index, old("full").index);
@@ -203,7 +203,11 @@ test("14. Citation checking branches: Yes/No paths, the citator adjustment, the 
   [noIdeas, noCont].forEach((x) => { assert.equal(x.lvl, "none"); assert.equal(x.r.index, old("none").index); assert.equal(x.r.verdict, "Not recommended"); assert.ok(x.r.stopIds.includes("no-cite-check")); });
   assert.deepEqual(noIdeas.r, noCont.r, "wanting ideas changes nothing");
   // any one citator counts
-  ["keycite", "shepards", "bcite"].forEach((m) => assert.equal(run({ citeProcess: "yes", citeMethods: ["read", m], citeScope: "every" }).lvl, "full"));
+  ["keycite", "shepards"].forEach((m) => assert.equal(run({ citeProcess: "yes", citeMethods: ["pincites", m], citeScope: "every" }).lvl, "full"));
+  // options no longer offered stay hidden but still load: an earlier "BCite + every" result keeps its score
+  const shown = q.follow.yes[0].options.filter((o) => !o.hidden).map((o) => o.v);
+  assert.deepEqual(shown, ["keycite", "shepards", "pincites", "spreadsheet", "checklist", "second"]);
+  assert.equal(run({ citeProcess: "yes", citeMethods: ["bcite"], citeScope: "every" }).lvl, "full");
   // completeness: Yes needs a method and a scope; No needs the ideas answer
   [{ citeProcess: "yes" }, { citeProcess: "yes", citeMethods: ["keycite"] }, { citeProcess: "yes", citeScope: "every" }, { citeProcess: "yes", citeMethods: [], citeScope: "every" }, { citeProcess: "no" }, {}]
     .forEach((ch) => assert.equal(E.answered(q, Object.assign({}, base, ch)), false, JSON.stringify(ch)));

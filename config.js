@@ -127,10 +127,10 @@
      The user answers "Do you have a process?" (citeProcess) and the follow-ups for that branch.
      The score comes from the internal risk levels in `options`, chosen by `levelRules`
      (first rule that matches wins). The "no-cite-check" automatic stop fires on level "none". */
-  {id:"citeCheck",type:"branch",text:"Do you have a process for checking citations?",why:"Every sanction decision on AI citations comes down to this step. Rule 11 and Rule 3.3 make the signer responsible for every authority. A citator (KeyCite, Shepard’s or BCite) shows whether a case is still good law.",
+  {id:"citeCheck",type:"branch",text:"Do you have a process for checking citations?",why:"Every sanction decision on AI citations comes down to this step. Rule 11 and Rule 3.3 make the signer responsible for every authority. A citator (KeyCite or Shepard’s) shows whether a case is still good law.",
    options:[ // internal risk levels (not shown as choices)
     {v:"full",label:"Checks every citation, using a citator",score:0,note:"Full citation verification is in place."},             // = old "Every citation pulled, read, and KeyCited or Shepardized"
-    {v:"nocitator",label:"Checks every citation, without a citator",score:4,note:"You check every citation but don’t use a citator (KeyCite, Shepard’s or BCite). A case can exist and still be bad law, so this is scored the same as a spot-check."}, // adjustment: same score as a spot-check
+    {v:"nocitator",label:"Checks every citation, without a citator",score:4,note:"You check every citation but don’t use a citator (KeyCite or Shepard’s). A case can exist and still be bad law, so this is scored the same as a spot-check."}, // adjustment: same score as a spot-check
     {v:"spot",label:"Spot-checks some citations",score:4,note:"Spot-checking is how fabricated cases slipped through in Mata and Smith v. Farwell."}, // = old "Spot-check some citations"
     {v:"none",label:"No citation-checking process",score:6,note:"Without a citation check, AI drafting should not proceed."}], // = old "No formal process"; triggers the automatic stop
    main:{id:"citeProcess",options:[{v:"yes",label:"Yes"},{v:"no",label:"No"}]},
@@ -139,14 +139,15 @@
      {id:"citeMethods",type:"multi",text:"Which methods do you use?",hint:"Select all that apply",options:[
       {v:"keycite",label:"KeyCite (Westlaw)",short:"KeyCite",citator:true},
       {v:"shepards",label:"Shepard’s (Lexis)",short:"Shepard’s",citator:true},
-      {v:"bcite",label:"BCite (Bloomberg Law)",short:"BCite",citator:true},
-      {v:"read",label:"Reading the full opinion for each case",short:"reading each opinion"},
       {v:"pincites",label:"Checking pincites and quotations against the source",short:"pincite and quotation check"},
       {v:"spreadsheet",label:"Tracking citations in a spreadsheet (Excel, Google Sheets)",short:"spreadsheet"},
       {v:"checklist",label:"Notes or a checklist",short:"checklist"},
       {v:"second",label:"A second person reviews the citations",short:"second reviewer"},
-      {v:"toolkit",label:"Motion Advisor’s Citation Toolkit",short:"Citation Toolkit"},
-      {v:"other",label:"Other method",short:"other method"},
+      // no longer offered; kept hidden so results saved earlier still load and score the same
+      {v:"bcite",label:"BCite (Bloomberg Law)",short:"BCite",citator:true,hidden:true},
+      {v:"read",label:"Reading the full opinion for each case",short:"reading each opinion",hidden:true},
+      {v:"toolkit",label:"Motion Advisor’s Citation Toolkit",short:"Citation Toolkit",hidden:true},
+      {v:"other",label:"Other method",short:"other method",hidden:true},
       // used only when converting results saved before this question branched ("Every citation pulled, read, and KeyCited or Shepardized")
       {v:"legacy",label:"Pulled, read and KeyCited or Shepardized",short:"KeyCite or Shepard’s",citator:true,hidden:true}]},
      {id:"citeScope",type:"choice",text:"How many citations do you check?",options:[
@@ -203,9 +204,9 @@
 
       /* Test scenarios from the project plan's testing section. */
       personas: [
- {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeProcess:"yes",citeMethods:["keycite","read","pincites"],citeScope:"every",finalReview:"signer",jurisdiction:"ma",standing:"none",informed:"will",billing:"actual"}},
- {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeProcess:"yes",citeMethods:["shepards","read","spreadsheet","second"],citeScope:"every",finalReview:"signer",jurisdiction:"dmass",standing:"unknown",informed:"consent",billing:"actual"}},
- {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:["research"],tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeProcess:"yes",citeMethods:["read"],citeScope:"some",finalReview:"other",jurisdiction:"ma",standing:"unknown",informed:"no",billing:"saved"}}
+ {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeProcess:"yes",citeMethods:["keycite","pincites"],citeScope:"every",finalReview:"signer",jurisdiction:"ma",standing:"none",informed:"will",billing:"actual"}},
+ {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeProcess:"yes",citeMethods:["shepards","spreadsheet","second"],citeScope:"every",finalReview:"signer",jurisdiction:"dmass",standing:"unknown",informed:"consent",billing:"actual"}},
+ {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:["research"],tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeProcess:"yes",citeMethods:["pincites"],citeScope:"some",finalReview:"other",jurisdiction:"ma",standing:"unknown",informed:"no",billing:"saved"}}
 ]
     },
 
