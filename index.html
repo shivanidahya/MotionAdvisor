@@ -963,6 +963,12 @@ body.modal-open{overflow:hidden}
 @media (max-width:480px){.ma-modal-actions{flex-direction:column-reverse}.ma-modal-actions .btn{width:100%;justify-content:center}}
 .info-note{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;font-size:.86rem;color:var(--muted)}
 .info-note .ic{flex-shrink:0;display:inline-grid;place-items:center;width:18px;height:18px;margin-top:1px;border-radius:50%;border:1.5px solid currentColor;font-family:var(--f-ui);font-size:.7rem;font-weight:700;font-style:italic}
+.learn-tip{margin:0}
+.learn-in{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;font-size:.86rem;line-height:1.45;color:var(--muted);max-height:6em;overflow:hidden;transition:opacity .22s ease,transform .22s ease,max-height .25s ease,margin .25s ease}
+.learn-in.enter,.learn-in.leave{opacity:0;transform:translateY(-4px);max-height:0;margin-top:0}
+.learn-in .ic{flex-shrink:0;display:inline-grid;place-items:center;width:16px;height:16px;margin-top:2px;border-radius:50%;border:1.5px solid currentColor;font-family:var(--f-ui);font-size:.66rem;font-weight:700;font-style:italic}
+.learn-in a{color:var(--accent);text-decoration:none;font-weight:600}
+.learn-in a:hover,.learn-in a:focus-visible{text-decoration:underline}
 .q-hint{margin:2px 0 6px;font-family:var(--f-ui);font-size:.84rem;font-weight:600;color:var(--accent-2)}
 .ans-list{margin:0;padding-left:1.1em}
 /* ==== Draft scanner ==== */
@@ -1419,8 +1425,17 @@ function questionHTML(q){
   }else{
     control=`<div class="opts" role="radiogroup" aria-labelledby="qt-${q.id}">${q.options.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${val===o.v?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(hintText(o))}</small>`:""}</span></label>`).join("")}</div>`;
   }
-  return `<div class="q"><div class="q-text" id="qt-${q.id}">${esc(q.text)}<span class="req" aria-label="required">*</span></div>${q.multi?`<p class="q-hint" id="qh-${q.id}">${esc(q.hint||"Select all that apply")}</p>`:""}<details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}${q.id===CFG.scanner.question?scanPanelHTML(val===CFG.scanner.showFor):""}</div>`;
+  return `<div class="q"><div class="q-text" id="qt-${q.id}">${esc(q.text)}<span class="req" aria-label="required">*</span></div>${q.multi?`<p class="q-hint" id="qh-${q.id}">${esc(q.hint||"Select all that apply")}</p>`:""}<details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}${q.learn?`<div class="learn-tip" id="learn-${q.id}" aria-live="polite">${learnShows(q,val)?learnHTML(q):""}</div>`:""}${q.id===CFG.scanner.question?scanPanelHTML(val===CFG.scanner.showFor):""}</div>`;
 }
+/* a small learning link below the options (question config: learn) */
+function learnShows(q,v){return !!(q.learn&&v&&q.learn.showFor.includes(v))}
+function learnHTML(q){const L=q.learn;return `<p class="learn-in"><span class="ic" aria-hidden="true">i</span><span>${esc(L.lead)} <a href="${esc(L.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.linkText)}<span aria-hidden="true"> ↗</span></a></span></p>`}
+function learnToggle(q,v){
+  const box=$("#learn-"+q.id);if(!box)return;const show=learnShows(q,v),cur=box.querySelector(".learn-in");
+  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(show&&!cur){box.innerHTML=learnHTML(q);const el=box.firstElementChild;if(!still){el.classList.add("enter");requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove("enter")))}}
+  else if(!show&&cur){if(still||cur.classList.contains("leave")){box.innerHTML="";return}cur.classList.add("leave");setTimeout(()=>{if(cur.parentNode&&cur.classList.contains("leave"))cur.remove()},260)}
+  else if(show&&cur&&cur.classList.contains("leave"))cur.classList.remove("leave")}
 /* answer text for a question; "select all" questions list every choice */
 function answerLabels(q,v){return (Array.isArray(v)?v:[v]).map(x=>{const o=optOf(q.id,x);return o?o.label:""}).filter(Boolean)}
 function answerHTML(q,v){const l=answerLabels(q,v);return q.multi&&l.length>1?`<ul class="ans-list">${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:esc(l.join(""))}
@@ -1543,6 +1558,7 @@ function bindSteps(){
     else{adv.answers[el.dataset.q]=el.value||undefined; if(!el.value)delete adv.answers[el.dataset.q]}
     if(el.type==="radio"){$$(`input[name="${el.name}"]`).forEach(r=>r.closest(".opt").classList.toggle("sel",r.checked))}
     if(el.dataset.q===CFG.scanner.question)scanToggle(el.value===CFG.scanner.showFor);
+    {const qq=CFG.assessment.sections.flatMap(s=>s.qs).find(x=>x.id===el.dataset.q);if(qq&&qq.learn)learnToggle(qq,el.value)}
     if(adv.showErr&&sectionComplete(adv.step)){const e=$(".err");if(e)e.remove()}
   }));
   $$("[data-go]").forEach(b=>b.addEventListener("click",()=>{adv.step=+b.dataset.go;adv.showErr=false;renderAdvisor()}));

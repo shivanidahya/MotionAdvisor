@@ -109,7 +109,9 @@
   {id:"familiarity",type:"choice",text:"How familiar are you with AI’s limits: hallucinated cases, outdated law, confident errors?",why:"Comment 8 to Rule 1.1 requires understanding the benefits and risks of the technology you use. ABA 512 applies that to generative AI.",options:[
     {v:"high",label:"Trained and experienced; I know how these tools fail",score:0,note:"You understand the tool’s failure modes."},
     {v:"some",label:"Some familiarity",score:2,note:"Partial familiarity often misses subtler errors like misquoted holdings."},
-    {v:"low",label:"Little or none",score:4,note:"Low familiarity with AI limits is a Rule 1.1 competence gap."}]},
+    {v:"low",label:"Little or none",score:4,note:"Low familiarity with AI limits is a Rule 1.1 competence gap."}],
+   // a learning link shown below the options for these answers; it never changes the answer or the score
+   learn:{showFor:["some","low"],lead:"New to AI’s limits?",linkText:"Learn how AI tools can go wrong",url:"https://www.ncsc.org/resources-courts/legal-practitioners-guide-ai-hallucinations",ariaLabel:"Learn how AI tools can go wrong (opens in new tab)"}},
   {id:"guidance",type:"choice",text:"Have you read ABA Formal Op. 512 and your jurisdiction’s AI guidance?",why:"Guidance differs by bar and court and is changing quickly. Reading it is the baseline for competent use.",options:[
     {v:"yes",label:"Yes",score:0,note:"You have read the governing guidance."},
     {v:"partly",label:"Partly",score:1,note:"Finish reading the guidance before relying on AI for this motion."},
