@@ -37,6 +37,8 @@ engine.js              # Pure, deterministic functions that apply config.js
 tests/engine.test.js   # Automated tests (node:test), incl. parity with the original scoring
 tests/original-compute.js # The original scoring code, kept for the parity test
 tests/scanner-fixtures/   # Test drafts for the draft scanner (.txt, .docx, .pdf)
+docs/aba-formal-opinion-512.pdf + docs/view.html # the opinion and an in-browser viewer for it
+vercel.json            # serves PDFs inline (opened in the browser, not downloaded)
 vendor/                # compromise 14.19.0 (name detection, MIT licence)
 docs/DESIGN.md         # Design rationale, test results, values flagged for review
 package.json           # `npm test`
