@@ -1368,6 +1368,9 @@ function renderAdvisor(){
   bindSteps();
 }
 function firstIncomplete(){for(let i=0;i<SECTIONS.length;i++)if(!sectionComplete(i))return i;return SECTIONS.length}
+/* option subtitle; "{examples}" is filled from the option's examples list in config.js */
+function hintText(o){if(!o.examples||!o.examples.length)return o.hint;const e=o.examples;
+  const list=o.join==="or"&&e.length>1?e.slice(0,-1).join(", ")+" or "+e[e.length-1]:e.join(", ");return o.hint.replace("{examples}",list)}
 function questionHTML(q){
   const val=adv.answers[q.id];
   let control;
@@ -1375,9 +1378,9 @@ function questionHTML(q){
     control=`<select class="field" id="q-${q.id}" data-q="${q.id}"><option value="">Choose one…</option>${q.options.map(o=>`<option value="${o.v}" ${val===o.v?"selected":""}>${esc(o.label)}</option>`).join("")}</select>`;
   }else if(q.multi){
     const vals=Array.isArray(val)?val:(val!=null?[val]:[]);
-    control=`<div class="opts" role="group" aria-labelledby="qt-${q.id}" aria-describedby="qh-${q.id}">${q.options.map(o=>`<label class="opt ${vals.includes(o.v)?"sel":""}"><input type="checkbox" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${vals.includes(o.v)?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(o.hint)}</small>`:""}</span></label>`).join("")}</div>`;
+    control=`<div class="opts" role="group" aria-labelledby="qt-${q.id}" aria-describedby="qh-${q.id}">${q.options.map(o=>`<label class="opt ${vals.includes(o.v)?"sel":""}"><input type="checkbox" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${vals.includes(o.v)?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(hintText(o))}</small>`:""}</span></label>`).join("")}</div>`;
   }else{
-    control=`<div class="opts" role="radiogroup" aria-labelledby="qt-${q.id}">${q.options.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${val===o.v?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(o.hint)}</small>`:""}</span></label>`).join("")}</div>`;
+    control=`<div class="opts" role="radiogroup" aria-labelledby="qt-${q.id}">${q.options.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${val===o.v?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(hintText(o))}</small>`:""}</span></label>`).join("")}</div>`;
   }
   return `<div class="q"><div class="q-text" id="qt-${q.id}">${esc(q.text)}<span class="req" aria-label="required">*</span></div>${q.multi?`<p class="q-hint" id="qh-${q.id}">${esc(q.hint||"Select all that apply")}</p>`:""}<details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}</div>`;
 }

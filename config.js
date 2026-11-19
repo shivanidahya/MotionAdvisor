@@ -85,11 +85,14 @@
     {v:"summarize",label:"Summarizing record or discovery materials I provide",score:2,note:"Summaries of client materials raise confidentiality issues and can misstate facts."},
     {v:"draft",label:"Drafting argument sections",score:3,note:"Drafted argument sections mix language with legal claims that must each be verified."},
     {v:"research",label:"Finding case law and legal research",hint:"Highest hallucination risk",score:4,note:"Using general AI to find authority is how fabricated citations reach courts."}]},
-  {id:"tool",type:"choice",text:"What kind of AI tool would you use?",why:"Consumer chatbots may retain or train on what you enter. Legal-specific and enterprise tools usually offer contractual confidentiality and citation grounding.",options:[
-    {v:"legal",label:"Legal-specific or enterprise tool under a firm contract",hint:"No training on inputs; terms reviewed",score:0,note:"An enterprise or legal-specific tool with reviewed terms is the safest choice."},
-    {v:"paid",label:"Paid general tool with data-training turned off",score:1,note:"A paid general tool with training off reduces, but does not remove, disclosure risk."},
-    {v:"consumer",label:"Free consumer chatbot",score:3,note:"Free consumer tools may retain prompts and are not grounded in verified legal sources."},
-    {v:"unsure",label:"Not sure",score:3,note:"Not knowing the tool’s data terms is itself a risk under Rule 1.6."}]}
+  /* Example products shown under each option. Edit the "examples" lists as products
+     change; "{examples}" in the hint is replaced by the list ("join": "or" puts "or"
+     before the last item, "list" uses commas only). Examples don't affect scoring. */
+  {id:"tool",type:"choice",text:"What kind of AI tool would you use?",why:"Consumer chatbots may retain or train on what you enter. Legal-specific and enterprise tools usually offer contractual confidentiality and citation grounding. The same product can fall into different categories depending on your plan. Choose based on the version you’d actually use, and check its data and training settings.",options:[
+    {v:"legal",label:"Legal-specific or enterprise tool under a firm contract",hint:"No training on inputs; terms reviewed. E.g., {examples}",examples:["CoCounsel","Lexis+ AI","Harvey","ChatGPT Enterprise","Claude for Enterprise"],join:"list",score:0,note:"An enterprise or legal-specific tool with reviewed terms is the safest choice."},
+    {v:"paid",label:"Paid general tool with data-training turned off",hint:"E.g., paid plans of {examples}, with training on your data switched off in settings",examples:["ChatGPT","Claude","Gemini","Copilot"],join:"or",score:1,note:"A paid general tool with training off reduces, but does not remove, disclosure risk."},
+    {v:"consumer",label:"Free consumer chatbot",hint:"E.g., free versions of {examples}",examples:["ChatGPT","Claude","Gemini","Microsoft Copilot"],join:"or",score:3,note:"Free consumer tools may retain prompts and are not grounded in verified legal sources."},
+    {v:"unsure",label:"Not sure",hint:"We’ll treat this as the riskier choice",score:3,note:"Not knowing the tool’s data terms is itself a risk under Rule 1.6."}]}
  ]},
  {id:"conf",title:"Confidentiality",weight:1.5,qs:[
   {id:"clientInfo",type:"choice",text:"Would client-identifying or privileged information be entered into the tool?",why:"Rule 1.6 requires reasonable efforts to prevent unauthorized disclosure. ABA Formal Op. 512 says informed client consent is needed before confidential information goes into a self-learning tool.",options:[
