@@ -963,6 +963,8 @@ body.modal-open{overflow:hidden}
 @media (max-width:480px){.ma-modal-actions{flex-direction:column-reverse}.ma-modal-actions .btn{width:100%;justify-content:center}}
 .info-note{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;font-size:.86rem;color:var(--muted)}
 .info-note .ic{flex-shrink:0;display:inline-grid;place-items:center;width:18px;height:18px;margin-top:1px;border-radius:50%;border:1.5px solid currentColor;font-family:var(--f-ui);font-size:.7rem;font-weight:700;font-style:italic}
+.q-hint{margin:2px 0 6px;font-family:var(--f-ui);font-size:.84rem;font-weight:600;color:var(--accent-2)}
+.ans-list{margin:0;padding-left:1.1em}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -1344,7 +1346,7 @@ const PERSONAS=CFG.assessment.personas;
 const adv={step:-1,answers:{},ack:false,showErr:false,fromReview:false,fromMotion:null};
 const STEP_REVIEW=SECTIONS.length, STEP_RESULT=SECTIONS.length+1;
 
-function sectionComplete(i){return SECTIONS[i].qs.every(q=>adv.answers[q.id]!=null)}
+function sectionComplete(i){return SECTIONS[i].qs.every(q=>ENG.answered(q,adv.answers))}
 function allComplete(){return SECTIONS.every((s,i)=>sectionComplete(i))}
 
 function renderAdvisor(){
@@ -1371,14 +1373,20 @@ function questionHTML(q){
   let control;
   if(q.type==="select"){
     control=`<select class="field" id="q-${q.id}" data-q="${q.id}"><option value="">Choose one…</option>${q.options.map(o=>`<option value="${o.v}" ${val===o.v?"selected":""}>${esc(o.label)}</option>`).join("")}</select>`;
+  }else if(q.multi){
+    const vals=Array.isArray(val)?val:(val!=null?[val]:[]);
+    control=`<div class="opts" role="group" aria-labelledby="qt-${q.id}" aria-describedby="qh-${q.id}">${q.options.map(o=>`<label class="opt ${vals.includes(o.v)?"sel":""}"><input type="checkbox" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${vals.includes(o.v)?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(o.hint)}</small>`:""}</span></label>`).join("")}</div>`;
   }else{
     control=`<div class="opts" role="radiogroup" aria-labelledby="qt-${q.id}">${q.options.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${val===o.v?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(o.hint)}</small>`:""}</span></label>`).join("")}</div>`;
   }
-  return `<div class="q"><div class="q-text" id="qt-${q.id}">${esc(q.text)}<span class="req" aria-label="required">*</span></div><details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}</div>`;
+  return `<div class="q"><div class="q-text" id="qt-${q.id}">${esc(q.text)}<span class="req" aria-label="required">*</span></div>${q.multi?`<p class="q-hint" id="qh-${q.id}">${esc(q.hint||"Select all that apply")}</p>`:""}<details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}</div>`;
 }
+/* answer text for a question; "select all" questions list every choice */
+function answerLabels(q,v){return (Array.isArray(v)?v:[v]).map(x=>{const o=optOf(q.id,x);return o?o.label:""}).filter(Boolean)}
+function answerHTML(q,v){const l=answerLabels(q,v);return q.multi&&l.length>1?`<ul class="ans-list">${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:esc(l.join(""))}
 function reviewHTML(){
   return `<div class="eyebrow">Before your result</div><h2 style="font-size:1.9rem;margin:6px 0 14px">Review your answers</h2>`+
-  SECTIONS.map((s,i)=>`<div class="review-sec"><div class="rh"><h4>${s.title}</h4><button class="btn sm ghost" data-edit="${i}">Edit</button></div><dl>${s.qs.map(q=>`<dt>${esc(q.text)}</dt><dd>${esc(optOf(q.id,adv.answers[q.id]).label)}</dd>`).join("")}</dl></div>`).join("")+
+  SECTIONS.map((s,i)=>`<div class="review-sec"><div class="rh"><h4>${s.title}</h4><button class="btn sm ghost" data-edit="${i}">Edit</button></div><dl>${s.qs.map(q=>`<dt>${esc(q.text)}</dt><dd>${answerHTML(q,adv.answers[q.id])}</dd>`).join("")}</dl></div>`).join("")+
   `<div class="nav-btns"><button class="btn" id="adv-back">← Back</button><button class="btn primary" id="adv-see">See my result →</button></div>`;
 }
 function introHTML(){
@@ -1405,7 +1413,10 @@ function bindIntro(){
 function scrollTop(){const el=$("#v-advisor");window.scrollTo({top:el.offsetTop-70,behavior:"smooth"})}
 function bindSteps(){
   $$("[data-q]").forEach(el=>el.addEventListener("change",()=>{
-    adv.answers[el.dataset.q]=el.value||undefined; if(!el.value)delete adv.answers[el.dataset.q];
+    if(el.type==="checkbox"){const vals=$$(`input[name="${el.name}"]`).filter(c=>c.checked).map(c=>c.value);
+      if(vals.length)adv.answers[el.dataset.q]=vals;else delete adv.answers[el.dataset.q];
+      $$(`input[name="${el.name}"]`).forEach(c=>c.closest(".opt").classList.toggle("sel",c.checked))}
+    else{adv.answers[el.dataset.q]=el.value||undefined; if(!el.value)delete adv.answers[el.dataset.q]}
     if(el.type==="radio"){$$(`input[name="${el.name}"]`).forEach(r=>r.closest(".opt").classList.toggle("sel",r.checked))}
     if(adv.showErr&&sectionComplete(adv.step)){const e=$(".err");if(e)e.remove()}
   }));
@@ -1433,8 +1444,9 @@ function workflow(A){
     outline:"Prepare your own list of authorities first. Ask AI to organize your points, not to supply law.",
     summarize:"Have AI summarize only documents you provide, then spot-check each summary against the record before relying on it.",
     draft:"Give AI your outline and verified authorities, and treat its prose as a first draft to rewrite in your own voice.",
-    research:"Do not use general AI to find authority. Research in Westlaw, Lexis, Fastcase or a court database; use AI only to explain concepts."}[A.aiTask];
-  steps.push(t);
+    research:"Do not use general AI to find authority. Research in Westlaw, Lexis, Fastcase or a court database; use AI only to explain concepts."};
+  const tasks=Array.isArray(A.aiTask)?A.aiTask:[A.aiTask];
+  SECTIONS[0].qs.find(q=>q.id==="aiTask").options.forEach(o=>{if(tasks.includes(o.v))steps.push(t[o.v])});
   steps.push("Treat every citation as unverified until pulled, read and checked for negative history. Run the draft through the Citation Toolkit.");
   steps.push(A.finalReview==="signer"?"The signing attorney reads the entire final motion line by line before filing.":"Make the signing attorney, not the drafter, read the entire final motion before filing (Rules 5.1, 5.3; Fed. R. Civ. P. 11).");
   steps.push(A.standing==="none"?"Re-check the judge’s standing orders the week you file; they change.":"Check the judge’s standing orders and add any required AI disclosure or certification.");
@@ -1479,6 +1491,7 @@ function bindResult(){
   $("#adv-edit").addEventListener("click",()=>{adv.step=STEP_REVIEW;renderAdvisor();scrollTop()});
 }
 
+const QBYID=Object.fromEntries(QUESTIONS.map(q=>[q.id,q]));
 /* ---- "Start assessment": always a fresh start; confirm before deleting a result ---- */
 function hasResult(){return !!loadLast()||adv.step===STEP_RESULT}
 function goToIntro(after){
@@ -1527,8 +1540,8 @@ function initStartAssessment(){
 /* ---- Last run report on the home page (saved only in this browser) ---- */
 const LAST_KEY="motionAdvisor.lastReport";let lastMem=null;
 const JSHORT={ma:"Mass. state court",dmass:"D. Mass.",fed:"Federal court",state:"State court"};
-function saveLast(r){const rec={at:r.date.toISOString(),verdict:r.verdict,cls:r.cls,index:r.index,overrides:r.overrides.length,factors:r.factors.map(f=>({title:f.title,level:f.level,ratio:f.ratio})),answers:{...adv.answers}};lastMem=rec;try{localStorage.setItem(LAST_KEY,JSON.stringify(rec))}catch(e){}renderLastReport()}
-function loadLast(){try{const s=localStorage.getItem(LAST_KEY);if(s){const r=JSON.parse(s);if(r&&r.factors&&r.answers)return r}}catch(e){}return lastMem}
+function saveLast(r){const rec={at:r.date.toISOString(),verdict:r.verdict,cls:r.cls,index:r.index,overrides:r.overrides.length,factors:r.factors.map(f=>({title:f.title,level:f.level,ratio:f.ratio})),answers:ENG.normalize(adv.answers)};lastMem=rec;try{localStorage.setItem(LAST_KEY,JSON.stringify(rec))}catch(e){}renderLastReport()}
+function loadLast(){try{const s=localStorage.getItem(LAST_KEY);if(s){const r=JSON.parse(s);if(r&&r.factors&&r.answers){r.answers=ENG.normalize(r.answers);return r}}}catch(e){}return lastMem}
 function clearLast(){lastMem=null;try{localStorage.removeItem(LAST_KEY)}catch(e){}renderLastReport();toast("Last report cleared from this browser.")}
 function renderLastReport(){
   const el=$("#last-report");if(!el)return;const r=loadLast();
@@ -1574,7 +1587,7 @@ function makePDF(r){
   h("Rules and authorities to check");
   rulesFor(A.jurisdiction).forEach(([a,b])=>{text(a,{size:10,bold:true,gap:1});text(b,{size:9.5,color:mute,gap:5})});
   h("Your answers");
-  QUESTIONS.forEach(q=>{text(q.text,{size:9,color:mute,gap:1});text(optOf(q.id,A[q.id]).label,{size:10,gap:5})});
+  QUESTIONS.forEach(q=>{text(q.text,{size:9,color:mute,gap:1});text(answerLabels(q,A[q.id]).join("; "),{size:10,gap:5})});
   h("FAQ");
   FAQ.forEach(([q,a])=>{text(q,{size:10,bold:true,gap:1});text(a,{size:9.5,gap:6})});
   y+=6;text("Not legal advice. Motion Advisor · Shivani Dahya · Suffolk Law School.",{size:8.5,color:mute});
@@ -1665,10 +1678,12 @@ function orCell(oid,sid){
   else{
     const lines=c.lines.filter(l=>!(sid==="juris"&&l.q==="jurisdiction")).map(l=>{
       let adj="";
-      if(l.replaced)adj=`For this option it is scored as “${esc(ENG.optOf("aiTask",l.asAnswer).label)}”.`;
+      if(l.replaced&&l.multi){const yours=(Array.isArray(a.aiTask)?a.aiTask:[a.aiTask]);const dropped=yours.filter(t=>!(l.asAnswer||[]).includes(t)).map(t=>ENG.optOf("aiTask",t).label);
+        adj=`For this option it is scored on: ${esc(l.tasks.map(t=>t.label+" ("+t.level.toLowerCase()+" risk"+(t.sets?", sets the score":"")+")").join("; "))}.${dropped.length?` Not part of this option: ${esc(dropped.join("; "))}.`:""}`}
+      else if(l.replaced)adj=`For this option it is scored as “${esc(ENG.optOf("aiTask",l.asAnswer).label)}”.`;
       else if(l.mult===0)adj="Not counted for this option: it adds no citations to the motion.";
       else if(l.mult===0.5)adj="Counted at half: you supply the authorities, but AI summaries can still misstate them.";
-      return `<li><span class="muted">${esc(l.question)}</span><br><b>Your answer:</b> ${esc(l.answer)}${adj?`<br><em>${adj}</em>`:""}${l.mult!==0&&!l.replaced?`<br>${esc(l.note)}`:l.replaced?`<br>${esc(ENG.optOf("aiTask",l.asAnswer).note)}`:""}</li>`}).join("");
+      return `<li><span class="muted">${esc(l.question)}</span><br><b>Your answer:</b> ${esc(l.multi?answerLabels(QBYID[l.q],a[l.q]).join("; "):l.answer)}${adj?`<br><em>${adj}</em>`:""}${l.mult!==0&&!l.replaced?`<br>${esc(l.note)}`:l.replaced?`<br>${esc(l.multi?ENG.optOf("aiTask",l.tasks.find(t=>t.sets).v).note:ENG.optOf("aiTask",l.asAnswer).note)}`:""}</li>`}).join("");
     body=`<p>${chip(c.level)}</p><div><h3>Why this rating</h3><p>Rated ${c.level.toLowerCase()} risk from your answers in this area${optCfg.taskAs?", applied to this way of using AI":""}.</p></div><div><h3>Answers behind it</h3><ul>${lines}</ul></div>`}
   body+=`<div><h3>The rule behind it</h3>${authHTML(CFG.assessment.authorities[sid])}</div>`;
   drawerCell=null;openDrawer(o.name+": "+c.title,body)}

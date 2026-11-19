@@ -75,7 +75,11 @@
     {v:"dispositive",label:"Dispositive (summary judgment, judgment on the pleadings)",score:3,note:"Dispositive motions can end a client’s case; every authority and record cite must be exact."},
     {v:"emergency",label:"Emergency or injunctive (TRO, preliminary injunction)",score:3,note:"Emergency motions combine high stakes with time pressure, the condition under which verification gets skipped."},
     {v:"post",label:"Post-trial (new trial, relief from judgment)",score:3,note:"Post-trial motions have strict deadlines and preservation rules that AI frequently misstates."}]},
-  {id:"aiTask",type:"choice",text:"Which part of the motion would AI help with?",why:"AI is far more reliable at structure and language than at finding law. The closer the task is to legal research, the more verification it needs.",options:[
+  /* Select all that apply. SCORING RULE (multi: "max"): the question scores as the
+     single riskiest task selected. Conservative on purpose: adding low-risk tasks
+     next to a high-risk one never lowers the score, and one high-risk task is
+     enough to call for full verification (Rule 1.1 cmt. 8; Fed. R. Civ. P. 11).  REVIEW */
+  {id:"aiTask",type:"multi",multi:"max",hint:"Select all that apply",text:"Which part of the motion would AI help with?",why:"AI is far more reliable at structure and language than at finding law. The closer the task is to legal research, the more verification it needs. Each task you select is assessed, and the riskiest one sets the score for this question.",options:[
     {v:"format",label:"Formatting, templates, proofreading",hint:"No legal substance generated",score:0,note:"Formatting and proofreading keep AI away from legal substance."},
     {v:"outline",label:"Outlining or organizing my own arguments",score:1,note:"Outlining your own arguments is low risk if you supply the authorities."},
     {v:"summarize",label:"Summarizing record or discovery materials I provide",score:2,note:"Summaries of client materials raise confidentiality issues and can misstate facts."},
@@ -145,17 +149,20 @@
 
       /* Test scenarios from the project plan's testing section. */
       personas: [
- {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:"format",tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeCheck:"full",finalReview:"signer",jurisdiction:"ma",standing:"none",informed:"will",billing:"actual"}},
- {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:"summarize",tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeCheck:"full",finalReview:"signer",jurisdiction:"dmass",standing:"unknown",informed:"consent",billing:"actual"}},
- {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:"research",tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeCheck:"spot",finalReview:"other",jurisdiction:"ma",standing:"unknown",informed:"no",billing:"saved"}}
+ {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeCheck:"full",finalReview:"signer",jurisdiction:"ma",standing:"none",informed:"will",billing:"actual"}},
+ {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeCheck:"full",finalReview:"signer",jurisdiction:"dmass",standing:"unknown",informed:"consent",billing:"actual"}},
+ {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:["research"],tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeCheck:"spot",finalReview:"other",jurisdiction:"ma",standing:"unknown",informed:"no",billing:"saved"}}
 ]
     },
 
     /* ========================================================================
        OPTIONS REPORT (optional): four ways of using AI rated on the same six
        sections, from the same answers.
-       For each AI option the section score is recalculated as if the answer to
-       "Which part of the motion would AI help with?" were taskAs. Questions in
+       For each AI option, "Which part of the motion would AI help with?" is
+       re-scored as the option's own task (taskAs) plus every task you selected
+       that the option still allows (allows), using the same riskiest-task rule.
+       Tasks an option doesn't allow (for example legal research under any option)
+       are dropped from that option. Questions in
        notCounted score 0 for that option; questions in halfCounted score half.
        "Draft without AI" is Low on every section: no AI tool is involved.
        ====================================================================== */
@@ -163,13 +170,13 @@
       options: [
         { id: "none", name: "Draft without AI", noAI: true, usefulness: 0,
           desc: "You research and write the motion yourself. No AI tool sees any part of it." },
-        { id: "format", name: "AI for formatting and proofreading only", taskAs: "format", usefulness: 1,
+        { id: "format", name: "AI for formatting and proofreading only", taskAs: "format", allows: ["format"], usefulness: 1,
           notCounted: ["citeCheck"],     // proofreading adds no citations  REVIEW
           desc: "AI tidies the layout and catches typos in text you wrote. It adds no law or facts." },
-        { id: "organize", name: "AI to organize and summarize your own material", taskAs: "summarize", usefulness: 2,
+        { id: "organize", name: "AI to organize and summarize your own material", taskAs: "summarize", allows: ["format", "outline", "summarize"], usefulness: 2,
           halfCounted: ["citeCheck"],    // you supply the authorities; AI summaries can still misstate them  REVIEW
           desc: "AI outlines your arguments or summarizes documents you give it. You supply every authority." },
-        { id: "draft", name: "AI to draft argument sections (with full verification)", taskAs: "draft", usefulness: 3,
+        { id: "draft", name: "AI to draft argument sections (with full verification)", taskAs: "draft", allows: ["format", "outline", "summarize", "draft"], usefulness: 3,
           desc: "AI writes first drafts of argument sections, and you check every citation and fact." }
       ],
       /* Which options each automatic stop blocks. "Draft without AI" is never blocked. */

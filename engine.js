@@ -26,9 +26,25 @@
       return false;
     }
     function optOf(qid, v) { var q = QBY[qid]; if (!q) return null; for (var i = 0; i < q.options.length; i++) if (q.options[i].v === v) return q.options[i]; return null; }
+    /* "Select all that apply" questions: the riskiest selected answer sets the score
+       (config: multi: "max"). A single value saved by an older version counts as a one-item list. */
+    function pickMulti(q, v) {
+      var list = q.options.filter(function (o) { return asList(v).indexOf(o.v) >= 0; });
+      var top = list.reduce(function (t, o) { return !t || o.score > t.score ? o : t; }, null);
+      return { list: list, top: top };
+    }
+    function multiNote(q, pick) {
+      if (!pick.top) return "";
+      if (pick.list.length === 1) return pick.top.note;
+      var lvl = function (o) { return levelOf(o.score / maxScore(q)).toLowerCase() + " risk"; };
+      return pick.top.note + " Tasks selected: " + pick.list.map(function (o) { return o.label + " (" + lvl(o) + (o === pick.top ? ", sets the score" : "") + ")"; }).join("; ") + ".";
+    }
     function maxScore(q) { return Math.max.apply(null, q.options.map(function (o) { return o.score; })); }
     function levelOf(ratio) { return ratio < AS.levelCuts.moderate ? "Low" : ratio < AS.levelCuts.high ? "Moderate" : "High"; }
-    function complete(a) { return QUESTIONS.every(function (q) { return a[q.id] != null; }); }
+    function answered(q, a) { return q.multi ? asList(a[q.id]).length > 0 : a[q.id] != null; }
+    function complete(a) { return QUESTIONS.every(function (q) { return answered(q, a); }); }
+    /* Older saved results stored one task as a string; turn it into a one-item list. */
+    function normalize(a) { var b = Object.assign({}, a); QUESTIONS.forEach(function (q) { if (q.multi && b[q.id] != null && !Array.isArray(b[q.id])) b[q.id] = [b[q.id]]; }); return b; }
     function defaultWeights() { var w = {}; AS.sections.forEach(function (s) { w[s.id] = s.weight; }); return w; }
 
     /* Section points for a set of answers; mod lets the Options Report re-score. */
@@ -38,10 +54,19 @@
         var sp = 0, sm = 0, lines = [];
         s.qs.forEach(function (q) {
           var v = mod.answers && q.id in mod.answers ? mod.answers[q.id] : a[q.id];
-          var o = optOf(q.id, v), mult = (mod.mult && q.id in mod.mult) ? mod.mult[q.id] : 1;
-          var sc = (o ? o.score : 0) * mult;
-          sp += sc; sm += maxScore(q);
-          lines.push({ q: q.id, question: q.text, answer: o ? o.label : "", note: o ? o.note : "", score: sc, mult: mult, replaced: !!(mod.answers && q.id in mod.answers && mod.answers[q.id] !== a[q.id]), asAnswer: v });
+          var mult = (mod.mult && q.id in mod.mult) ? mod.mult[q.id] : 1;
+          if (q.multi) {
+            var pick = pickMulti(q, v), sc = (pick.top ? pick.top.score : 0) * mult;
+            sp += sc; sm += maxScore(q);
+            lines.push({ q: q.id, question: q.text, multi: true, answer: pick.list.map(function (o) { return o.label; }).join("; "),
+              note: multiNote(q, pick), tasks: pick.list.map(function (o) { return { v: o.v, label: o.label, level: levelOf(o.score / maxScore(q)), sets: o === pick.top }; }),
+              score: sc, mult: mult, replaced: !!(mod.answers && q.id in mod.answers), asAnswer: v });
+            return;
+          }
+          var o = optOf(q.id, v);
+          var sc1 = (o ? o.score : 0) * mult;
+          sp += sc1; sm += maxScore(q);
+          lines.push({ q: q.id, question: q.text, answer: o ? o.label : "", note: o ? o.note : "", score: sc1, mult: mult, replaced: !!(mod.answers && q.id in mod.answers && mod.answers[q.id] !== a[q.id]), asAnswer: v });
         });
         var r = sm ? sp / sm : 0;
         return { id: s.id, title: s.title, weight: s.weight, points: sp, max: sm, ratio: r, level: levelOf(r), lines: lines };
@@ -84,7 +109,9 @@
           var mult = {};
           (o.notCounted || []).forEach(function (q) { mult[q] = 0; });
           (o.halfCounted || []).forEach(function (q) { mult[q] = 0.5; });
-          secs = sectionScores(a, { answers: { aiTask: o.taskAs }, mult: mult });
+          /* the option's own task plus every selected task the option still allows */
+          var tasks = [o.taskAs].concat(asList(a.aiTask).filter(function (t) { return (o.allows || []).indexOf(t) >= 0 && t !== o.taskAs; }));
+          secs = sectionScores(a, { answers: { aiTask: tasks }, mult: mult });
         }
         var idx = indexOf(secs, weights);
         return { id: o.id, name: o.name, desc: o.desc, usefulness: o.usefulness, noAI: !!o.noAI,
@@ -104,7 +131,7 @@
     }
 
     return {
-      config: cfg, questions: QUESTIONS, optOf: optOf, complete: complete, assess: assess,
+      config: cfg, questions: QUESTIONS, optOf: optOf, complete: complete, answered: answered, normalize: normalize, assess: assess,
       stops: stops, optionsReport: optionsReport, defaultWeights: defaultWeights, levelOf: levelOf, bandOf: bandOf
     };
   }
