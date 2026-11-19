@@ -247,3 +247,13 @@ test("15. Massachusetts court follow-up: required for MA state court, cleared ot
   assert.ok(!juris("superior").notes.some((n) => /Appellate/.test(n)));
   assert.equal(E.assess(TWO).factors.find((f) => f.id === "juris").links, undefined, "federal court gets no Massachusetts state-court extras");
 });
+
+test("16. Every link and PDF the assessment shows is also on the Rules & Sources page", () => {
+  const html = require("node:fs").readFileSync(require("node:path").join(__dirname, "..", "index.html"), "utf8");
+  const rules = html.slice(html.indexOf("const RULES=["), html.indexOf("function renderRules"));
+  const urls = new Set();
+  const walk = (o) => { if (!o || typeof o !== "object") return; Object.values(o).forEach((v) => { if (typeof v === "string" && (/^https?:\/\//.test(v) || /^docs\//.test(v)) && !/#citations$/.test(v)) urls.add(v); else walk(v); }); };
+  walk(CONFIG.assessment);
+  assert.ok(urls.size >= 10);
+  urls.forEach((u) => assert.ok(rules.includes('"' + u + '"'), "missing from Rules & Sources: " + u));
+});
