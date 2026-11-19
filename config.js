@@ -100,7 +100,7 @@
     {v:"limited",label:"Yes, limited facts that are necessary to the task",score:2,note:"Even limited client facts in prompts trigger Rule 1.6 duties."},
     {v:"substantial",label:"Yes, substantial privileged facts or strategy",score:4,note:"Privileged facts or strategy in a prompt risk waiver and disclosure."},
     {v:"unsure",label:"Not sure",score:3,note:"Uncertainty about what will be entered needs to be resolved before drafting."}]},
-  {id:"safeguards",type:"choice",text:"What protocols prevent a data breach or disclosure?",why:"Reasonable efforts usually mean a written policy, reviewed vendor terms, access controls and staff training (Rules 1.6(c) and 5.3).",options:[
+  {id:"safeguards",type:"choice",text:"Do you have security protocols in place to prevent a data breach or disclosure of confidential information?",why:"Reasonable efforts usually mean a written policy, reviewed vendor terms, access controls and staff training (Rules 1.6(c) and 5.3).",options:[
     {v:"policy",label:"Written firm AI policy and reviewed vendor terms",score:0,note:"A written policy plus reviewed vendor terms meets the reasonable-efforts standard."},
     {v:"informal",label:"Informal practices only",score:2,note:"Informal practices are hard to prove and easy to skip under deadline."},
     {v:"none",label:"None yet",score:4,note:"No protocols means no reasonable efforts to show if something goes wrong."}]}
