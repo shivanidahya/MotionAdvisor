@@ -83,7 +83,7 @@
       if (o) notes.push("Filed in " + o.name + " (" + optOf(q.id, a[q.id]).label + ").");
       if (o && o.appellate && f.appellateNote) notes.push(f.appellateNote);
       if (o && o.bls && f.bls) { notes.push(f.bls.text); links.push({ text: f.bls.linkText, url: f.bls.url, ariaLabel: f.bls.ariaLabel }); }
-      if (f.learn) links.push({ text: f.learn.linkText, url: f.learn.url, ariaLabel: f.learn.ariaLabel, sub: f.learn.sub });
+      if (f.note && f.note.articles) f.note.articles.forEach(function (x) { links.push({ text: x.short + " (PDF)", url: x.href, pdf: x.pdf, ariaLabel: x.title + " (PDF, opens in new tab)", sub: x.author + " (" + x.date + "): " + x.desc + ".", resume: true }); });
       return { notes: notes, links: links };
     }
     function answered(q, a) { if (q.followUp && a[q.id] === q.followUp.showFor && a[q.followUp.id] == null) return false; if (q.type === "branch") return branchComplete(q, a) || (a[q.main.id] == null && a[q.id] != null); return q.multi ? asList(a[q.id]).length > 0 : a[q.id] != null; }

@@ -237,7 +237,9 @@ test("15. Massachusetts court follow-up: required for MA state court, cleared ot
   assert.ok(idx.every((i) => i === E.assess(base).index), "no court changes the score");
   const juris = (ct) => E.assess(Object.assign({}, base, { maCourt: ct })).factors.find((f) => f.id === "juris");
   assert.match(juris("superior").notes[0], /Filed in the Superior Court/);
-  assert.ok(juris("superior").links.some((l) => /interim-guidelines-for-use-of-generative-ai/.test(l.url)));
+  assert.ok(!juris("superior").links.some((l) => /interim-guidelines/.test(l.url)), "SJC guidelines are no longer in the question or explanation");
+  assert.deepEqual(juris("superior").links.map((l) => l.pdf), ["docs/wild-west-of-artificial-intelligence.pdf", "docs/two-years-of-fake-cases.pdf"]);
+  q.followUp.note.articles.forEach((x) => assert.ok(require("node:fs").existsSync(require("node:path").join(__dirname, "..", x.pdf)), x.pdf));
   assert.ok(juris("bls").links.some((l) => /business-litigation-session-bench-notes/.test(l.url)));
   ["sjc", "appeals"].forEach((ct) => assert.ok(juris(ct).notes.some((n) => /Rules of Appellate Procedure/.test(n))));
   assert.ok(!juris("superior").notes.some((n) => /Appellate/.test(n)));

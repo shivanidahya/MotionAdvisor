@@ -201,10 +201,15 @@
      {v:"land",label:"Land Court",name:"the Land Court"},
      {v:"probate",label:"Probate and Family Court",name:"the Probate and Family Court"},
      {v:"juvenile",label:"Juvenile Court",name:"the Juvenile Court"}],
-    // shown as soon as Massachusetts state court is chosen
-    learn:{lead:"See how Massachusetts courts are approaching AI:",linkText:"SJC Interim Guidelines for Use of Generative AI",url:"https://www.mass.gov/guidance/interim-guidelines-for-use-of-generative-ai",ariaLabel:"SJC Interim Guidelines for Use of Generative AI (opens in new tab)",
-      sub:"These guidelines apply to judges and court staff, not attorneys, but they show the courts’ expectations.",
-      rule:"Massachusetts Trial Court and SJC interim guidelines on generative AI for judges and court staff; not binding on attorneys, but they show the courts’ expectations."},
+    // shown as soon as Massachusetts state court is chosen; listed in the Jurisdiction explanation and the report's rules to check
+    note:{text:"Massachusetts courts haven’t issued AI rules that apply to attorneys’ filings. For guidance, read these two articles from the Massachusetts Office of Bar Counsel. They are educational and informational only.",
+     articles:[
+      {short:"The Wild West of Artificial Intelligence",title:"The Wild West of Artificial Intelligence: Ethical Considerations for the Use of A.I. in the Practice of Law",
+       author:"Afton Pavletic, Assistant Bar Counsel, Massachusetts Office of Bar Counsel",date:"Jan. 2024",desc:"the ethical considerations of using AI in practice",
+       pdf:"docs/wild-west-of-artificial-intelligence.pdf",href:"docs/view.html?file=wild-west-of-artificial-intelligence.pdf"},
+      {short:"Two Years of Fake Cases and the Courts are Ratcheting up the Sanctions",title:"Two Years of Fake Cases and the Courts are Ratcheting up the Sanctions",
+       author:"Heather L. LaVigne, Assistant Bar Counsel, Massachusetts Office of Bar Counsel",date:"2025",desc:"how sanctions for AI-generated fake citations are escalating",
+       pdf:"docs/two-years-of-fake-cases.pdf",href:"docs/view.html?file=two-years-of-fake-cases.pdf"}]},
     // extra lines in the Jurisdiction explanation
     appellateNote:"Appeals are governed by the Massachusetts Rules of Appellate Procedure, not the Rules of Civil Procedure. Check those rules for filing requirements.",
     bls:{text:"Business Litigation Session judges have shared their views on AI use in litigation in the BLS Bench Notes.",linkText:"BLS Bench Notes: use of artificial intelligence",url:"https://www.mass.gov/info-details/business-litigation-session-bench-notes-miscellaneous",ariaLabel:"BLS Bench Notes on the use of artificial intelligence (opens in new tab)"}}},
