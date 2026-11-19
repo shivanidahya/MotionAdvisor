@@ -74,12 +74,25 @@
       var labs = asList(a[f.id]).map(function (v) { var o = followOpt(q, f.id, v); return o ? o.label : ""; }).filter(Boolean);
       return labs.length ? " Methods you use: " + labs.join("; ") + "." : "";
     }
-    function answered(q, a) { if (q.type === "branch") return branchComplete(q, a) || (a[q.main.id] == null && a[q.id] != null); return q.multi ? asList(a[q.id]).length > 0 : a[q.id] != null; }
+    /* ---- Follow-up on one answer (config: followUp), e.g. which Massachusetts court ---- */
+    function followUpOpt(q, a) { var f = q.followUp; if (!f || a[q.id] !== f.showFor) return null; for (var i = 0; i < f.options.length; i++) if (f.options[i].v === a[f.id]) return f.options[i]; return null; }
+    /* court-specific lines and links for the section's explanation */
+    function followUpExtras(q, a) {
+      var f = q.followUp, o = followUpOpt(q, a), notes = [], links = [];
+      if (!f || a[q.id] !== f.showFor) return { notes: notes, links: links };
+      if (o) notes.push("Filed in " + o.name + " (" + optOf(q.id, a[q.id]).label + ").");
+      if (o && o.appellate && f.appellateNote) notes.push(f.appellateNote);
+      if (o && o.bls && f.bls) { notes.push(f.bls.text); links.push({ text: f.bls.linkText, url: f.bls.url, ariaLabel: f.bls.ariaLabel }); }
+      if (f.learn) links.push({ text: f.learn.linkText, url: f.learn.url, ariaLabel: f.learn.ariaLabel, sub: f.learn.sub });
+      return { notes: notes, links: links };
+    }
+    function answered(q, a) { if (q.followUp && a[q.id] === q.followUp.showFor && a[q.followUp.id] == null) return false; if (q.type === "branch") return branchComplete(q, a) || (a[q.main.id] == null && a[q.id] != null); return q.multi ? asList(a[q.id]).length > 0 : a[q.id] != null; }
     function complete(a) { return QUESTIONS.every(function (q) { return answered(q, a); }); }
     /* Older saved results stored one task as a string; turn it into a one-item list. */
     function normalize(a) {
       var b = Object.assign({}, a);
       QUESTIONS.forEach(function (q) { if (q.multi && b[q.id] != null && !Array.isArray(b[q.id])) b[q.id] = [b[q.id]]; });
+      QUESTIONS.forEach(function (q) { if (q.followUp && b[q.id] !== q.followUp.showFor) delete b[q.followUp.id]; });
       /* results saved before a question branched: convert the old single answer to the branch answers */
       BRANCHES.forEach(function (q) {
         if (b[q.main.id] == null && b[q.id] != null && q.legacy && q.legacy[b[q.id]]) Object.assign(b, JSON.parse(JSON.stringify(q.legacy[b[q.id]])));
@@ -138,8 +151,14 @@
         index: index, verdict: v.verdict, cls: v.cls, summary: v.summary,
         overrides: st.map(function (s) { return s.text; }), stopIds: st.map(function (s) { return s.id; }),
         factors: secs.map(function (s) {
-          return { id: s.id, title: s.title, ratio: s.ratio, level: s.level,
+          var f = { id: s.id, title: s.title, ratio: s.ratio, level: s.level,
             notes: s.lines.filter(function (l, i) { return !(s.id === "juris" && i === 0); }).map(function (l) { return l.note; }) };
+          /* follow-up extras (e.g. the Massachusetts court) come first; links only when there are any */
+          var ex = { notes: [], links: [] };
+          AS.sections.filter(function (x) { return x.id === s.id; })[0].qs.forEach(function (q) { var e = followUpExtras(q, a); ex.notes = ex.notes.concat(e.notes); ex.links = ex.links.concat(e.links); });
+          if (ex.notes.length) f.notes = ex.notes.concat(f.notes);
+          if (ex.links.length) f.links = ex.links;
+          return f;
         })
       };
     }
@@ -319,7 +338,7 @@
     return {
       scanDraft: scanDraft, normalizeText: normalizeText,
       config: cfg, questions: QUESTIONS, optOf: optOf, complete: complete, answered: answered, normalize: normalize, prepare: prepare, assess: assess,
-      branchSummary: branchSummary, branchComplete: branchComplete, branchLevel: branchLevel, branchFields: branchFields, allBranchFields: allBranchFields,
+      followUpOpt: followUpOpt, followUpExtras: followUpExtras, branchSummary: branchSummary, branchComplete: branchComplete, branchLevel: branchLevel, branchFields: branchFields, allBranchFields: allBranchFields,
       stops: stops, optionsReport: optionsReport, defaultWeights: defaultWeights, levelOf: levelOf, bandOf: bandOf
     };
   }

@@ -964,6 +964,10 @@ body.modal-open{overflow:hidden}
 .info-note{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;font-size:.86rem;color:var(--muted)}
 .info-note .ic{flex-shrink:0;display:inline-grid;place-items:center;width:18px;height:18px;margin-top:1px;border-radius:50%;border:1.5px solid currentColor;font-family:var(--f-ui);font-size:.7rem;font-weight:700;font-style:italic}
 .learn-tip{margin:0}
+.learn-sub{display:block;margin-top:2px;font-size:.82rem}
+.q.sub label.q-text{display:block;margin-bottom:6px}
+.factor-link{font-size:.9rem}.factor-link a{color:var(--accent);font-weight:600;text-decoration:none}.factor-link a:hover,.factor-link a:focus-visible{text-decoration:underline}
+.rules a{color:inherit;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 35%,transparent)}
 /* branching question */
 .branch{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .3s ease,opacity .25s ease}
 .branch.open{grid-template-rows:1fr;opacity:1}
@@ -1483,6 +1487,17 @@ function branchUpdate(q,changed){
 function bindBranches(){
   QUESTIONS.filter(q=>q.type==="branch").forEach(q=>{const b=$("#ideas-hide-"+q.id);if(!b)return;
     b.addEventListener("click",()=>{const l=$("#ideas-list-"+q.id),hide=!l.hidden;l.hidden=hide;b.textContent=hide?"Show ideas":"Hide ideas";b.setAttribute("aria-expanded",String(!hide))})})}
+/* ---- Follow-up on one answer (config: followUp), e.g. "Which Massachusetts court?" ---- */
+function followUpHTML(q){const F=q.followUp,A=adv.answers,open=A[q.id]===F.showFor;
+  return `<p class="sr-only" aria-live="polite" id="fu-live-${q.id}"></p><div class="branch ${open?"open":""}" id="fu-${q.id}" ${open?"":"inert"}><div class="branch-in"><div class="q sub">
+    <label class="q-text" for="q-${F.id}">${esc(F.label)}<span class="req" aria-label="required">*</span></label>
+    <select class="field" id="q-${F.id}" data-q="${F.id}" required><option value="">${esc(F.placeholder||"Choose one…")}</option>${F.options.map(o=>`<option value="${o.v}" ${A[F.id]===o.v?"selected":""}>${esc(o.label)}</option>`).join("")}</select>
+    ${F.learn?learnHTML(q,F.learn):""}</div></div></div>`}
+function followUpUpdate(q){const F=q.followUp,A=adv.answers,open=A[q.id]===F.showFor,box=$("#fu-"+q.id);if(!box)return;
+  const was=box.classList.contains("open");
+  if(!open){delete A[F.id];const sel=$("#q-"+F.id);if(sel)sel.value=""}
+  setBranchOpen(box,open);
+  if(open!==was){const live=$("#fu-live-"+q.id);if(live)live.textContent=open?`${F.label} appeared below${F.learn?", with a link to the "+F.learn.linkText:""}.`:""}}
 function questionHTML(q){
   const val=adv.answers[q.id];
   let control;
@@ -1495,6 +1510,7 @@ function questionHTML(q){
   }else{
     control=`<div class="opts" role="radiogroup" aria-labelledby="qt-${q.id}">${q.options.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${val===o.v?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(hintText(o))}</small>`:""}</span></label>`).join("")}</div>`;
   }
+  if(q.followUp)control+=followUpHTML(q);
   return `<div class="q"><div class="q-text" id="qt-${q.id}">${qTextHTML(q)}<span class="req" aria-label="required">*</span></div>${q.multi?`<p class="q-hint" id="qh-${q.id}">${esc(q.hint||"Select all that apply")}</p>`:""}<details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}${q.learn?`<div class="learn-tip" id="learn-${q.id}" aria-live="polite">${learnShows(q,val)?learnHTML(q):""}</div>`:""}${q.id===CFG.scanner.question?scanPanelHTML(val===CFG.scanner.showFor):""}</div>`;
 }
 /* question text, with an optional document link (question config: textLink) */
@@ -1507,7 +1523,7 @@ function qTextHTML(q){
   return out+esc(q.text.slice(pos))}
 /* a small learning link below the options (question config: learn) */
 function learnShows(q,v){return !!(q.learn&&v&&(Array.isArray(v)?v.some(x=>q.learn.showFor.includes(x)):q.learn.showFor.includes(v)))}
-function learnHTML(q){const L=q.learn;return `<p class="learn-in"><span class="ic" aria-hidden="true">i</span><span>${esc(L.lead)} <a href="${esc(L.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.linkText)}<span aria-hidden="true"> ↗</span></a></span></p>`}
+function learnHTML(q,L){L=L||q.learn;return `<p class="learn-in"><span class="ic" aria-hidden="true">i</span><span>${esc(L.lead)} <a href="${esc(L.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.linkText)}<span aria-hidden="true"> ↗</span></a>${L.sub?`<span class="learn-sub">${esc(L.sub)}</span>`:""}</span></p>`}
 function learnToggle(q,v){
   const box=$("#learn-"+q.id);if(!box)return;const show=learnShows(q,v),cur=box.querySelector(".learn-in");
   const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1515,7 +1531,8 @@ function learnToggle(q,v){
   else if(!show&&cur){if(still||cur.classList.contains("leave")){box.innerHTML="";return}cur.classList.add("leave");setTimeout(()=>{if(cur.parentNode&&cur.classList.contains("leave"))cur.remove()},260)}
   else if(show&&cur&&cur.classList.contains("leave"))cur.classList.remove("leave")}
 /* answer text for a question; "select all" questions list every choice */
-function answerLabels(q,v,A){if(q.type==="branch"){const s=ENG.branchSummary(q,ENG.normalize(A||adv.answers));return s?[s]:[]}return (Array.isArray(v)?v:[v]).map(x=>{const o=optOf(q.id,x);return o?o.label:""}).filter(Boolean)}
+function answerLabels(q,v,A){if(q.followUp){const o=optOf(q.id,v),c=ENG.followUpOpt(q,ENG.normalize(A||adv.answers));return o?[o.label+(c?" – "+c.label:"")]:[]}
+  if(q.type==="branch"){const s=ENG.branchSummary(q,ENG.normalize(A||adv.answers));return s?[s]:[]}return (Array.isArray(v)?v:[v]).map(x=>{const o=optOf(q.id,x);return o?o.label:""}).filter(Boolean)}
 function answerHTML(q,v){const l=answerLabels(q,v);return q.multi&&l.length>1?`<ul class="ans-list">${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:esc(l.join(""))}
 function reviewHTML(){
   return `<div class="eyebrow">Before your result</div><h2 style="font-size:1.9rem;margin:6px 0 14px">Review your answers</h2>`+
@@ -1637,6 +1654,7 @@ function bindSteps(){
     if(el.type==="radio"){$$(`input[name="${el.name}"]`).forEach(r=>r.closest(".opt").classList.toggle("sel",r.checked))}
     if(el.dataset.q===CFG.scanner.question)scanToggle(el.value===CFG.scanner.showFor);
     QUESTIONS.filter(q=>q.type==="branch"&&ENG.allBranchFields(q).includes(el.dataset.q)).forEach(q=>branchUpdate(q,el.dataset.q));
+    {const fq=QUESTIONS.find(q=>q.followUp&&q.id===el.dataset.q);if(fq)followUpUpdate(fq)}
     {const qq=LEARN_QS.find(x=>x.id===el.dataset.q);if(qq)learnToggle(qq,adv.answers[qq.id])}
     if(adv.showErr&&sectionComplete(adv.step)){const e=$(".err");if(e)e.remove()}
   }));
@@ -1672,13 +1690,24 @@ function workflow(A){
   else{if(CL==="nocitator")steps.push("Add a citator check (KeyCite or Shepard’s) for every case: a case can exist and still be bad law.");
     steps.push("Treat every citation as unverified until pulled, read and checked for negative history. Run the draft through the Citation Toolkit.")}
   steps.push(A.finalReview==="signer"?"The signing attorney reads the entire final motion line by line before filing.":"Make the signing attorney, not the drafter, read the entire final motion before filing (Rules 5.1, 5.3; Fed. R. Civ. P. 11).");
-  steps.push(A.standing==="none"?"Re-check the judge’s standing orders the week you file; they change.":"Check the judge’s standing orders and add any required AI disclosure or certification.");
+  const court=courtOf(A);
+  if(court)steps.push(A.standing==="none"?`Check ${court.name}’s rules and your judge’s standing orders again the week you file; they change.`:`Check ${court.name}’s rules and your judge’s standing orders, and add any required AI disclosure or certification.`);
+  else steps.push(A.standing==="none"?"Re-check the judge’s standing orders the week you file; they change.":"Check the judge’s standing orders and add any required AI disclosure or certification.");
   steps.push("Redact personal identifiers under Fed. R. Civ. P. 5.2 or SJC Rule 1:24 before filing.");
   steps.push("Note AI use in the file memo and bill only actual time spent.");
   return steps;
 }
+function courtOf(A){const q=QUESTIONS.find(x=>x.followUp);return q?ENG.followUpOpt(q,ENG.normalize(A||{})):null}
+function cap(t){return t.charAt(0).toUpperCase()+t.slice(1)}
+function checklistFor(A){const c=courtOf(A);return CHECKLIST.map(x=>x.startsWith("Standing-order AI disclosure")&&c?`${cap(c.name)}’s rules and the judge’s standing orders checked; AI disclosure or certification added, if required`:x)}
 const CHECKLIST=["Every case pulled from Westlaw, Lexis or an official source and read in full","Each pincite supports the sentence it follows","Every quotation compared word for word with the source","Each authority checked for negative history (KeyCite / Shepard’s)","Statutes and rules checked against the current version","Record citations match the actual exhibits and transcript pages","No client identifiers left in prompts, chat history or uploaded files","Standing-order AI disclosure or certification added, if required","Personal identifiers redacted (Fed. R. Civ. P. 5.2 / SJC Rule 1:24)","Signing attorney reviewed the final version"];
-function rulesFor(j){
+function rulesFor(j,A){const out=rulesBase(j),q=QUESTIONS.find(x=>x.followUp&&x.followUp.showFor===j);
+  if(q&&A){const F=q.followUp,c=ENG.followUpOpt(q,ENG.normalize(A));
+    if(c&&c.appellate)out.splice(2,0,["Massachusetts Rules of Appellate Procedure",F.appellateNote]);
+    if(c&&c.bls)out.push(["BLS Bench Notes on AI use",F.bls.text,F.bls.url]);
+    if(F.learn)out.push([F.learn.linkText,F.learn.rule||F.learn.sub,F.learn.url])}
+  return out}
+function rulesBase(j){
   const base=[["ABA Formal Opinion 512 (July 29, 2024)","Generative AI and the duties of competence, confidentiality, communication, candor, supervision and fees."],["Model Rules 1.1 (cmt. 8), 1.4, 1.5, 1.6, 3.3, 5.1, 5.3","The professional duties the questionnaire maps to."]];
   const m={
    ma:[["Mass. R. Prof. C. 1.1, 1.6, 3.3, 5.1, 5.3","Massachusetts versions of the competence, confidentiality, candor and supervision rules."],["Mass. R. Civ. P. 11","Signature certifies good ground to support the pleading or motion."],["Superior Court Rule 9A","Service-first motion practice and filing of the full package."],["SJC Rule 1:24","Redaction of personal identifying information in court filings."],["Smith v. Farwell (Mass. Super. Ct. 2024)","$2,000 sanction for AI-generated fictitious citations."],["Mass. Office of Bar Counsel, “Two Years of Fake Cases…” (2025)","Verify every citation; ask co-counsel whether AI was used."]],
@@ -1695,12 +1724,12 @@ function resultHTML(r){
   return `<div class="verdict ${r.cls}"><div><div class="eyebrow">Your result · ${r.date.toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})}</div><h2>${r.verdict}</h2><p style="max-width:62ch">${esc(r.summary)}</p></div><div class="gauge"><div class="num" style="color:var(--${r.cls})">${r.index}</div><div class="muted" style="font-size:.8rem">Risk index / 100</div><div class="meter" style="margin-top:8px"><i style="width:${r.index}%;background:var(--${r.cls})"></i></div></div></div>
   ${r.overrides.length?`<div class="override"><h4>Automatic stop conditions</h4><ul>${r.overrides.map(o=>`<li>${esc(o)}</li>`).join("")}</ul></div>`:""}
   <div class="res-grid">
-    <div class="card"><h3>Key factors</h3>${r.factors.map(f=>`<div class="factor"><div class="fh"><h4>${f.title}</h4><span class="pill ${lv(f.level)}">${f.level}</span></div><div class="meter"><i style="width:${Math.max(4,Math.round(f.ratio*100))}%;background:var(--${lv(f.level)})"></i></div>${f.notes.map(n=>`<p>${esc(n)}</p>`).join("")}</div>`).join("")}</div>
+    <div class="card"><h3>Key factors</h3>${r.factors.map(f=>`<div class="factor"><div class="fh"><h4>${f.title}</h4><span class="pill ${lv(f.level)}">${f.level}</span></div><div class="meter"><i style="width:${Math.max(4,Math.round(f.ratio*100))}%;background:var(--${lv(f.level)})"></i></div>${f.notes.map(n=>`<p>${esc(n)}</p>`).join("")}${(f.links||[]).map(l=>`<p class="factor-link"><a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(l.ariaLabel)}">${esc(l.text)}<span aria-hidden="true"> ↗</span></a>${l.sub?`<br><span class="muted">${esc(l.sub)}</span>`:""}</p>`).join("")}</div>`).join("")}</div>
     <div style="display:grid;gap:20px;align-content:start">
       <div class="card"><h3>Recommended workflow</h3><ol class="flow">${workflow(A).map(s=>`<li>${esc(s)}</li>`).join("")}</ol></div>
-      <div class="card"><h3>Verification checklist</h3><ul class="checklist">${CHECKLIST.map((c,i)=>`<li><label><input type="checkbox" id="chk-${i}"><span>${esc(c)}</span></label></li>`).join("")}</ul><p style="margin-top:12px;font-size:.88rem"><a href="#citations">Open the Citation Toolkit →</a></p></div>
+      <div class="card"><h3>Verification checklist</h3><ul class="checklist">${checklistFor(A).map((c,i)=>`<li><label><input type="checkbox" id="chk-${i}"><span>${esc(c)}</span></label></li>`).join("")}</ul><p style="margin-top:12px;font-size:.88rem"><a href="#citations">Open the Citation Toolkit →</a></p></div>
     </div>
-    <div class="card"><h3>Rules to check</h3><div class="rules">${rulesFor(A.jurisdiction).map(([a,b])=>`<div><b>${esc(a)}</b><span class="muted">${esc(b)}</span></div>`).join("")}</div><p style="margin-top:12px;font-size:.88rem"><a href="#rules">See every source on the Rules &amp; Sources page →</a></p></div>
+    <div class="card"><h3>Rules to check</h3><div class="rules">${rulesFor(A.jurisdiction,A).map(([a,b,u])=>`<div><b>${u?`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(a)} (opens in new tab)">${esc(a)}<span aria-hidden="true"> ↗</span></a>`:esc(a)}</b><span class="muted">${esc(b)}</span></div>`).join("")}</div><p style="margin-top:12px;font-size:.88rem"><a href="#rules">See every source on the Rules &amp; Sources page →</a></p></div>
     <div class="card faq"><h3>FAQ</h3>${FAQ.map(([q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</div>
   </div>
   <div class="cmp-cta no-print"><div><b>Want to see your options side by side?</b><p>Compare four ways of using AI on this motion, built from the same answers.</p></div><button class="btn primary" id="adv-compare">Compare your options →</button></div>
@@ -1802,13 +1831,13 @@ function makePDF(r){
   text(r.summary,{size:10,gap:6});
   if(r.overrides.length){text("Automatic stop conditions:",{size:10,bold:true,color:col.bad,gap:2});r.overrides.forEach(o=>text("•  "+o,{size:10,indent:10,gap:2}));y+=4}
   h("Key factors");
-  r.factors.forEach(f=>{text(f.title+" — "+f.level+" risk",{size:10.5,bold:true,color:f.level==="Low"?col.ok:f.level==="Moderate"?col.warn:col.bad,gap:2});f.notes.forEach(n=>text(n,{size:9.5,indent:10,gap:2}));y+=4});
+  r.factors.forEach(f=>{text(f.title+" — "+f.level+" risk",{size:10.5,bold:true,color:f.level==="Low"?col.ok:f.level==="Moderate"?col.warn:col.bad,gap:2});f.notes.forEach(n=>text(n,{size:9.5,indent:10,gap:2}));(f.links||[]).forEach(l=>text(l.text+": "+l.url,{size:9,indent:10,gap:2,color:mute}));y+=4});
   h("Recommended workflow");
   workflow(A).forEach((s,i)=>text((i+1)+".  "+s,{size:10,indent:4,gap:3}));
   h("Verification checklist");
-  CHECKLIST.forEach(c=>{need(16);doc.setDrawColor(...ink);doc.rect(M+2,y+1,9,9);text(c,{size:10,indent:18,gap:3})});
+  checklistFor(A).forEach(c=>{need(16);doc.setDrawColor(...ink);doc.rect(M+2,y+1,9,9);text(c,{size:10,indent:18,gap:3})});
   h("Rules and authorities to check");
-  rulesFor(A.jurisdiction).forEach(([a,b])=>{text(a,{size:10,bold:true,gap:1});text(b,{size:9.5,color:mute,gap:5})});
+  rulesFor(A.jurisdiction,A).forEach(([a,b,u])=>{text(a,{size:10,bold:true,gap:1});text(b,{size:9.5,color:mute,gap:u?1:5});if(u)text(u,{size:9,color:mute,gap:5})});
   h("Your answers");
   QUESTIONS.forEach(q=>{text(q.text,{size:9,color:mute,gap:1});text(answerLabels(q,A[q.id],A).join("; "),{size:10,gap:5})});
   h("FAQ");

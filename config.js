@@ -184,7 +184,27 @@
     {v:"ma",label:"Massachusetts state court",score:0,note:"Massachusetts state court."},
     {v:"dmass",label:"U.S. District Court for the District of Massachusetts",score:0,note:"D. Mass. federal court."},
     {v:"fed",label:"Another federal court",score:0,note:"Another federal court."},
-    {v:"state",label:"Another state court",score:0,note:"Another state court."}]},
+    {v:"state",label:"Another state court",score:0,note:"Another state court."}],
+   /* Follow-up for Massachusetts state court. The court choice never changes the score. */
+   followUp:{showFor:"ma",id:"maCourt",label:"Which Massachusetts court?",placeholder:"Choose a court…",
+    options:[ // name: used in sentences ("Check the Superior Court’s rules…")
+     {v:"sjc",label:"Supreme Judicial Court",name:"the Supreme Judicial Court",appellate:true},
+     {v:"appeals",label:"Appeals Court",name:"the Appeals Court",appellate:true},
+     {v:"superior",label:"Superior Court",name:"the Superior Court"},
+     {v:"bls",label:"Superior Court – Business Litigation Session",name:"the Business Litigation Session",bls:true},
+     {v:"district",label:"District Court",name:"the District Court"},
+     {v:"bmc",label:"Boston Municipal Court",name:"the Boston Municipal Court"},
+     {v:"housing",label:"Housing Court",name:"the Housing Court"},
+     {v:"land",label:"Land Court",name:"the Land Court"},
+     {v:"probate",label:"Probate and Family Court",name:"the Probate and Family Court"},
+     {v:"juvenile",label:"Juvenile Court",name:"the Juvenile Court"}],
+    // shown as soon as Massachusetts state court is chosen
+    learn:{lead:"See how Massachusetts courts are approaching AI:",linkText:"SJC Interim Guidelines for Use of Generative AI",url:"https://www.mass.gov/guidance/interim-guidelines-for-use-of-generative-ai",ariaLabel:"SJC Interim Guidelines for Use of Generative AI (opens in new tab)",
+      sub:"These guidelines apply to judges and court staff, not attorneys, but they show the courts’ expectations.",
+      rule:"Massachusetts Trial Court and SJC interim guidelines on generative AI for judges and court staff; not binding on attorneys, but they show the courts’ expectations."},
+    // extra lines in the Jurisdiction explanation
+    appellateNote:"Appeals are governed by the Massachusetts Rules of Appellate Procedure, not the Rules of Civil Procedure. Check those rules for filing requirements.",
+    bls:{text:"Business Litigation Session judges have shared their views on AI use in litigation in the BLS Bench Notes.",linkText:"BLS Bench Notes: use of artificial intelligence",url:"https://www.mass.gov/info-details/business-litigation-session-bench-notes-miscellaneous",ariaLabel:"BLS Bench Notes on the use of artificial intelligence (opens in new tab)"}}},
   {id:"standing",type:"choice",text:"Does the judge or court have a standing order on AI use?",why:"A growing number of judges require disclosure or certification of AI use, and a few restrict it. A violation can be sanctioned on its own.",options:[
     {v:"none",label:"I checked; there is none",score:0,note:"You have confirmed no standing order applies."},
     {v:"comply",label:"Yes, it requires disclosure or certification, and I will comply",score:1,note:"Add the required AI disclosure or certification to your filing."},
@@ -206,9 +226,9 @@
 
       /* Test scenarios from the project plan's testing section. */
       personas: [
- {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeProcess:"yes",citeMethods:["keycite","pincites"],citeScope:"every",finalReview:"signer",jurisdiction:"ma",standing:"none",informed:"will",billing:"actual"}},
+ {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeProcess:"yes",citeMethods:["keycite","pincites"],citeScope:"every",finalReview:"signer",jurisdiction:"ma",maCourt:"district",standing:"none",informed:"will",billing:"actual"}},
  {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeProcess:"yes",citeMethods:["shepards","spreadsheet","second"],citeScope:"every",finalReview:"signer",jurisdiction:"dmass",standing:"unknown",informed:"consent",billing:"actual"}},
- {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:["research"],tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeProcess:"yes",citeMethods:["pincites"],citeScope:"some",finalReview:"other",jurisdiction:"ma",standing:"unknown",informed:"no",billing:"saved"}}
+ {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:["research"],tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeProcess:"yes",citeMethods:["pincites"],citeScope:"some",finalReview:"other",jurisdiction:"ma",maCourt:"superior",standing:"unknown",informed:"no",billing:"saved"}}
 ]
     },
 

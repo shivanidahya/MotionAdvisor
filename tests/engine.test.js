@@ -20,10 +20,11 @@ test("1. One selected task scores exactly as the original single-choice version 
   sets.forEach((a0) => {
     // the original took one task; the new version takes a list. One selection must score the same.
     const single = Object.assign({}, a0, { aiTask: Array.isArray(a0.aiTask) ? a0.aiTask[0] : a0.aiTask });
+    delete single.maCourt; // the court follow-up adds explanation lines only; checked in test 15
     if (single.citeProcess) { single.citeCheck = E.prepare(single).citeCheck; delete single.citeProcess; delete single.citeMethods; delete single.citeScope; delete single.citeIdeas; }
     const listed = Object.assign({}, single, { aiTask: [single.aiTask] });
     ORIGINAL.adv.answers = single; const o = ORIGINAL.compute(); delete o.date;
-    [listed, single].forEach((a) => { const e = E.assess(a); delete e.stopIds; e.factors.forEach((f) => { delete f.id; f.notes = f.notes.map((n) => n.replace(/ Methods you use: .*$/, "")); }); assert.deepEqual(e, o); });
+    [listed, single].forEach((a) => { const e = E.assess(a); delete e.stopIds; e.factors.forEach((f) => { delete f.id; delete f.links; f.notes = f.notes.map((n) => n.replace(/ Methods you use: .*$/, "")); }); assert.deepEqual(e, o); });
   });
 });
 
@@ -223,4 +224,22 @@ test("14. Citation checking branches: Yes/No paths, the citator adjustment, the 
   assert.equal(E.prepare({ citeCheck: "full" }).citeCheck, "full");
   // ideas are in the config
   assert.equal(q.ideas.items.length, 6);
+});
+
+test("15. Massachusetts court follow-up: required for MA state court, cleared otherwise, never changes the score", () => {
+  const q = CONFIG.assessment.sections.find((s) => s.id === "juris").qs.find((x) => x.id === "jurisdiction");
+  assert.equal(q.followUp.options.length, 10);
+  const base = Object.assign({}, SOLO);
+  assert.equal(E.answered(q, Object.assign({}, base, { maCourt: undefined })), false, "court required");
+  ["dmass", "fed", "state"].forEach((j) => assert.equal(E.answered(q, { jurisdiction: j }), true));
+  assert.deepEqual(E.normalize({ jurisdiction: "fed", maCourt: "sjc" }), { jurisdiction: "fed" }, "switching away clears the court");
+  const idx = q.followUp.options.map((o) => E.assess(Object.assign({}, base, { maCourt: o.v })).index);
+  assert.ok(idx.every((i) => i === E.assess(base).index), "no court changes the score");
+  const juris = (ct) => E.assess(Object.assign({}, base, { maCourt: ct })).factors.find((f) => f.id === "juris");
+  assert.match(juris("superior").notes[0], /Filed in the Superior Court/);
+  assert.ok(juris("superior").links.some((l) => /interim-guidelines-for-use-of-generative-ai/.test(l.url)));
+  assert.ok(juris("bls").links.some((l) => /business-litigation-session-bench-notes/.test(l.url)));
+  ["sjc", "appeals"].forEach((ct) => assert.ok(juris(ct).notes.some((n) => /Rules of Appellate Procedure/.test(n))));
+  assert.ok(!juris("superior").notes.some((n) => /Appellate/.test(n)));
+  assert.equal(E.assess(TWO).factors.find((f) => f.id === "juris").links, undefined, "D. Mass. gets no Massachusetts state-court extras");
 });
