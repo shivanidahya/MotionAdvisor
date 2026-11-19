@@ -1360,7 +1360,7 @@ function renderAdvisor(){
   if(adv.step===STEP_REVIEW){body=reviewHTML()}
   else{
     const s=SECTIONS[adv.step];
-    body=`<div class="eyebrow">Section ${adv.step+1} of ${SECTIONS.length}${s.weight>1?" · weighted 1.5×":""}</div><h2 style="font-size:1.9rem;margin:6px 0 14px">${s.title}</h2>`+
+    body=`<div class="eyebrow">Section ${adv.step+1} of ${SECTIONS.length}${s.weight>1&&s.id!=="conf"?" · weighted 1.5×":""}</div><h2 style="font-size:1.9rem;margin:6px 0 14px">${s.title}</h2>`+
     s.qs.map(q=>questionHTML(q)).join("")+
     `<div class="nav-btns"><button class="btn" id="adv-back">← ${adv.step===0?"Introduction":"Back"}</button>${adv.showErr&&!sectionComplete(adv.step)?'<span class="err" role="alert">Answer every required question to continue.</span>':""}<button class="btn primary" id="adv-next">${adv.fromReview?"Back to review":(adv.step===SECTIONS.length-1?"Review answers":"Next")} →</button></div>`;
   }
