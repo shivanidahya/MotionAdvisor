@@ -139,14 +139,11 @@
      {id:"citeMethods",type:"multi",text:"Which methods do you use?",hint:"Select all that apply",options:[
       {v:"keycite",label:"KeyCite (Westlaw)",short:"KeyCite",citator:true},
       {v:"shepards",label:"Shepard’s (Lexis)",short:"Shepard’s",citator:true},
-      {v:"bcite",label:"BCite (Bloomberg Law)",short:"BCite",citator:true},
-      {v:"read",label:"Reading the full opinion for each case",short:"reading each opinion"},
       {v:"pincites",label:"Checking pincites and quotations against the source",short:"pincite and quotation check"},
       {v:"spreadsheet",label:"Tracking citations in a spreadsheet (Excel, Google Sheets)",short:"spreadsheet"},
       {v:"checklist",label:"Notes or a checklist",short:"checklist"},
       {v:"second",label:"A second person reviews the citations",short:"second reviewer"},
-      {v:"toolkit",label:"Motion Advisor’s Citation Toolkit",short:"Citation Toolkit"},
-      {v:"other",label:"Other method",short:"other method"},
+      {v:"toolkit",label:"Motion Advisor’s Citation Toolkit",short:"Citation Toolkit"}
       // used only when converting results saved before this question branched ("Every citation pulled, read, and KeyCited or Shepardized")
       {v:"legacy",label:"Pulled, read and KeyCited or Shepardized",short:"KeyCite or Shepard’s",citator:true,hidden:true}]},
      {id:"citeScope",type:"choice",text:"How many citations do you check?",options:[
