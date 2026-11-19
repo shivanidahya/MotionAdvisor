@@ -231,7 +231,9 @@ test("15. Massachusetts court follow-up: required for MA state court, cleared ot
   assert.equal(q.followUp.options.length, 10);
   const base = Object.assign({}, SOLO);
   assert.equal(E.answered(q, Object.assign({}, base, { maCourt: undefined })), false, "court required");
-  ["dmass", "fed", "state"].forEach((j) => assert.equal(E.answered(q, { jurisdiction: j }), true));
+  ["fed", "state"].forEach((j) => assert.equal(E.answered(q, { jurisdiction: j }), true));
+  assert.deepEqual(q.options.map((o) => o.v), ["ma", "fed", "state"]);
+  assert.equal(E.normalize({ jurisdiction: "dmass" }).jurisdiction, "fed", "old D. Mass. answers become Federal court");
   assert.deepEqual(E.normalize({ jurisdiction: "fed", maCourt: "sjc" }), { jurisdiction: "fed" }, "switching away clears the court");
   const idx = q.followUp.options.map((o) => E.assess(Object.assign({}, base, { maCourt: o.v })).index);
   assert.ok(idx.every((i) => i === E.assess(base).index), "no court changes the score");
@@ -243,5 +245,5 @@ test("15. Massachusetts court follow-up: required for MA state court, cleared ot
   assert.ok(juris("bls").links.some((l) => /business-litigation-session-bench-notes/.test(l.url)));
   ["sjc", "appeals"].forEach((ct) => assert.ok(juris(ct).notes.some((n) => /Rules of Appellate Procedure/.test(n))));
   assert.ok(!juris("superior").notes.some((n) => /Appellate/.test(n)));
-  assert.equal(E.assess(TWO).factors.find((f) => f.id === "juris").links, undefined, "D. Mass. gets no Massachusetts state-court extras");
+  assert.equal(E.assess(TWO).factors.find((f) => f.id === "juris").links, undefined, "federal court gets no Massachusetts state-court extras");
 });

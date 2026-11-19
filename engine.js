@@ -92,6 +92,7 @@
     function normalize(a) {
       var b = Object.assign({}, a);
       QUESTIONS.forEach(function (q) { if (q.multi && b[q.id] != null && !Array.isArray(b[q.id])) b[q.id] = [b[q.id]]; });
+      QUESTIONS.forEach(function (q) { if (q.legacyValues && b[q.id] in q.legacyValues) b[q.id] = q.legacyValues[b[q.id]]; });
       QUESTIONS.forEach(function (q) { if (q.followUp && b[q.id] !== q.followUp.showFor) delete b[q.followUp.id]; });
       /* results saved before a question branched: convert the old single answer to the branch answers */
       BRANCHES.forEach(function (q) {

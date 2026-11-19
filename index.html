@@ -1458,7 +1458,7 @@ function hintText(o){if(!o.examples||!o.examples.length)return o.hint;const e=o.
 function radioGroup(id,opts,val,label){return `<div class="opts" role="radiogroup" aria-labelledby="${label}">${opts.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${id}" id="q-${id}-${o.v}" value="${o.v}" data-q="${id}" ${val===o.v?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`}
 function checkGroup(id,opts,vals,label,hint){return `<div class="opts" role="group" aria-labelledby="${label}" aria-describedby="${hint}">${opts.filter(o=>!o.hidden).map(o=>`<label class="opt ${vals.includes(o.v)?"sel":""}"><input type="checkbox" name="q-${id}" id="q-${id}-${o.v}" value="${o.v}" data-q="${id}" ${vals.includes(o.v)?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`}
 function followHTML(f){const A=adv.answers,lab="qt-"+f.id;
-  return `<div class="q sub"><div class="q-text" id="${lab}">${esc(f.text)}<span class="req" aria-label="required">*</span></div>${f.type==="multi"?`<p class="q-hint" id="qh-${f.id}">${esc(f.hint||"Select all that apply")}</p>`+checkGroup(f.id,f.options,Array.isArray(A[f.id])?A[f.id]:[],lab,"qh-"+f.id):radioGroup(f.id,f.options,A[f.id],lab)}${f.learn?`<div class="learn-tip" id="learn-${f.id}" aria-live="polite">${learnShows(f,A[f.id])?learnHTML(f):""}</div>`:""}</div>`}
+  return `<div class="q sub"><div class="q-text" id="${lab}">${esc(f.text)}<span class="req" aria-label="required">*</span></div>${f.type==="multi"?`<p class="q-hint" id="qh-${f.id}">${esc(f.hint||"Select all that apply")}</p>`+checkGroup(f.id,f.options,Array.isArray(A[f.id])?A[f.id]:[],lab,"qh-"+f.id):radioGroup(f.id,f.options,A[f.id],lab)}${f.learn?`<div class="learn-tip" id="learn-${f.id}" aria-live="polite">${learnShows(f,A[f.id])?learnHTML(f,learnEntry(f,A[f.id])):""}</div>`:""}</div>`}
 function ideaHTML(it){if(!it.link||!it.text.includes(it.link.match))return esc(it.text);const L=it.link,i=it.text.indexOf(L.match);
   return esc(it.text.slice(0,i))+`<a href="${esc(L.href)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.match)}<span aria-hidden="true"> ↗</span></a>`+esc(it.text.slice(i+L.match.length))}
 function ideasPanelHTML(q){return `<div class="ideas" id="ideas-${q.id}"><div class="ideas-h"><h4 id="ideas-t-${q.id}">${esc(q.ideas.title)}</h4><button type="button" class="btn sm ghost" id="ideas-hide-${q.id}" aria-controls="ideas-list-${q.id}" aria-expanded="true">Hide ideas</button></div><ol id="ideas-list-${q.id}" aria-labelledby="ideas-t-${q.id}">${q.ideas.items.map(it=>`<li>${ideaHTML(it)}</li>`).join("")}</ol></div>`}
@@ -1514,7 +1514,7 @@ function questionHTML(q){
     control=`<div class="opts" role="radiogroup" aria-labelledby="qt-${q.id}">${q.options.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${val===o.v?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(hintText(o))}</small>`:""}</span></label>`).join("")}</div>`;
   }
   if(q.followUp)control+=followUpHTML(q);
-  return `<div class="q"><div class="q-text" id="qt-${q.id}">${qTextHTML(q)}<span class="req" aria-label="required">*</span></div>${q.multi?`<p class="q-hint" id="qh-${q.id}">${esc(q.hint||"Select all that apply")}</p>`:""}<details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}${q.learn?`<div class="learn-tip" id="learn-${q.id}" aria-live="polite">${learnShows(q,val)?learnHTML(q):""}</div>`:""}${q.id===CFG.scanner.question?scanPanelHTML(val===CFG.scanner.showFor):""}</div>`;
+  return `<div class="q"><div class="q-text" id="qt-${q.id}">${qTextHTML(q)}<span class="req" aria-label="required">*</span></div>${q.multi?`<p class="q-hint" id="qh-${q.id}">${esc(q.hint||"Select all that apply")}</p>`:""}<details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}${q.learn?`<div class="learn-tip" id="learn-${q.id}" aria-live="polite">${learnShows(q,val)?learnHTML(q,learnEntry(q,val)):""}</div>`:""}${q.id===CFG.scanner.question?scanPanelHTML(val===CFG.scanner.showFor):""}</div>`;
 }
 /* question text, with an optional document link (question config: textLink) */
 function qTextHTML(q){
@@ -1525,12 +1525,17 @@ function qTextHTML(q){
     pos=i+L.match.length});
   return out+esc(q.text.slice(pos))}
 /* a small learning link below the options (question config: learn) */
-function learnShows(q,v){return !!(q.learn&&v&&(Array.isArray(v)?v.some(x=>q.learn.showFor.includes(x)):q.learn.showFor.includes(v)))}
-function learnHTML(q,L){L=L||q.learn;return `<p class="learn-in"><span class="ic" aria-hidden="true">i</span><span>${esc(L.lead)} <a href="${esc(L.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.linkText)}<span aria-hidden="true"> ↗</span></a>${L.sub?`<span class="learn-sub">${esc(L.sub)}</span>`:""}</span></p>`}
+/* q.learn is one note or a list of notes, each for some answers (showFor) */
+function learnEntry(q,v){if(!q.learn||!v)return null;const L=Array.isArray(q.learn)?q.learn:[q.learn];return L.find(e=>Array.isArray(v)?v.some(x=>e.showFor.includes(x)):e.showFor.includes(v))||null}
+function learnShows(q,v){return !!learnEntry(q,v)}
+function learnHTML(q,L){L=L||learnEntry(q,adv.answers[q.id])||q.learn;const k=Array.isArray(q.learn)?q.learn.indexOf(L):0;
+  if(L.links)return `<div class="learn-in art-note" data-k="${k}"><span class="ic" aria-hidden="true">i</span><div><p>${esc(L.lead)}</p><ul>${L.links.map(x=>`<li><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(x.ariaLabel)}">${esc(x.text)}<span aria-hidden="true"> ↗</span></a></li>`).join("")}</ul></div></div>`;
+  return `<p class="learn-in" data-k="${k}"><span class="ic" aria-hidden="true">i</span><span>${esc(L.lead)} <a href="${esc(L.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.linkText)}<span aria-hidden="true"> ↗</span></a>${L.sub?`<span class="learn-sub">${esc(L.sub)}</span>`:""}</span></p>`}
 function learnToggle(q,v){
-  const box=$("#learn-"+q.id);if(!box)return;const show=learnShows(q,v),cur=box.querySelector(".learn-in");
-  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if(show&&!cur){box.innerHTML=learnHTML(q);const el=box.firstElementChild;if(!still){el.classList.add("enter");requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove("enter")))}}
+  const box=$("#learn-"+q.id);if(!box)return;const E=learnEntry(q,v),show=!!E,cur=box.querySelector(".learn-in");
+  const still=matchMedia("(prefers-reduced-motion: reduce)").matches,k=String(Array.isArray(q.learn)?q.learn.indexOf(E):0);
+  const enter=()=>{box.innerHTML=learnHTML(q,E);const el=box.firstElementChild;if(!still){el.classList.add("enter");requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove("enter")))}};
+  if(show&&(!cur||cur.dataset.k!==k))enter();
   else if(!show&&cur){if(still||cur.classList.contains("leave")){box.innerHTML="";return}cur.classList.add("leave");setTimeout(()=>{if(cur.parentNode&&cur.classList.contains("leave"))cur.remove()},260)}
   else if(show&&cur&&cur.classList.contains("leave"))cur.classList.remove("leave")}
 /* answer text for a question; "select all" questions list every choice */
@@ -1706,7 +1711,7 @@ function cap(t){return t.charAt(0).toUpperCase()+t.slice(1)}
 function checklistFor(A){const c=courtOf(A);return CHECKLIST.map(x=>x.startsWith("Standing-order AI disclosure")&&c?`${cap(c.name)}’s rules and the judge’s standing orders checked; AI disclosure or certification added, if required`:x)}
 const CHECKLIST=["Every case pulled from Westlaw, Lexis or an official source and read in full","Each pincite supports the sentence it follows","Every quotation compared word for word with the source","Each authority checked for negative history (KeyCite / Shepard’s)","Statutes and rules checked against the current version","Record citations match the actual exhibits and transcript pages","No client identifiers left in prompts, chat history or uploaded files","Standing-order AI disclosure or certification added, if required","Personal identifiers redacted (Fed. R. Civ. P. 5.2 / SJC Rule 1:24)","Signing attorney reviewed the final version"];
 function rulesFor(j,A){const out=rulesBase(j),q=QUESTIONS.find(x=>x.followUp&&x.followUp.showFor===j);
-  {const lq=QUESTIONS.find(x=>x.id==="jurisdiction");if(lq&&lq.learn&&learnShows(lq,j))out.push([lq.learn.linkText,lq.learn.rule,lq.learn.url])}
+  {const lq=QUESTIONS.find(x=>x.id==="jurisdiction"),E=lq&&learnEntry(lq,j);if(E){if(E.links)E.links.forEach(x=>out.push([x.text,x.rule,x.url]));else out.push([E.linkText,E.rule,E.url])}}
   if(q&&A){const F=q.followUp,c=ENG.followUpOpt(q,ENG.normalize(A));
     if(c&&c.appellate)out.splice(2,0,["Massachusetts Rules of Appellate Procedure",F.appellateNote]);
     if(c&&c.bls)out.push(["BLS Bench Notes on AI use",F.bls.text,F.bls.url]);
@@ -1716,7 +1721,6 @@ function rulesBase(j){
   const base=[["ABA Formal Opinion 512 (July 29, 2024)","Generative AI and the duties of competence, confidentiality, communication, candor, supervision and fees."],["Model Rules 1.1 (cmt. 8), 1.4, 1.5, 1.6, 3.3, 5.1, 5.3","The professional duties the questionnaire maps to."]];
   const m={
    ma:[["Mass. R. Prof. C. 1.1, 1.6, 3.3, 5.1, 5.3","Massachusetts versions of the competence, confidentiality, candor and supervision rules."],["Mass. R. Civ. P. 11","Signature certifies good ground to support the pleading or motion."],["Superior Court Rule 9A","Service-first motion practice and filing of the full package."],["SJC Rule 1:24","Redaction of personal identifying information in court filings."],["Smith v. Farwell (Mass. Super. Ct. 2024)","$2,000 sanction for AI-generated fictitious citations."]],
-   dmass:[["Fed. R. Civ. P. 11","Certification that legal contentions are warranted by existing law."],["Fed. R. Civ. P. 5.2","Privacy protection for filings: last four digits, birth year, minors’ initials."],["D. Mass. Local Rule 7.1","Conferral certification and memorandum requirements."],["Judge-specific session procedures","Check the assigned judge’s page for AI disclosure orders."],["Mass. R. Prof. C. (applies to D. Mass. practice)","D. Mass. Local Rule 83.6.1 adopts the Massachusetts Rules of Professional Conduct."]],
    fed:[["Fed. R. Civ. P. 11 and Fed. R. Civ. P. 5.2","Signature certification and privacy redactions."],["Local rules and judges’ standing orders","Many federal judges require AI-use certification."],["Mata v. Avianca, Inc., 678 F. Supp. 3d 443 (S.D.N.Y. 2023)","Sanctions for ChatGPT-fabricated cases."],["Park v. Kim, 91 F.4th 610 (2d Cir. 2024)","Referral for citing a nonexistent case."]],
    state:[["Your state’s Rules of Professional Conduct and bar AI opinions","Many state bars have issued their own generative-AI guidance."],["State analog to Rule 11","Signature and certification rule for filings."],["Court-level AI orders","Check state and local court administrative orders."]]};
   return base.concat(m[j]||[]);
@@ -1796,7 +1800,7 @@ function initStartAssessment(){
 }
 /* ---- Last run report on the home page (saved only in this browser) ---- */
 const LAST_KEY="motionAdvisor.lastReport";let lastMem=null;
-const JSHORT={ma:"Mass. state court",dmass:"D. Mass.",fed:"Federal court",state:"State court"};
+const JSHORT={ma:"Mass. state court",dmass:"Federal court",fed:"Federal court",state:"State court"};
 function saveLast(r){const rec={at:r.date.toISOString(),verdict:r.verdict,cls:r.cls,index:r.index,overrides:r.overrides.length,factors:r.factors.map(f=>({title:f.title,level:f.level,ratio:f.ratio})),answers:ENG.normalize(adv.answers)};lastMem=rec;try{localStorage.setItem(LAST_KEY,JSON.stringify(rec))}catch(e){}renderLastReport()}
 function loadLast(){try{const s=localStorage.getItem(LAST_KEY);if(s){const r=JSON.parse(s);if(r&&r.factors&&r.answers){r.answers=ENG.normalize(r.answers);return r}}}catch(e){}return lastMem}
 function clearLast(){lastMem=null;try{localStorage.removeItem(LAST_KEY)}catch(e){}renderLastReport();toast("Last report cleared from this browser.")}

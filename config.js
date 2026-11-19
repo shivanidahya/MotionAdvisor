@@ -180,14 +180,20 @@
     {v:"none",label:"No formal final review",score:6,note:"No final review means no one stands behind the AI output."}]}
  ]},
  {id:"juris",title:"Jurisdiction",weight:1,qs:[
-  {id:"jurisdiction",type:"select",text:"Where will the motion be filed?",why:"Rules on signatures, redaction and AI disclosure vary by court. The result lists the rules for your forum.",options:[
+  {id:"jurisdiction",type:"choice",text:"Where will the motion be filed?",why:"Rules on signatures, redaction and AI disclosure vary by court. The result lists the rules for your forum.",options:[
     {v:"ma",label:"Massachusetts state court",score:0,note:"Massachusetts state court."},
-    {v:"dmass",label:"U.S. District Court for the District of Massachusetts",score:0,note:"D. Mass. federal court."},
-    {v:"fed",label:"Another federal court",score:0,note:"Another federal court."},
+    {v:"fed",label:"Federal court",hint:"U.S. District Courts, Bankruptcy Courts, Courts of Appeals, U.S. Supreme Court",score:0,note:"Federal court."},
     {v:"state",label:"Another state court",score:0,note:"Another state court."}],
-   // a learning link for "Another state court"; it never changes the answer or the score
-   learn:{showFor:["state"],lead:"See how state courts are approaching AI:",linkText:"NCSC: AI and the state courts",url:"https://www.ncsc.org/resources-courts/ai-state-courts",ariaLabel:"National Center for State Courts: AI and the state courts (opens in new tab)",
-     rule:"National Center for State Courts resources on how state courts are handling AI, including court rules and orders."},
+   // answers saved before the two federal options merged
+   legacyValues:{dmass:"fed"},
+   // learning notes by answer; they never change the answer or the score. Also listed in the report's rules to check.
+   learn:[
+    {showFor:["fed"],lead:"Federal AI rules vary by court and by judge. Many judges have issued their own standing orders. Use these trackers to check yours:",
+     links:[
+      {text:"Law360 AI Tracker",url:"https://www.law360.com/pulse/ai-tracker",ariaLabel:"Law360 AI Tracker (opens in new tab)",rule:"Tracks federal judges’ orders and court rules on AI use."},
+      {text:"Legal AI Governance: Court Orders Tracker",url:"https://legalaigovernance.com/tracker/court-orders/",ariaLabel:"Legal AI Governance: Court Orders Tracker (opens in new tab)",rule:"Tracks court orders and standing orders on AI use."}]},
+    {showFor:["state"],lead:"See how state courts are approaching AI:",linkText:"NCSC: AI and the state courts",url:"https://www.ncsc.org/resources-courts/ai-state-courts",ariaLabel:"National Center for State Courts: AI and the state courts (opens in new tab)",
+     rule:"National Center for State Courts resources on how state courts are handling AI, including court rules and orders."}],
    /* Follow-up for Massachusetts state court. The court choice never changes the score. */
    followUp:{showFor:"ma",id:"maCourt",label:"Which Massachusetts court?",placeholder:"Choose a court…",
     options:[ // name: used in sentences ("Check the Superior Court’s rules…")
@@ -235,7 +241,7 @@
       /* Test scenarios from the project plan's testing section. */
       personas: [
  {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeProcess:"yes",citeMethods:["keycite","pincites"],citeScope:"every",finalReview:"signer",jurisdiction:"ma",maCourt:"district",standing:"none",informed:"will",billing:"actual"}},
- {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeProcess:"yes",citeMethods:["shepards","spreadsheet","second"],citeScope:"every",finalReview:"signer",jurisdiction:"dmass",standing:"unknown",informed:"consent",billing:"actual"}},
+ {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeProcess:"yes",citeMethods:["shepards","spreadsheet","second"],citeScope:"every",finalReview:"signer",jurisdiction:"fed",standing:"unknown",informed:"consent",billing:"actual"}},
  {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:["research"],tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeProcess:"yes",citeMethods:["pincites"],citeScope:"some",finalReview:"other",jurisdiction:"ma",maCourt:"superior",standing:"unknown",informed:"no",billing:"saved"}}
 ]
     },
