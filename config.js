@@ -117,7 +117,7 @@
     {v:"partly",label:"Partly",score:1,note:"Finish reading the guidance before relying on AI for this motion."},
     {v:"no",label:"No",score:2,note:"Read ABA 512 and your bar’s guidance before you start."}],
    // links never change the answer or the score
-   textLink:{match:"ABA Formal Op. 512",href:"docs/aba-formal-opinion-512.pdf",badge:"(PDF)",ariaLabel:"ABA Formal Opinion 512 (PDF, opens in new tab)"},
+   textLink:{match:"ABA Formal Opinion 512",href:"docs/aba-formal-opinion-512.pdf",badge:"(PDF)",ariaLabel:"ABA Formal Opinion 512 (PDF, opens in new tab)"},
    learn:{showFor:["partly","no"],lead:"Haven’t read it yet?",linkText:"See the ABA’s summary of its first AI ethics guidance",url:"https://www.americanbar.org/news/abanews/aba-news-archives/2024/07/aba-issues-first-ethics-guidance-ai-tools/",ariaLabel:"ABA summary of its first AI ethics guidance (opens in new tab)"}}
  ]},
  {id:"verify",title:"Verification",weight:1.5,qs:[
