@@ -23,6 +23,8 @@
       if ("equals" in c) return v === c.equals;
       if ("in" in c) return c.in.indexOf(v) >= 0;
       if ("notEquals" in c) return v !== c.notEquals;
+      if ("hasAny" in c) return asList(v).some(function (x) { return c.hasAny.indexOf(x) >= 0; });
+      if ("hasNone" in c) return !asList(v).some(function (x) { return c.hasNone.indexOf(x) >= 0; });
       return false;
     }
     function optOf(qid, v) { var q = QBY[qid]; if (!q) return null; for (var i = 0; i < q.options.length; i++) if (q.options[i].v === v) return q.options[i]; return null; }
@@ -41,10 +43,52 @@
     }
     function maxScore(q) { return Math.max.apply(null, q.options.map(function (o) { return o.score; })); }
     function levelOf(ratio) { return ratio < AS.levelCuts.moderate ? "Low" : ratio < AS.levelCuts.high ? "Moderate" : "High"; }
-    function answered(q, a) { return q.multi ? asList(a[q.id]).length > 0 : a[q.id] != null; }
+    /* ---- Branching questions (type "branch"): a main yes/no question plus follow-ups for each answer.
+       The scored value (a[q.id]) is derived from the branch answers by q.levelRules. ---- */
+    var BRANCHES = QUESTIONS.filter(function (q) { return q.type === "branch"; });
+    function branchFields(q, which) { return (q.follow[which] || []).map(function (f) { return f.id; }); }
+    function allBranchFields(q) { var out = [q.main.id]; Object.keys(q.follow).forEach(function (k) { out = out.concat(branchFields(q, k)); }); return out; }
+    function branchComplete(q, a) {
+      var m = a[q.main.id]; if (m == null) return false;
+      return (q.follow[m] || []).every(function (f) { return f.type === "multi" ? asList(a[f.id]).length > 0 : a[f.id] != null; });
+    }
+    function branchLevel(q, a) {
+      if (!branchComplete(q, a)) return undefined;
+      for (var i = 0; i < q.levelRules.length; i++) if (test(q.levelRules[i].when, a)) return q.levelRules[i].level;
+      return undefined;
+    }
+    function followOpt(q, fid, v) { var f = null; Object.keys(q.follow).forEach(function (k) { q.follow[k].forEach(function (x) { if (x.id === fid) f = x; }); }); if (!f) return null; for (var i = 0; i < f.options.length; i++) if (f.options[i].v === v) return f.options[i]; return null; }
+    /* One-line answer, e.g. "Yes. KeyCite, spreadsheet, second reviewer. Every citation." */
+    function branchSummary(q, a) {
+      var m = a[q.main.id]; if (m == null) return "";
+      var main = q.main.options.filter(function (o) { return o.v === m; })[0], parts = [main ? main.label : m];
+      (q.follow[m] || []).forEach(function (f) {
+        if (f.id === "citeIdeas") return; // wanting ideas isn't part of the answer
+        var labs = asList(a[f.id]).map(function (v) { var o = followOpt(q, f.id, v); return o ? (o.short || o.label) : ""; }).filter(Boolean);
+        if (labs.length) { var t = labs.join(", "); parts.push(t.charAt(0).toUpperCase() + t.slice(1)); }
+      });
+      return parts.join(". ") + ".";
+    }
+    function branchMethodsNote(q, a) {
+      var f = (q.follow[a[q.main.id]] || []).filter(function (x) { return x.type === "multi"; })[0]; if (!f) return "";
+      var labs = asList(a[f.id]).map(function (v) { var o = followOpt(q, f.id, v); return o ? o.label : ""; }).filter(Boolean);
+      return labs.length ? " Methods you use: " + labs.join("; ") + "." : "";
+    }
+    function answered(q, a) { if (q.type === "branch") return branchComplete(q, a) || (a[q.main.id] == null && a[q.id] != null); return q.multi ? asList(a[q.id]).length > 0 : a[q.id] != null; }
     function complete(a) { return QUESTIONS.every(function (q) { return answered(q, a); }); }
     /* Older saved results stored one task as a string; turn it into a one-item list. */
-    function normalize(a) { var b = Object.assign({}, a); QUESTIONS.forEach(function (q) { if (q.multi && b[q.id] != null && !Array.isArray(b[q.id])) b[q.id] = [b[q.id]]; }); return b; }
+    function normalize(a) {
+      var b = Object.assign({}, a);
+      QUESTIONS.forEach(function (q) { if (q.multi && b[q.id] != null && !Array.isArray(b[q.id])) b[q.id] = [b[q.id]]; });
+      /* results saved before a question branched: convert the old single answer to the branch answers */
+      BRANCHES.forEach(function (q) {
+        if (b[q.main.id] == null && b[q.id] != null && q.legacy && q.legacy[b[q.id]]) Object.assign(b, JSON.parse(JSON.stringify(q.legacy[b[q.id]])));
+        if (b[q.main.id] != null) delete b[q.id];
+      });
+      return b;
+    }
+    /* answers ready for scoring: normalized, with each branch's scored level filled in */
+    function prepare(a) { var b = normalize(a || {}); BRANCHES.forEach(function (q) { var l = branchLevel(q, b); if (l) b[q.id] = l; else delete b[q.id]; }); return b; }
     function defaultWeights() { var w = {}; AS.sections.forEach(function (s) { w[s.id] = s.weight; }); return w; }
 
     /* Section points for a set of answers; mod lets the Options Report re-score. */
@@ -65,6 +109,11 @@
           }
           var o = optOf(q.id, v);
           var sc1 = (o ? o.score : 0) * mult;
+          if (q.type === "branch") {
+            sp += sc1; sm += maxScore(q);
+            lines.push({ q: q.id, question: q.text, branch: true, answer: branchSummary(q, a), note: o ? o.note + branchMethodsNote(q, a) : "", score: sc1, mult: mult, replaced: false, asAnswer: v });
+            return;
+          }
           sp += sc1; sm += maxScore(q);
           lines.push({ q: q.id, question: q.text, answer: o ? o.label : "", note: o ? o.note : "", score: sc1, mult: mult, replaced: !!(mod.answers && q.id in mod.answers && mod.answers[q.id] !== a[q.id]), asAnswer: v });
         });
@@ -77,10 +126,11 @@
       secs.forEach(function (s) { var w = weights && s.id in weights ? weights[s.id] : s.weight; tot += s.points * w; max += s.max * w; });
       return max ? Math.round(tot / max * 100) : 0;
     }
-    function stops(a) { return AS.stops.filter(function (s) { return test(s.when, a); }); }
+    function stops(a) { a = prepare(a); return AS.stops.filter(function (s) { return test(s.when, a); }); }
 
     /* The main result, identical to the original assessment's compute(). */
     function assess(a) {
+      a = prepare(a);
       var secs = sectionScores(a), index = indexOf(secs), st = stops(a), v;
       if (st.length) v = AS.stopVerdict;
       else for (var i = 0; i < AS.verdicts.length; i++) if (index <= AS.verdicts[i].max) { v = AS.verdicts[i]; break; }
@@ -98,6 +148,7 @@
     function bandOf(index) { for (var i = 0; i < OR.bands.length; i++) if (index <= OR.bands[i].max) return OR.bands[i].label; return "High"; }
 
     function optionsReport(a, weights) {
+      a = prepare(a);
       weights = weights || defaultWeights();
       var st = stops(a), stopIds = st.map(function (s) { return s.id; });
       var options = OR.options.map(function (o) {
@@ -267,7 +318,8 @@
 
     return {
       scanDraft: scanDraft, normalizeText: normalizeText,
-      config: cfg, questions: QUESTIONS, optOf: optOf, complete: complete, answered: answered, normalize: normalize, assess: assess,
+      config: cfg, questions: QUESTIONS, optOf: optOf, complete: complete, answered: answered, normalize: normalize, prepare: prepare, assess: assess,
+      branchSummary: branchSummary, branchComplete: branchComplete, branchLevel: branchLevel, branchFields: branchFields, allBranchFields: allBranchFields,
       stops: stops, optionsReport: optionsReport, defaultWeights: defaultWeights, levelOf: levelOf, bandOf: bandOf
     };
   }

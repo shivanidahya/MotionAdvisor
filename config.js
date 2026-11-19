@@ -123,10 +123,54 @@
    learn:{showFor:["partly","no"],lead:"Haven’t read it yet?",linkText:"See the ABA’s summary of its first AI ethics guidance",url:"https://www.americanbar.org/news/abanews/aba-news-archives/2024/07/aba-issues-first-ethics-guidance-ai-tools/",ariaLabel:"ABA summary of its first AI ethics guidance (opens in new tab)"}}
  ]},
  {id:"verify",title:"Verification",weight:1.5,qs:[
-  {id:"citeCheck",type:"choice",text:"What is your process for checking citations in the motion?",why:"Every sanction decision on AI citations comes down to this step. Rule 11 and Rule 3.3 make the signer responsible for every authority.",options:[
-    {v:"full",label:"Every citation pulled, read, and KeyCited or Shepardized",score:0,note:"Full citation verification is in place."},
-    {v:"spot",label:"Spot-check some citations",score:4,note:"Spot-checking is how fabricated cases slipped through in Mata and Smith v. Farwell."},
-    {v:"none",label:"No formal process",score:6,note:"Without a citation check, AI drafting should not proceed."}]},
+  /* Citation checking: a branching question.
+     The user answers "Do you have a process?" (citeProcess) and the follow-ups for that branch.
+     The score comes from the internal risk levels in `options`, chosen by `levelRules`
+     (first rule that matches wins). The "no-cite-check" automatic stop fires on level "none". */
+  {id:"citeCheck",type:"branch",text:"Do you have a process for checking citations?",why:"Every sanction decision on AI citations comes down to this step. Rule 11 and Rule 3.3 make the signer responsible for every authority. A citator (KeyCite, Shepard’s or BCite) shows whether a case is still good law.",
+   options:[ // internal risk levels (not shown as choices)
+    {v:"full",label:"Checks every citation, using a citator",score:0,note:"Full citation verification is in place."},             // = old "Every citation pulled, read, and KeyCited or Shepardized"
+    {v:"nocitator",label:"Checks every citation, without a citator",score:4,note:"You check every citation but don’t use a citator (KeyCite, Shepard’s or BCite). A case can exist and still be bad law, so this is scored the same as a spot-check."}, // adjustment: same score as a spot-check
+    {v:"spot",label:"Spot-checks some citations",score:4,note:"Spot-checking is how fabricated cases slipped through in Mata and Smith v. Farwell."}, // = old "Spot-check some citations"
+    {v:"none",label:"No citation-checking process",score:6,note:"Without a citation check, AI drafting should not proceed."}], // = old "No formal process"; triggers the automatic stop
+   main:{id:"citeProcess",options:[{v:"yes",label:"Yes"},{v:"no",label:"No"}]},
+   follow:{
+    yes:[
+     {id:"citeMethods",type:"multi",text:"Which methods do you use?",hint:"Select all that apply",options:[
+      {v:"keycite",label:"KeyCite (Westlaw)",short:"KeyCite",citator:true},
+      {v:"shepards",label:"Shepard’s (Lexis)",short:"Shepard’s",citator:true},
+      {v:"bcite",label:"BCite (Bloomberg Law)",short:"BCite",citator:true},
+      {v:"read",label:"Reading the full opinion for each case",short:"reading each opinion"},
+      {v:"pincites",label:"Checking pincites and quotations against the source",short:"pincite and quotation check"},
+      {v:"spreadsheet",label:"Tracking citations in a spreadsheet (Excel, Google Sheets)",short:"spreadsheet"},
+      {v:"checklist",label:"Notes or a checklist",short:"checklist"},
+      {v:"second",label:"A second person reviews the citations",short:"second reviewer"},
+      {v:"toolkit",label:"Motion Advisor’s Citation Toolkit",short:"Citation Toolkit"},
+      {v:"other",label:"Other method",short:"other method"},
+      // used only when converting results saved before this question branched ("Every citation pulled, read, and KeyCited or Shepardized")
+      {v:"legacy",label:"Pulled, read and KeyCited or Shepardized",short:"KeyCite or Shepard’s",citator:true,hidden:true}]},
+     {id:"citeScope",type:"choice",text:"How many citations do you check?",options:[
+      {v:"every",label:"Every citation",short:"Every citation"},
+      {v:"some",label:"Some citations (spot-check)",short:"Some citations (spot-check)"}]}],
+    no:[
+     {id:"citeIdeas",type:"choice",text:"Would you like some ideas for checking citations?",options:[
+      {v:"yes",label:"Yes, show me ideas"},
+      {v:"no",label:"No, continue"}]}]},
+   // Wanting ideas never changes the score or removes the stop.
+   levelRules:[
+    {when:{field:"citeProcess",equals:"no"},level:"none"},
+    {when:{all:[{field:"citeProcess",equals:"yes"},{field:"citeScope",equals:"some"}]},level:"spot"},
+    {when:{all:[{field:"citeProcess",equals:"yes"},{field:"citeScope",equals:"every"},{field:"citeMethods",hasNone:["keycite","shepards","bcite","legacy"]}]},level:"nocitator"},
+    {when:{all:[{field:"citeProcess",equals:"yes"},{field:"citeScope",equals:"every"}]},level:"full"}],
+   // results saved before the question branched
+   legacy:{full:{citeProcess:"yes",citeMethods:["legacy"],citeScope:"every"},spot:{citeProcess:"yes",citeMethods:["legacy"],citeScope:"some"},none:{citeProcess:"no",citeIdeas:"no"}},
+   ideas:{title:"Ideas for checking citations",items:[
+    {text:"Pull and read every case you cite; don’t rely on summaries or AI descriptions."},
+    {text:"Run each case through KeyCite, Shepard’s or BCite to check that it’s still good law."},
+    {text:"Confirm every pincite and quotation matches the source word for word."},
+    {text:"Track each citation and its status in a simple spreadsheet."},
+    {text:"Have a second person check the citations before filing."},
+    {text:"Run your draft through Motion Advisor’s Citation Toolkit to pull out every citation.",link:{match:"Citation Toolkit",href:"index.html#citations",ariaLabel:"Citation Toolkit (opens in new tab)"}}]}},
   {id:"finalReview",type:"choice",text:"Who does the final review before filing?",why:"The attorney who signs certifies the filing under Rule 11. Supervisors are responsible for work they delegate (Rules 5.1, 5.3).",options:[
     {v:"signer",label:"The signing attorney reviews the entire motion",score:0,note:"The signing attorney reviews the whole filing."},
     {v:"other",label:"Another attorney or supervised staff reviews it",score:2,note:"Review by someone other than the signer still leaves the signer responsible."},
@@ -159,9 +203,9 @@
 
       /* Test scenarios from the project plan's testing section. */
       personas: [
- {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeCheck:"full",finalReview:"signer",jurisdiction:"ma",standing:"none",informed:"will",billing:"actual"}},
- {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeCheck:"full",finalReview:"signer",jurisdiction:"dmass",standing:"unknown",informed:"consent",billing:"actual"}},
- {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:["research"],tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeCheck:"spot",finalReview:"other",jurisdiction:"ma",standing:"unknown",informed:"no",billing:"saved"}}
+ {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeProcess:"yes",citeMethods:["keycite","read","pincites"],citeScope:"every",finalReview:"signer",jurisdiction:"ma",standing:"none",informed:"will",billing:"actual"}},
+ {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeProcess:"yes",citeMethods:["shepards","read","spreadsheet","second"],citeScope:"every",finalReview:"signer",jurisdiction:"dmass",standing:"unknown",informed:"consent",billing:"actual"}},
+ {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:["research"],tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeProcess:"yes",citeMethods:["read"],citeScope:"some",finalReview:"other",jurisdiction:"ma",standing:"unknown",informed:"no",billing:"saved"}}
 ]
     },
 

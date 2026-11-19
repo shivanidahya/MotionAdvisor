@@ -14,13 +14,16 @@ const ids = (list) => list.map((o) => o.id);
 test("1. One selected task scores exactly as the original single-choice version did (personas + 3,000 random answer sets; old saved strings too)", () => {
   const sets = CONFIG.assessment.personas.map((p) => p.a);
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  for (let i = 0; i < 3000; i++) { const a = {}; CONFIG.assessment.sections.forEach((s) => s.qs.forEach((q) => { a[q.id] = q.options[Math.floor(rnd() * q.options.length)].v; })); sets.push(a); }
+  // the citation question now branches; old saved answers ("full", "spot", "none") convert to the branch answers
+  const LEGACY = { citeCheck: ["full", "spot", "none"] };
+  for (let i = 0; i < 3000; i++) { const a = {}; CONFIG.assessment.sections.forEach((s) => s.qs.forEach((q) => { const vs = LEGACY[q.id] || q.options.map((o) => o.v); a[q.id] = vs[Math.floor(rnd() * vs.length)]; })); sets.push(a); }
   sets.forEach((a0) => {
     // the original took one task; the new version takes a list. One selection must score the same.
     const single = Object.assign({}, a0, { aiTask: Array.isArray(a0.aiTask) ? a0.aiTask[0] : a0.aiTask });
+    if (single.citeProcess) { single.citeCheck = E.prepare(single).citeCheck; delete single.citeProcess; delete single.citeMethods; delete single.citeScope; delete single.citeIdeas; }
     const listed = Object.assign({}, single, { aiTask: [single.aiTask] });
     ORIGINAL.adv.answers = single; const o = ORIGINAL.compute(); delete o.date;
-    [listed, single].forEach((a) => { const e = E.assess(a); delete e.stopIds; e.factors.forEach((f) => delete f.id); assert.deepEqual(e, o); });
+    [listed, single].forEach((a) => { const e = E.assess(a); delete e.stopIds; e.factors.forEach((f) => { delete f.id; f.notes = f.notes.map((n) => n.replace(/ Methods you use: .*$/, "")); }); assert.deepEqual(e, o); });
   });
 });
 
@@ -33,7 +36,7 @@ test("2. Persona results", () => {
 });
 
 test("3. Every automatic stop forces Not recommended and blocks the configured options", () => {
-  const cases = { "no-cite-check": { citeCheck: "none" }, "no-final-review": { finalReview: "none" }, "client-info-unsafe-tool": { clientInfo: "limited", tool: "consumer" },
+  const cases = { "no-cite-check": { citeProcess: "no", citeIdeas: "no" }, "no-final-review": { finalReview: "none" }, "client-info-unsafe-tool": { clientInfo: "limited", tool: "consumer" },
     "client-info-no-safeguards": { clientInfo: "limited", safeguards: "none", tool: "legal" }, "privileged-no-client": { clientInfo: "substantial", informed: "no", tool: "legal" }, "court-restricts": { standing: "restricts" } };
   Object.entries(cases).forEach(([id, ch]) => {
     const a = Object.assign({}, SOLO, ch);
@@ -68,7 +71,7 @@ test("5. Bottom line: lowest-risk open AI option; Draft without AI when every AI
 
 test("6. Weights change the bars and the bottom line is recomputed; defaults equal the assessment weights", () => {
   assert.deepEqual(E.defaultWeights(), { task: 1, conf: 1.5, comp: 1, verify: 1.5, juris: 1, client: 1 });
-  const a = Object.assign({}, TWO, { citeCheck: "spot" });
+  const a = Object.assign({}, TWO, { citeScope: "some" });
   const base = E.optionsReport(a);
   const heavy = E.optionsReport(a, Object.assign(E.defaultWeights(), { comp: 3 }));
   assert.notEqual(heavy.options.find((o) => o.id === "format").index, base.options.find((o) => o.id === "format").index);
@@ -180,4 +183,40 @@ test("13. The scanner never changes the score", () => {
   const before = E.assess(Object.assign({}, TWO, { clientInfo: "unsure" }));
   E.scanDraft("SSN 123-45-6789 privileged");
   assert.deepEqual(E.assess(Object.assign({}, TWO, { clientInfo: "unsure" })), before);
+});
+
+test("14. Citation checking branches: Yes/No paths, the citator adjustment, the stop, completeness, summaries", () => {
+  const q = CONFIG.assessment.sections.find((s) => s.id === "verify").qs.find((x) => x.id === "citeCheck");
+  assert.equal(q.type, "branch"); assert.equal(CONFIG.assessment.sections.find((s) => s.id === "verify").weight, 1.5);
+  const base = Object.assign({}, TWO); ["citeProcess", "citeMethods", "citeScope", "citeIdeas"].forEach((k) => delete base[k]);
+  const run = (ch) => { const a = Object.assign({}, base, ch); return { a, r: E.assess(a), lvl: E.prepare(a).citeCheck }; };
+  const old = (v) => { ORIGINAL.adv.answers = Object.assign({}, base, { aiTask: base.aiTask[0], citeCheck: v }); return ORIGINAL.compute(); };
+  const every = run({ citeProcess: "yes", citeMethods: ["keycite", "spreadsheet", "second"], citeScope: "every" });
+  const some = run({ citeProcess: "yes", citeMethods: ["keycite"], citeScope: "some" });
+  const noCitator = run({ citeProcess: "yes", citeMethods: ["read", "pincites", "spreadsheet"], citeScope: "every" });
+  const noIdeas = run({ citeProcess: "no", citeIdeas: "yes" }), noCont = run({ citeProcess: "no", citeIdeas: "no" });
+  // levels and scores match the old answers
+  assert.equal(every.lvl, "full"); assert.equal(every.r.index, old("full").index);
+  assert.equal(some.lvl, "spot"); assert.equal(some.r.index, old("spot").index);
+  assert.equal(noCitator.lvl, "nocitator"); assert.equal(noCitator.r.index, old("spot").index, "every citation but no citator = moderate");
+  assert.equal(noCitator.r.factors[3].level, some.r.factors[3].level);
+  [noIdeas, noCont].forEach((x) => { assert.equal(x.lvl, "none"); assert.equal(x.r.index, old("none").index); assert.equal(x.r.verdict, "Not recommended"); assert.ok(x.r.stopIds.includes("no-cite-check")); });
+  assert.deepEqual(noIdeas.r, noCont.r, "wanting ideas changes nothing");
+  // any one citator counts
+  ["keycite", "shepards", "bcite"].forEach((m) => assert.equal(run({ citeProcess: "yes", citeMethods: ["read", m], citeScope: "every" }).lvl, "full"));
+  // completeness: Yes needs a method and a scope; No needs the ideas answer
+  [{ citeProcess: "yes" }, { citeProcess: "yes", citeMethods: ["keycite"] }, { citeProcess: "yes", citeScope: "every" }, { citeProcess: "yes", citeMethods: [], citeScope: "every" }, { citeProcess: "no" }, {}]
+    .forEach((ch) => assert.equal(E.answered(q, Object.assign({}, base, ch)), false, JSON.stringify(ch)));
+  [every.a, noIdeas.a].forEach((a) => assert.equal(E.answered(q, a), true));
+  // summaries and the Verification note name the methods
+  assert.equal(E.branchSummary(q, every.a), "Yes. KeyCite, spreadsheet, second reviewer. Every citation.");
+  assert.equal(E.branchSummary(q, noIdeas.a), "No.");
+  assert.match(every.r.factors[3].notes[0], /Methods you use: KeyCite \(Westlaw\); Tracking citations in a spreadsheet/);
+  assert.match(noCitator.r.factors[3].notes[0], /don’t use a citator/);
+  // personas keep their scores; old saved results convert
+  assert.deepEqual([E.assess(SOLO).index, E.assess(TWO).index, E.assess(NEW).index], [9, 21, 79]);
+  assert.deepEqual(E.normalize({ citeCheck: "none" }), { citeProcess: "no", citeIdeas: "no" });
+  assert.equal(E.prepare({ citeCheck: "full" }).citeCheck, "full");
+  // ideas are in the config
+  assert.equal(q.ideas.items.length, 6);
 });

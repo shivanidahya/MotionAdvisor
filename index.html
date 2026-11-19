@@ -964,6 +964,20 @@ body.modal-open{overflow:hidden}
 .info-note{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;font-size:.86rem;color:var(--muted)}
 .info-note .ic{flex-shrink:0;display:inline-grid;place-items:center;width:18px;height:18px;margin-top:1px;border-radius:50%;border:1.5px solid currentColor;font-family:var(--f-ui);font-size:.7rem;font-weight:700;font-style:italic}
 .learn-tip{margin:0}
+/* branching question */
+.branch{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .3s ease,opacity .25s ease}
+.branch.open{grid-template-rows:1fr;opacity:1}
+.branch-in{overflow:hidden;min-height:0}
+.branch.open .branch-in{overflow:visible}
+.q.sub{margin:14px 0 0 0;padding:4px 0 2px 16px;border-left:3px solid var(--sage)}
+.q.sub .q-text{font-size:.98rem}
+.ideas{margin:14px 0 2px 16px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.ideas-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.ideas h4{margin:0;font-size:1rem}
+.ideas ol{margin:0;padding-left:1.3em;display:grid;gap:6px;font-size:.92rem}
+.ideas a{color:var(--accent);font-weight:600;text-decoration:none}.ideas a:hover,.ideas a:focus-visible{text-decoration:underline}
+@media (max-width:560px){.q.sub{padding-left:10px}.ideas{margin-left:10px;padding:12px}}
+@media (prefers-reduced-motion:reduce){.branch{transition:none}}
 .q-text a.q-doc{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
 .q-text a.q-doc:hover,.q-text a.q-doc:focus-visible{text-decoration:underline;border-bottom-color:transparent}
 .q-doc-ic{display:inline-block;margin-left:.15em;font-size:.8em;font-weight:600}
@@ -1434,10 +1448,43 @@ function firstIncomplete(){for(let i=0;i<SECTIONS.length;i++)if(!sectionComplete
 /* option subtitle; "{examples}" is filled from the option's examples list in config.js */
 function hintText(o){if(!o.examples||!o.examples.length)return o.hint;const e=o.examples;
   const list=o.join==="or"&&e.length>1?e.slice(0,-1).join(", ")+" or "+e[e.length-1]:e.join(", ");return o.hint.replace("{examples}",list)}
+/* ---- Branching question (config type "branch"): main yes/no + follow-ups, ideas panel ---- */
+function radioGroup(id,opts,val,label){return `<div class="opts" role="radiogroup" aria-labelledby="${label}">${opts.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${id}" id="q-${id}-${o.v}" value="${o.v}" data-q="${id}" ${val===o.v?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`}
+function checkGroup(id,opts,vals,label,hint){return `<div class="opts" role="group" aria-labelledby="${label}" aria-describedby="${hint}">${opts.filter(o=>!o.hidden).map(o=>`<label class="opt ${vals.includes(o.v)?"sel":""}"><input type="checkbox" name="q-${id}" id="q-${id}-${o.v}" value="${o.v}" data-q="${id}" ${vals.includes(o.v)?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`}
+function followHTML(f){const A=adv.answers,lab="qt-"+f.id;
+  return `<div class="q sub"><div class="q-text" id="${lab}">${esc(f.text)}<span class="req" aria-label="required">*</span></div>${f.type==="multi"?`<p class="q-hint" id="qh-${f.id}">${esc(f.hint||"Select all that apply")}</p>`+checkGroup(f.id,f.options,Array.isArray(A[f.id])?A[f.id]:[],lab,"qh-"+f.id):radioGroup(f.id,f.options,A[f.id],lab)}</div>`}
+function ideaHTML(it){if(!it.link||!it.text.includes(it.link.match))return esc(it.text);const L=it.link,i=it.text.indexOf(L.match);
+  return esc(it.text.slice(0,i))+`<a href="${esc(L.href)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.match)}<span aria-hidden="true"> ↗</span></a>`+esc(it.text.slice(i+L.match.length))}
+function ideasPanelHTML(q){return `<div class="ideas" id="ideas-${q.id}"><div class="ideas-h"><h4 id="ideas-t-${q.id}">${esc(q.ideas.title)}</h4><button type="button" class="btn sm ghost" id="ideas-hide-${q.id}" aria-controls="ideas-list-${q.id}" aria-expanded="true">Hide ideas</button></div><ol id="ideas-list-${q.id}" aria-labelledby="ideas-t-${q.id}">${q.ideas.items.map(it=>`<li>${ideaHTML(it)}</li>`).join("")}</ol></div>`}
+function branchHTML(q){const A=adv.answers,m=A[q.main.id];
+  const panel=(k,inner,open)=>`<div class="branch ${open?"open":""}" id="br-${q.id}-${k}" ${open?"":"inert"}><div class="branch-in">${inner}</div></div>`;
+  const no=(q.follow.no||[]).map(followHTML).join("")+(q.ideas?panel("ideas",ideasPanelHTML(q),m==="no"&&A.citeIdeas==="yes"):"");
+  return radioGroup(q.main.id,q.main.options,m,"qt-"+q.id)+
+    `<p class="sr-only" aria-live="polite" id="br-live-${q.id}"></p>`+
+    panel("yes",(q.follow.yes||[]).map(followHTML).join(""),m==="yes")+panel("no",no,m==="no")}
+function setBranchOpen(el,open){if(!el)return;el.classList.toggle("open",open);if(open)el.removeAttribute("inert");else el.setAttribute("inert","")}
+function branchUpdate(q,changed){
+  const A=adv.answers,m=A[q.main.id];
+  if(changed===q.main.id){
+    /* switching Yes/No clears the other branch's answers */
+    Object.keys(q.follow).filter(k=>k!==m).forEach(k=>ENG.branchFields(q,k).forEach(fid=>{delete A[fid];$$(`input[name="q-${fid}"]`).forEach(i=>{i.checked=false;i.closest(".opt").classList.remove("sel")})}));
+    Object.keys(q.follow).forEach(k=>setBranchOpen($(`#br-${q.id}-${k}`),k===m));
+    const n=(q.follow[m]||[]).length,live=$("#br-live-"+q.id);
+    if(live)live.textContent=n?`${n} follow-up question${n>1?"s":""} below.`:"";
+  }
+  const ideasOpen=m==="no"&&A.citeIdeas==="yes";
+  setBranchOpen($(`#br-${q.id}-ideas`),ideasOpen);
+  if(changed==="citeIdeas"){const live=$("#br-live-"+q.id);if(live)live.textContent=ideasOpen?`${q.ideas.title}: ${q.ideas.items.length} ideas shown below.`:"";
+    const l=$("#ideas-list-"+q.id),b=$("#ideas-hide-"+q.id);if(l&&ideasOpen){l.hidden=false;b.textContent="Hide ideas";b.setAttribute("aria-expanded","true")}}
+}
+function bindBranches(){
+  QUESTIONS.filter(q=>q.type==="branch").forEach(q=>{const b=$("#ideas-hide-"+q.id);if(!b)return;
+    b.addEventListener("click",()=>{const l=$("#ideas-list-"+q.id),hide=!l.hidden;l.hidden=hide;b.textContent=hide?"Show ideas":"Hide ideas";b.setAttribute("aria-expanded",String(!hide))})})}
 function questionHTML(q){
   const val=adv.answers[q.id];
   let control;
-  if(q.type==="select"){
+  if(q.type==="branch"){control=branchHTML(q)}
+  else if(q.type==="select"){
     control=`<select class="field" id="q-${q.id}" data-q="${q.id}"><option value="">Choose one…</option>${q.options.map(o=>`<option value="${o.v}" ${val===o.v?"selected":""}>${esc(o.label)}</option>`).join("")}</select>`;
   }else if(q.multi){
     const vals=Array.isArray(val)?val:(val!=null?[val]:[]);
@@ -1465,7 +1512,7 @@ function learnToggle(q,v){
   else if(!show&&cur){if(still||cur.classList.contains("leave")){box.innerHTML="";return}cur.classList.add("leave");setTimeout(()=>{if(cur.parentNode&&cur.classList.contains("leave"))cur.remove()},260)}
   else if(show&&cur&&cur.classList.contains("leave"))cur.classList.remove("leave")}
 /* answer text for a question; "select all" questions list every choice */
-function answerLabels(q,v){return (Array.isArray(v)?v:[v]).map(x=>{const o=optOf(q.id,x);return o?o.label:""}).filter(Boolean)}
+function answerLabels(q,v,A){if(q.type==="branch"){const s=ENG.branchSummary(q,ENG.normalize(A||adv.answers));return s?[s]:[]}return (Array.isArray(v)?v:[v]).map(x=>{const o=optOf(q.id,x);return o?o.label:""}).filter(Boolean)}
 function answerHTML(q,v){const l=answerLabels(q,v);return q.multi&&l.length>1?`<ul class="ans-list">${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:esc(l.join(""))}
 function reviewHTML(){
   return `<div class="eyebrow">Before your result</div><h2 style="font-size:1.9rem;margin:6px 0 14px">Review your answers</h2>`+
@@ -1578,7 +1625,7 @@ function bindScanner(){
 /* leaving the assessment page clears the draft too */
 window.addEventListener("hashchange",()=>{if(location.hash!=="#advisor")scanClear()});
 function bindSteps(){
-  bindScanner();
+  bindScanner();bindBranches();
   $$("[data-q]").forEach(el=>el.addEventListener("change",()=>{
     if(el.type==="checkbox"){const vals=$$(`input[name="${el.name}"]`).filter(c=>c.checked).map(c=>c.value);
       if(vals.length)adv.answers[el.dataset.q]=vals;else delete adv.answers[el.dataset.q];
@@ -1586,6 +1633,7 @@ function bindSteps(){
     else{adv.answers[el.dataset.q]=el.value||undefined; if(!el.value)delete adv.answers[el.dataset.q]}
     if(el.type==="radio"){$$(`input[name="${el.name}"]`).forEach(r=>r.closest(".opt").classList.toggle("sel",r.checked))}
     if(el.dataset.q===CFG.scanner.question)scanToggle(el.value===CFG.scanner.showFor);
+    QUESTIONS.filter(q=>q.type==="branch"&&ENG.allBranchFields(q).includes(el.dataset.q)).forEach(q=>branchUpdate(q,el.dataset.q));
     {const qq=CFG.assessment.sections.flatMap(s=>s.qs).find(x=>x.id===el.dataset.q);if(qq&&qq.learn)learnToggle(qq,el.value)}
     if(adv.showErr&&sectionComplete(adv.step)){const e=$(".err");if(e)e.remove()}
   }));
@@ -1616,7 +1664,10 @@ function workflow(A){
     research:"Do not use general AI to find authority. Research in Westlaw, Lexis, Fastcase or a court database; use AI only to explain concepts."};
   const tasks=Array.isArray(A.aiTask)?A.aiTask:[A.aiTask];
   SECTIONS[0].qs.find(q=>q.id==="aiTask").options.forEach(o=>{if(tasks.includes(o.v))steps.push(t[o.v])});
-  steps.push("Treat every citation as unverified until pulled, read and checked for negative history. Run the draft through the Citation Toolkit.");
+  const CQ=QUESTIONS.find(q=>q.id==="citeCheck"),CL=ENG.prepare(A).citeCheck;
+  if(CL==="none"&&CQ&&CQ.ideas){steps.push("Set up a citation check before you file. Ideas:");CQ.ideas.items.forEach((it,i)=>steps.push("Citation idea "+(i+1)+": "+it.text))}
+  else{if(CL==="nocitator")steps.push("Add a citator check (KeyCite, Shepard’s or BCite) for every case: a case can exist and still be bad law.");
+    steps.push("Treat every citation as unverified until pulled, read and checked for negative history. Run the draft through the Citation Toolkit.")}
   steps.push(A.finalReview==="signer"?"The signing attorney reads the entire final motion line by line before filing.":"Make the signing attorney, not the drafter, read the entire final motion before filing (Rules 5.1, 5.3; Fed. R. Civ. P. 11).");
   steps.push(A.standing==="none"?"Re-check the judge’s standing orders the week you file; they change.":"Check the judge’s standing orders and add any required AI disclosure or certification.");
   steps.push("Redact personal identifiers under Fed. R. Civ. P. 5.2 or SJC Rule 1:24 before filing.");
@@ -1756,7 +1807,7 @@ function makePDF(r){
   h("Rules and authorities to check");
   rulesFor(A.jurisdiction).forEach(([a,b])=>{text(a,{size:10,bold:true,gap:1});text(b,{size:9.5,color:mute,gap:5})});
   h("Your answers");
-  QUESTIONS.forEach(q=>{text(q.text,{size:9,color:mute,gap:1});text(answerLabels(q,A[q.id]).join("; "),{size:10,gap:5})});
+  QUESTIONS.forEach(q=>{text(q.text,{size:9,color:mute,gap:1});text(answerLabels(q,A[q.id],A).join("; "),{size:10,gap:5})});
   h("FAQ");
   FAQ.forEach(([q,a])=>{text(q,{size:10,bold:true,gap:1});text(a,{size:9.5,gap:6})});
   y+=6;text("Not legal advice. Motion Advisor · Shivani Dahya · Suffolk Law School.",{size:8.5,color:mute});
