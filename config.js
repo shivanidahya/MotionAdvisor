@@ -115,7 +115,10 @@
   {id:"guidance",type:"choice",text:"Have you read the ABA Formal Opinion 512 or your jurisdiction’s AI guidance?",why:"Guidance differs by bar and court and is changing quickly. Reading it is the baseline for competent use.",options:[
     {v:"yes",label:"Yes",score:0,note:"You have read the governing guidance."},
     {v:"partly",label:"Partly",score:1,note:"Finish reading the guidance before relying on AI for this motion."},
-    {v:"no",label:"No",score:2,note:"Read ABA 512 and your bar’s guidance before you start."}]}
+    {v:"no",label:"No",score:2,note:"Read ABA 512 and your bar’s guidance before you start."}],
+   // links never change the answer or the score
+   textLink:{match:"ABA Formal Op. 512",href:"docs/aba-formal-opinion-512.pdf",badge:"(PDF)",ariaLabel:"ABA Formal Opinion 512 (PDF, opens in new tab)"},
+   learn:{showFor:["partly","no"],lead:"Haven’t read it yet?",linkText:"See the ABA’s summary of its first AI ethics guidance",url:"https://www.americanbar.org/news/abanews/aba-news-archives/2024/07/aba-issues-first-ethics-guidance-ai-tools/",ariaLabel:"ABA summary of its first AI ethics guidance (opens in new tab)"}}
  ]},
  {id:"verify",title:"Verification",weight:1.5,qs:[
   {id:"citeCheck",type:"choice",text:"What is your process for checking citations in the motion?",why:"Every sanction decision on AI citations comes down to this step. Rule 11 and Rule 3.3 make the signer responsible for every authority.",options:[
