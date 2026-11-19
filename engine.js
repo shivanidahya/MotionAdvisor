@@ -130,7 +130,44 @@
       return { options: options, bottom: bottom, runnerUp: runnerUp, ranked: ranked, blocked: options.filter(function (o) { return o.blocked; }), weights: weights, stopIds: stopIds };
     }
 
+    /* ---------------- Draft scanner (local, deterministic) ---------------- */
+    var SC = cfg.scanner;
+    function luhn(d) { var sum = 0, alt = false; for (var i = d.length - 1; i >= 0; i--) { var n = +d[i]; if (alt) { n *= 2; if (n > 9) n -= 9; } sum += n; alt = !alt; } return sum % 10 === 0; }
+    function passes(rule, m) {
+      if (rule.check === "luhn") { var d = m[0].replace(/\D/g, ""); return d.length >= 13 && d.length <= 19 && luhn(d); }
+      if (rule.check === "under18") { var age = +(m[1] || m[2]); return age < 18; }
+      return true;
+    }
+    function scanDraft(text) {
+      text = String(text || "");
+      var found = [];
+      SC.rules.forEach(function (r, order) {
+        var re = new RegExp(r.re, r.flags.indexOf("g") >= 0 ? r.flags : r.flags + "g"), m;
+        while ((m = re.exec(text))) {
+          if (!m[0]) { re.lastIndex++; continue; }
+          if (passes(r, m)) found.push({ rule: r.id, cat: r.cat, name: r.name, start: m.index, end: m.index + m[0].length, text: m[0], explain: r.explain, authorities: r.authorities, order: order });
+        }
+      });
+      /* keep the earliest, then longest, match where two overlap */
+      found.sort(function (a, b) { return a.start - b.start || (b.end - b.start) - (a.end - a.start) || a.order - b.order; });
+      var flags = [], lastEnd = -1;
+      found.forEach(function (f) { if (f.start >= lastEnd) { flags.push(f); lastEnd = f.end; } });
+      var counts = {}; Object.keys(SC.categories).forEach(function (c) { counts[c] = 0; });
+      flags.forEach(function (f) { counts[f.cat]++; });
+      var parts = Object.keys(SC.categories).filter(function (c) { return counts[c]; }).map(function (c) {
+        var cc = SC.categories[c]; return counts[c] + " " + (counts[c] === 1 ? (cc.singular || cc.label.toLowerCase()) : cc.plural); });
+      var summary = parts.length ? "Found " + (parts.length > 1 ? parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] : parts[0]) + "." : "Found no common identifiers or markers.";
+      var lab = function (v) { var o = optOf(SC.question, v); return o ? o.label : v; };
+      var fill = function (t) { return t.replace("{limited}", lab("limited")).replace("{substantial}", lab("substantial")); };
+      var suggestions = [];
+      if (counts.privilege) suggestions.push({ kind: "privilege", suggests: "substantial", text: fill(SC.suggestions.privilege) });
+      if (counts.identifier || counts.minor || counts.sensitive) suggestions.push({ kind: "identifying", suggests: ["limited", "substantial"], text: fill(SC.suggestions.identifying) });
+      if (!suggestions.length) suggestions.push({ kind: "none", suggests: null, text: SC.suggestions.none });
+      return { flags: flags, counts: counts, summary: summary, suggestions: suggestions, limits: SC.limits };
+    }
+
     return {
+      scanDraft: scanDraft,
       config: cfg, questions: QUESTIONS, optOf: optOf, complete: complete, answered: answered, normalize: normalize, assess: assess,
       stops: stops, optionsReport: optionsReport, defaultWeights: defaultWeights, levelOf: levelOf, bandOf: bandOf
     };

@@ -159,6 +159,77 @@
     },
 
     /* ========================================================================
+       DRAFT SCANNER (question "Would client-identifying or privileged information
+       be entered into the tool?", shown only for "Not sure").
+       Runs entirely in the browser with the patterns and keyword lists below.
+       Nothing is sent anywhere or saved, and the scan never changes the score:
+       only the answer the user chooses counts.
+       Categories follow Fed. R. Civ. P. 5.2(a) (redacted filings), SJC Rule 1:24
+       (personal identifying information in Massachusetts filings) and Mass. R.
+       Prof. C. 1.6 (confidentiality). Patterns are deliberately simple; they miss
+       names and facts and can flag harmless text.  REVIEW
+       ====================================================================== */
+    scanner: {
+      question: "clientInfo",
+      showFor: "unsure",
+      categories: {
+        identifier: { label: "Personal identifier", plural: "personal identifiers", tag: "ID" },
+        minor: { label: "Minor's information", plural: "minors' information signals", singular: "minors' information signal", tag: "MINOR" },
+        privilege: { label: "Privilege marker", plural: "privilege markers", tag: "PRIV" },
+        sensitive: { label: "Sensitive category", plural: "sensitive-category keywords", singular: "sensitive-category keyword", tag: "SENS" }
+      },
+      /* Each rule: category, a JavaScript regular expression (source + flags),
+         an optional extra check, the one-line explanation and the rules behind it. */
+      rules: [
+        { id: "ssn", cat: "identifier", name: "Social Security number", re: "\\b(?!000|666|9\\d\\d)\\d{3}[-\\u2010\\u2011 ]\\d{2}[-\\u2010\\u2011 ]\\d{4}\\b", flags: "g",
+          explain: "Looks like a Social Security number. Filings may show only the last four digits.", authorities: ["rule:frcp-5-2", "rule:sjc-1-24", "rule:rpc-1-6"] },
+        { id: "ssn-labeled", cat: "identifier", name: "Social Security number", re: "\\b(?:SSN|SS#|Social Security(?: No\\.?| Number| #)?)\\s*[:#]?\\s*\\d{9}\\b", flags: "gi",
+          explain: "A labelled Social Security number. Filings may show only the last four digits.", authorities: ["rule:frcp-5-2", "rule:sjc-1-24", "rule:rpc-1-6"] },
+        { id: "tin", cat: "identifier", name: "Taxpayer ID number", re: "\\b(?:EIN|TIN|ITIN|Tax(?:payer)? ID(?:entification)?(?: No\\.?| Number)?)\\s*[:#]?\\s*\\d{2}-?\\d{7}\\b", flags: "gi",
+          explain: "Looks like a taxpayer identification number. Filings may show only the last four digits.", authorities: ["rule:frcp-5-2", "rule:sjc-1-24", "rule:rpc-1-6"] },
+        { id: "dob", cat: "identifier", name: "Date of birth", re: "\\b(?:DOB|D\\.O\\.B\\.|date of birth|birth ?date|born(?: on)?)\\s*[:\\-]?\\s*(?:\\d{1,2}[/.\\-]\\d{1,2}[/.\\-]\\d{2,4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\\.? \\d{1,2},? \\d{4})", flags: "gi",
+          explain: "A full date of birth. Federal filings may show only the year of birth.", authorities: ["rule:frcp-5-2", "rule:rpc-1-6"] },
+        { id: "card", cat: "identifier", name: "Card number", re: "\\b(?:\\d[ -]?){12,18}\\d\\b", flags: "g", check: "luhn",
+          explain: "Looks like a credit or debit card number. Filings may show only the last four digits.", authorities: ["rule:frcp-5-2", "rule:sjc-1-24", "rule:rpc-1-6"] },
+        { id: "account", cat: "identifier", name: "Financial account number", re: "\\b(?:account|acct\\.?|a/c|routing)(?: (?:no\\.?|number|#))?\\s*[:#]?\\s*[0-9][0-9 -]{4,20}[0-9]\\b", flags: "gi",
+          explain: "Looks like a financial account number. Filings may show only the last four digits.", authorities: ["rule:frcp-5-2", "rule:sjc-1-24", "rule:rpc-1-6"] },
+        { id: "license", cat: "identifier", name: "Driver's license number", re: "\\b(?:driver'?s? licen[cs]e|DL|license)(?: (?:no\\.?|number|#))?\\s*[:#]?\\s*[A-Z]?\\d{6,9}\\b", flags: "gi",
+          explain: "Looks like a driver's license number, a personal identifier in Massachusetts filings.", authorities: ["rule:sjc-1-24", "rule:rpc-1-6"] },
+        { id: "passport", cat: "identifier", name: "Passport number", re: "\\bpassport(?: (?:no\\.?|number|#))?\\s*[:#]?\\s*[A-Z0-9]{6,9}\\b", flags: "gi",
+          explain: "Looks like a passport number, a personal identifier in Massachusetts filings.", authorities: ["rule:sjc-1-24", "rule:rpc-1-6"] },
+        { id: "email", cat: "identifier", name: "Email address", re: "\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\b", flags: "gi",
+          explain: "An email address can identify the client or a witness.", authorities: ["rule:rpc-1-6"] },
+        { id: "phone", cat: "identifier", name: "Phone number", re: "(?:\\+1[ .-]?)?\\(?\\b\\d{3}\\)?[ .-]\\d{3}[ .-]\\d{4}\\b", flags: "g",
+          explain: "A phone number can identify the client or a witness.", authorities: ["rule:rpc-1-6"] },
+        { id: "address", cat: "identifier", name: "Street address", re: "\\b\\d{1,6}\\s+(?:[A-Z][A-Za-z.'-]*\\s+){1,4}(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Place|Pl|Way|Terrace|Ter|Circle|Cir|Highway|Hwy|Parkway|Pkwy|Square|Sq)\\b\\.?", flags: "g",
+          explain: "A street address can identify the client or a witness.", authorities: ["rule:rpc-1-6"] },
+        { id: "minor-word", cat: "minor", name: "Reference to a minor", re: "\\b(?:minor|minors|child|children|juvenile|infant|guardian ad litem|next friend)\\b", flags: "gi",
+          explain: "Mentions a minor. Federal filings may name a minor only by initials.", authorities: ["rule:frcp-5-2", "rule:rpc-1-6"] },
+        { id: "minor-age", cat: "minor", name: "Age of a minor", re: "\\b(?:age[d]? (\\d{1,2})|(\\d{1,2})[- ]years?[- ]old)\\b", flags: "gi", check: "under18",
+          explain: "Gives an age under 18. Federal filings may name a minor only by initials.", authorities: ["rule:frcp-5-2", "rule:rpc-1-6"] },
+        { id: "privilege", cat: "privilege", name: "Privilege or confidentiality marker", re: "\\b(?:privileged(?: (?:&|and) confidential)?|confidential|attorney[- ]client|work product|do not disclose|do not distribute|settlement offer|for settlement purposes|our strategy|litigation strategy|legal strategy|mediation statement)\\b", flags: "gi",
+          explain: "Suggests privileged or confidential material. Entering it into a tool risks disclosure and waiver.", authorities: ["rule:rpc-1-6", "rule:aba-512"] },
+        { id: "medical", cat: "sensitive", name: "Medical information", re: "\\b(?:medical|diagnos(?:is|ed|es)|treatment|prescription|medication|HIPAA|surgery|hospitali[sz]ed)\\b", flags: "gi",
+          explain: "Medical information is highly sensitive client information.", authorities: ["rule:rpc-1-6"] },
+        { id: "mental", cat: "sensitive", name: "Mental health information", re: "\\b(?:mental health|psychiatric|psychological|therapy|therapist|counseling|depression|anxiety disorder|PTSD)\\b", flags: "gi",
+          explain: "Mental health information is highly sensitive client information.", authorities: ["rule:rpc-1-6"] },
+        { id: "immigration", cat: "sensitive", name: "Immigration status", re: "\\b(?:immigration status|undocumented|asylum|green card|visa status|deportation|removal proceedings|DACA)\\b", flags: "gi",
+          explain: "Immigration status is highly sensitive client information.", authorities: ["rule:rpc-1-6"] },
+        { id: "criminal", cat: "sensitive", name: "Criminal history", re: "\\b(?:criminal (?:history|record)|CORI|prior conviction|convicted|arrest(?:ed)?|probation|parole)\\b", flags: "gi",
+          explain: "Criminal history is sensitive and may be restricted.", authorities: ["rule:rpc-1-6"] },
+        { id: "sealed", cat: "sensitive", name: "Sealed or impounded material", re: "\\b(?:sealed|under seal|impounded|impoundment)\\b", flags: "gi",
+          explain: "Sealed or impounded material must stay out of tools and public filings.", authorities: ["rule:rpc-1-6"] }
+      ],
+      suggestions: {
+        none: "No common identifiers found. This scan can’t detect names or sensitive facts, so review the draft yourself before choosing.",
+        identifying: "Your draft appears to contain client-identifying information. Consider choosing “{limited}” or “{substantial}”, or anonymize it first.",
+        privilege: "Your draft contains privilege or confidentiality markers. Consider choosing “{substantial}”, or remove that material before using AI."
+      },
+      limits: "This scan catches common patterns like ID numbers, dates and contact details. It cannot reliably detect names, case facts or privileged strategy. Your own review is still required.",
+      privacy: "Your draft is scanned on this device and never uploaded or saved."
+    },
+
+    /* ========================================================================
        OPTIONS REPORT (optional): four ways of using AI rated on the same six
        sections, from the same answers.
        For each AI option, "Which part of the motion would AI help with?" is

@@ -965,6 +965,38 @@ body.modal-open{overflow:hidden}
 .info-note .ic{flex-shrink:0;display:inline-grid;place-items:center;width:18px;height:18px;margin-top:1px;border-radius:50%;border:1.5px solid currentColor;font-family:var(--f-ui);font-size:.7rem;font-weight:700;font-style:italic}
 .q-hint{margin:2px 0 6px;font-family:var(--f-ui);font-size:.84rem;font-weight:600;color:var(--accent-2)}
 .ans-list{margin:0;padding-left:1.1em}
+/* ==== Draft scanner ==== */
+.scan-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.scan-wrap.open{grid-template-rows:1fr}
+.scan-inner{overflow:hidden;min-height:0}
+.scan-panel{margin-top:14px;border:1px solid var(--line);border-left:4px solid var(--verify);border-radius:10px;padding:16px 18px;background:var(--surface);display:grid;gap:10px}
+.scan-panel h3{font-size:1.2rem;margin:0}
+.scan-priv{display:flex;gap:8px;align-items:center;margin:0;font-size:.86rem;font-weight:600;color:var(--ink-2)}
+.scan-priv .lock-ic{color:var(--ok)}
+.scan-drop textarea{width:100%;min-height:140px;padding:12px;border:1px dashed var(--line);border-radius:8px;background:var(--paper);font:inherit;font-size:.92rem;resize:vertical;box-sizing:border-box}
+.scan-drop.over textarea{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--paper))}
+.scan-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.scan-file-in:focus-visible+label{outline:3px solid var(--accent);outline-offset:2px}
+.scan-status{font-size:.86rem;color:var(--muted)}
+.scan-res{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.scan-res h4{font-family:var(--f-ui);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-2);margin:6px 0 0}
+.scan-sum{margin:0;font-size:1rem}
+.scan-sugg{margin:0;padding:10px 14px;border-radius:8px;background:var(--warn-bg);border-left:4px solid var(--warn);font-size:.92rem}
+.scan-sugg.s-privilege{background:var(--bad-bg);border-left-color:var(--bad)}
+.scan-sugg.s-none{background:var(--ok-bg);border-left-color:var(--ok)}
+.scan-limits{display:flex;gap:8px;margin:0;font-size:.85rem;color:var(--muted)}
+.scan-limits .ic{flex-shrink:0;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1.5px solid currentColor;font-size:.7rem;font-weight:700;font-style:italic}
+.scan-doc{max-height:280px;overflow:auto;white-space:pre-wrap;word-break:break-word;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-size:.9rem;line-height:1.7}
+mark.sc{padding:1px 3px;border-radius:4px;color:var(--ink)}
+.sc-lbl{display:inline-block;font-family:var(--f-ui);font-size:.62rem;font-weight:700;letter-spacing:.04em;padding:0 4px;margin-right:3px;border-radius:3px;vertical-align:1px;color:var(--surface)}
+mark.sc-identifier,.sc-lbl.sc-identifier{background:var(--bad-bg)}mark.sc-identifier .sc-lbl,.sc-lbl.sc-identifier{background:var(--bad)}
+mark.sc-minor{background:var(--warn-bg)}mark.sc-minor .sc-lbl,.sc-lbl.sc-minor{background:var(--warn)}
+mark.sc-privilege{background:color-mix(in srgb,var(--accent) 16%,var(--paper))}mark.sc-privilege .sc-lbl,.sc-lbl.sc-privilege{background:var(--accent)}
+mark.sc-sensitive{background:var(--verify-bg)}mark.sc-sensitive .sc-lbl,.sc-lbl.sc-sensitive{background:var(--verify)}
+.scan-list{margin:0;padding-left:1.3em;display:grid;gap:8px;font-size:.88rem}
+.scan-list li>span:last-child .auth-chips{display:inline-flex;margin-left:4px}
+.scan-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;font-size:.8rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.scan-wrap{transition:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -1382,7 +1414,7 @@ function questionHTML(q){
   }else{
     control=`<div class="opts" role="radiogroup" aria-labelledby="qt-${q.id}">${q.options.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${q.id}" id="q-${q.id}-${o.v}" value="${o.v}" data-q="${q.id}" ${val===o.v?"checked":""}><span>${esc(o.label)}${o.hint?`<small>${esc(hintText(o))}</small>`:""}</span></label>`).join("")}</div>`;
   }
-  return `<div class="q"><div class="q-text" id="qt-${q.id}">${esc(q.text)}<span class="req" aria-label="required">*</span></div>${q.multi?`<p class="q-hint" id="qh-${q.id}">${esc(q.hint||"Select all that apply")}</p>`:""}<details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}</div>`;
+  return `<div class="q"><div class="q-text" id="qt-${q.id}">${esc(q.text)}<span class="req" aria-label="required">*</span></div>${q.multi?`<p class="q-hint" id="qh-${q.id}">${esc(q.hint||"Select all that apply")}</p>`:""}<details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}${q.id===CFG.scanner.question?scanPanelHTML(val===CFG.scanner.showFor):""}</div>`;
 }
 /* answer text for a question; "select all" questions list every choice */
 function answerLabels(q,v){return (Array.isArray(v)?v:[v]).map(x=>{const o=optOf(q.id,x);return o?o.label:""}).filter(Boolean)}
@@ -1414,13 +1446,66 @@ function bindIntro(){
   $$("[data-persona]").forEach(b=>b.addEventListener("click",()=>{adv.answers={...PERSONAS[+b.dataset.persona].a};adv.ack=true;adv.step=STEP_REVIEW;renderAdvisor();scrollTop()}));
 }
 function scrollTop(){const el=$("#v-advisor");window.scrollTo({top:el.offsetTop-70,behavior:"smooth"})}
+
+/* ======================================================
+   DRAFT SCANNER (shown for "Not sure" on the client-information question)
+   Runs only in this browser: patterns and keyword lists are in config.js
+   (scanner) and engine.js does the matching. The draft is never sent anywhere,
+   never written to storage, and is cleared when the panel closes, when
+   "Clear" is pressed, or when the user leaves the question. It never changes
+   the score: only the answer the user picks counts.
+   ====================================================== */
+function scanPanelHTML(open){const SC=CFG.scanner;
+  return `<div class="scan-wrap${open?" open":""}" id="scan-wrap" ${open?"":'aria-hidden="true" inert'}><div class="scan-inner"><section class="scan-panel" aria-labelledby="scan-h">
+    <h3 id="scan-h">Not sure? Scan your draft.</h3>
+    <p class="scan-priv"><span class="lock-ic" aria-hidden="true"></span>${esc(SC.privacy)}</p>
+    <div class="scan-drop" id="scan-drop"><label for="scan-text" class="sr-only">Draft text to scan</label><textarea id="scan-text" rows="7" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Paste your draft here, or drop a .docx, .pdf or .txt file onto this box"></textarea></div>
+    <div class="scan-actions"><button type="button" class="btn primary sm" id="scan-go">Scan draft</button><input type="file" id="scan-file" class="sr-only scan-file-in" accept=".docx,.pdf,.txt,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><label class="btn sm" for="scan-file">Upload .docx, .pdf or .txt</label><button type="button" class="btn ghost sm" id="scan-clear">Clear</button><span class="scan-status" id="scan-status" role="status"></span></div>
+    <div id="scan-out"></div></section></div></div>`}
+function scanClear(){const t=$("#scan-text"),o=$("#scan-out"),f=$("#scan-file"),st=$("#scan-status");if(t)t.value="";if(o)o.innerHTML="";if(f)f.value="";if(st)st.textContent=""}
+function scanToggle(open){const w=$("#scan-wrap");if(!w)return;w.classList.toggle("open",open);
+  if(open){w.removeAttribute("inert");w.removeAttribute("aria-hidden")}else{w.setAttribute("inert","");w.setAttribute("aria-hidden","true");scanClear()}}
+function scanRender(text){
+  const SC=CFG.scanner,R=ENG.scanDraft(text),out=$("#scan-out");if(!out)return;
+  let html="",pos=0;
+  R.flags.forEach((f,i)=>{html+=esc(text.slice(pos,f.start))+`<mark class="sc sc-${f.cat}" id="scf-${i}"><span class="sc-lbl">${esc(SC.categories[f.cat].tag)}</span>${esc(f.text)}</mark>`;pos=f.end});
+  html+=esc(text.slice(pos));
+  const sugg=R.suggestions.map(s=>`<p class="scan-sugg s-${s.kind}">${esc(s.text)}</p>`).join("");
+  out.innerHTML=`<div class="scan-res">
+    <p class="scan-sum"><b>${esc(R.summary)}</b></p>
+    <p class="sr-only" role="status">${esc(R.summary)} ${esc(R.suggestions.map(s=>s.text).join(" "))}</p>
+    ${sugg}
+    <p class="scan-limits" role="note"><span class="ic" aria-hidden="true">i</span>${esc(R.limits)}</p>
+    ${R.flags.length?`<h4>Your draft, with flagged items</h4><div class="scan-doc" tabindex="0" role="region" aria-label="Your draft with flagged items highlighted">${html}</div>
+    <h4>What was flagged</h4><ol class="scan-list">${R.flags.map(f=>`<li><span class="sc-lbl sc-${f.cat}">${esc(SC.categories[f.cat].tag)}</span><span><b>${esc(f.name)}:</b> “${esc(f.text)}”. ${esc(f.explain)} ${authHTML(f.authorities)}</span></li>`).join("")}</ol>`:""}
+    <p class="scan-legend">${Object.keys(SC.categories).map(c=>`<span><span class="sc-lbl sc-${c}">${esc(SC.categories[c].tag)}</span>${esc(SC.categories[c].label)}</span>`).join("")}</p>
+    <p><a href="#redaction">Practice redacting in the Redaction Game →</a></p></div>`;
+  const st=$("#scan-status");if(st)st.textContent="Scan complete."}
+function bindScanner(){
+  const go=$("#scan-go");if(!go)return;
+  go.addEventListener("click",()=>{const t=$("#scan-text").value;if(!t.trim()){$("#scan-status").textContent="Paste or upload a draft first.";$("#scan-text").focus();return}scanRender(t)});
+  $("#scan-clear").addEventListener("click",()=>{scanClear();$("#scan-text").focus()});
+  const load=async file=>{const st=$("#scan-status");if(!file)return;st.textContent="Reading "+file.name+" on this device…";
+    try{const t=await readDraftFile(file);$("#scan-text").value=t;st.textContent="";scanRender(t)}
+    catch(e){st.textContent=e&&e.message==="type"?"That file type isn’t supported. Use .docx, .pdf or .txt, or paste the text.":"The file couldn’t be read here. Paste the text instead."}};
+  $("#scan-file").addEventListener("change",e=>{load(e.target.files[0]);e.target.value=""});
+  const drop=$("#scan-drop");
+  drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("over")});
+  drop.addEventListener("dragleave",()=>drop.classList.remove("over"));
+  drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("over");load(e.dataTransfer.files[0])});
+  $("#scan-out").addEventListener("click",e=>{const r=e.target.closest("[data-rule]");if(r){e.preventDefault();openRule(r.dataset.rule)}});
+}
+/* leaving the assessment page clears the draft too */
+window.addEventListener("hashchange",()=>{if(location.hash!=="#advisor")scanClear()});
 function bindSteps(){
+  bindScanner();
   $$("[data-q]").forEach(el=>el.addEventListener("change",()=>{
     if(el.type==="checkbox"){const vals=$$(`input[name="${el.name}"]`).filter(c=>c.checked).map(c=>c.value);
       if(vals.length)adv.answers[el.dataset.q]=vals;else delete adv.answers[el.dataset.q];
       $$(`input[name="${el.name}"]`).forEach(c=>c.closest(".opt").classList.toggle("sel",c.checked))}
     else{adv.answers[el.dataset.q]=el.value||undefined; if(!el.value)delete adv.answers[el.dataset.q]}
     if(el.type==="radio"){$$(`input[name="${el.name}"]`).forEach(r=>r.closest(".opt").classList.toggle("sel",r.checked))}
+    if(el.dataset.q===CFG.scanner.question)scanToggle(el.value===CFG.scanner.showFor);
     if(adv.showErr&&sectionComplete(adv.step)){const e=$(".err");if(e)e.remove()}
   }));
   $$("[data-go]").forEach(b=>b.addEventListener("click",()=>{adv.step=+b.dataset.go;adv.showErr=false;renderAdvisor()}));

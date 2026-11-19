@@ -117,3 +117,25 @@ test("10. Options Report uses every selected task the option allows", () => {
   const org = E.optionsReport(Object.assign({}, TWO, { aiTask: ["outline", "summarize"] })).options.find((o) => o.id === "organize").cells[0].lines.find((l) => l.q === "aiTask");
   assert.deepEqual(org.asAnswer.slice().sort(), ["outline", "summarize"]);
 });
+
+test("11. Draft scanner: finds identifiers, minors, privilege and sensitive terms; suggests without choosing", () => {
+  const t = "PRIVILEGED & CONFIDENTIAL. Client SSN 123-45-6789, DOB 03/14/1985, card 4111 1111 1111 1111, email a@b.com. Her child, age 9, was treated for depression. Our strategy is to settle.";
+  const r = E.scanDraft(t);
+  assert.ok(r.counts.identifier >= 4 && r.counts.minor === 2 && r.counts.privilege === 2 && r.counts.sensitive === 1);
+  assert.deepEqual(r.suggestions.map((s) => s.kind), ["privilege", "identifying"]);
+  assert.match(r.summary, /^Found \d+ personal identifiers, 2 minors' information signals, 2 privilege markers and 1 sensitive-category keyword\.$/);
+  r.flags.forEach((f) => assert.equal(t.slice(f.start, f.end), f.text));
+  // ordinary legal citations and dates aren't flagged
+  const clean = E.scanDraft("Motion to dismiss under Rule 12(b)(6). See 550 U.S. 544 (2007); 28 U.S.C. § 1332. Filed Nov. 3, 2026. Docket No. 1:24-cv-10123. Page 12 of 20.");
+  assert.equal(clean.flags.length, 0);
+  assert.equal(clean.suggestions[0].kind, "none");
+  // a 16-digit number that fails the card checksum isn't a card; ages 18+ aren't minors
+  assert.equal(E.scanDraft("Ref 1234 5678 9012 3456").flags.length, 0);
+  assert.equal(E.scanDraft("She is age 34.").flags.length, 0);
+});
+
+test("12. The scanner never changes the score", () => {
+  const before = E.assess(Object.assign({}, TWO, { clientInfo: "unsure" }));
+  E.scanDraft("SSN 123-45-6789 privileged");
+  assert.deepEqual(E.assess(Object.assign({}, TWO, { clientInfo: "unsure" })), before);
+});
