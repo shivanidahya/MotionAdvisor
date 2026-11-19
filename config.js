@@ -149,7 +149,9 @@
       {v:"toolkit",label:"Motion Advisor’s Citation Toolkit",short:"Citation Toolkit",hidden:true},
       {v:"other",label:"Other method",short:"other method",hidden:true},
       // used only when converting results saved before this question branched ("Every citation pulled, read, and KeyCited or Shepardized")
-      {v:"legacy",label:"Pulled, read and KeyCited or Shepardized",short:"KeyCite or Shepard’s",citator:true,hidden:true}]},
+      {v:"legacy",label:"Pulled, read and KeyCited or Shepardized",short:"KeyCite or Shepard’s",citator:true,hidden:true}],
+      // a link to the Citation Toolkit's checklist when either of these is selected; it never changes the answer or the score
+      learn:{showFor:["pincites","spreadsheet"],lead:"Keep track as you check:",linkText:"Use Motion Advisor’s Citation Checklist",url:"index.html#citations",ariaLabel:"Motion Advisor’s Citation Checklist, in the Citation Toolkit (opens in new tab)"}},
      {id:"citeScope",type:"choice",text:"How many citations do you check?",options:[
       {v:"every",label:"Every citation",short:"Every citation"},
       {v:"some",label:"Some citations (spot-check)",short:"Some citations (spot-check)"}]}],

@@ -1452,7 +1452,7 @@ function hintText(o){if(!o.examples||!o.examples.length)return o.hint;const e=o.
 function radioGroup(id,opts,val,label){return `<div class="opts" role="radiogroup" aria-labelledby="${label}">${opts.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${id}" id="q-${id}-${o.v}" value="${o.v}" data-q="${id}" ${val===o.v?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`}
 function checkGroup(id,opts,vals,label,hint){return `<div class="opts" role="group" aria-labelledby="${label}" aria-describedby="${hint}">${opts.filter(o=>!o.hidden).map(o=>`<label class="opt ${vals.includes(o.v)?"sel":""}"><input type="checkbox" name="q-${id}" id="q-${id}-${o.v}" value="${o.v}" data-q="${id}" ${vals.includes(o.v)?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`}
 function followHTML(f){const A=adv.answers,lab="qt-"+f.id;
-  return `<div class="q sub"><div class="q-text" id="${lab}">${esc(f.text)}<span class="req" aria-label="required">*</span></div>${f.type==="multi"?`<p class="q-hint" id="qh-${f.id}">${esc(f.hint||"Select all that apply")}</p>`+checkGroup(f.id,f.options,Array.isArray(A[f.id])?A[f.id]:[],lab,"qh-"+f.id):radioGroup(f.id,f.options,A[f.id],lab)}</div>`}
+  return `<div class="q sub"><div class="q-text" id="${lab}">${esc(f.text)}<span class="req" aria-label="required">*</span></div>${f.type==="multi"?`<p class="q-hint" id="qh-${f.id}">${esc(f.hint||"Select all that apply")}</p>`+checkGroup(f.id,f.options,Array.isArray(A[f.id])?A[f.id]:[],lab,"qh-"+f.id):radioGroup(f.id,f.options,A[f.id],lab)}${f.learn?`<div class="learn-tip" id="learn-${f.id}" aria-live="polite">${learnShows(f,A[f.id])?learnHTML(f):""}</div>`:""}</div>`}
 function ideaHTML(it){if(!it.link||!it.text.includes(it.link.match))return esc(it.text);const L=it.link,i=it.text.indexOf(L.match);
   return esc(it.text.slice(0,i))+`<a href="${esc(L.href)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.match)}<span aria-hidden="true"> ↗</span></a>`+esc(it.text.slice(i+L.match.length))}
 function ideasPanelHTML(q){return `<div class="ideas" id="ideas-${q.id}"><div class="ideas-h"><h4 id="ideas-t-${q.id}">${esc(q.ideas.title)}</h4><button type="button" class="btn sm ghost" id="ideas-hide-${q.id}" aria-controls="ideas-list-${q.id}" aria-expanded="true">Hide ideas</button></div><ol id="ideas-list-${q.id}" aria-labelledby="ideas-t-${q.id}">${q.ideas.items.map(it=>`<li>${ideaHTML(it)}</li>`).join("")}</ol></div>`}
@@ -1462,6 +1462,8 @@ function branchHTML(q){const A=adv.answers,m=A[q.main.id];
   return radioGroup(q.main.id,q.main.options,m,"qt-"+q.id)+
     `<p class="sr-only" aria-live="polite" id="br-live-${q.id}"></p>`+
     panel("yes",(q.follow.yes||[]).map(followHTML).join(""),m==="yes")+panel("no",no,m==="no")}
+/* every question or follow-up that has a learning link */
+const LEARN_QS=QUESTIONS.flatMap(q=>[q].concat(q.type==="branch"?Object.values(q.follow).flat():[])).filter(q=>q.learn);
 function setBranchOpen(el,open){if(!el)return;el.classList.toggle("open",open);if(open)el.removeAttribute("inert");else el.setAttribute("inert","")}
 function branchUpdate(q,changed){
   const A=adv.answers,m=A[q.main.id];
@@ -1469,6 +1471,7 @@ function branchUpdate(q,changed){
     /* switching Yes/No clears the other branch's answers */
     Object.keys(q.follow).filter(k=>k!==m).forEach(k=>ENG.branchFields(q,k).forEach(fid=>{delete A[fid];$$(`input[name="q-${fid}"]`).forEach(i=>{i.checked=false;i.closest(".opt").classList.remove("sel")})}));
     Object.keys(q.follow).forEach(k=>setBranchOpen($(`#br-${q.id}-${k}`),k===m));
+    Object.values(q.follow).flat().filter(f=>f.learn).forEach(f=>learnToggle(f,A[f.id]));
     const n=(q.follow[m]||[]).length,live=$("#br-live-"+q.id);
     if(live)live.textContent=n?`${n} follow-up question${n>1?"s":""} below.`:"";
   }
@@ -1503,7 +1506,7 @@ function qTextHTML(q){
     pos=i+L.match.length});
   return out+esc(q.text.slice(pos))}
 /* a small learning link below the options (question config: learn) */
-function learnShows(q,v){return !!(q.learn&&v&&q.learn.showFor.includes(v))}
+function learnShows(q,v){return !!(q.learn&&v&&(Array.isArray(v)?v.some(x=>q.learn.showFor.includes(x)):q.learn.showFor.includes(v)))}
 function learnHTML(q){const L=q.learn;return `<p class="learn-in"><span class="ic" aria-hidden="true">i</span><span>${esc(L.lead)} <a href="${esc(L.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.linkText)}<span aria-hidden="true"> ↗</span></a></span></p>`}
 function learnToggle(q,v){
   const box=$("#learn-"+q.id);if(!box)return;const show=learnShows(q,v),cur=box.querySelector(".learn-in");
@@ -1634,7 +1637,7 @@ function bindSteps(){
     if(el.type==="radio"){$$(`input[name="${el.name}"]`).forEach(r=>r.closest(".opt").classList.toggle("sel",r.checked))}
     if(el.dataset.q===CFG.scanner.question)scanToggle(el.value===CFG.scanner.showFor);
     QUESTIONS.filter(q=>q.type==="branch"&&ENG.allBranchFields(q).includes(el.dataset.q)).forEach(q=>branchUpdate(q,el.dataset.q));
-    {const qq=CFG.assessment.sections.flatMap(s=>s.qs).find(x=>x.id===el.dataset.q);if(qq&&qq.learn)learnToggle(qq,el.value)}
+    {const qq=LEARN_QS.find(x=>x.id===el.dataset.q);if(qq)learnToggle(qq,adv.answers[qq.id])}
     if(adv.showErr&&sectionComplete(adv.step)){const e=$(".err");if(e)e.remove()}
   }));
   $$("[data-go]").forEach(b=>b.addEventListener("click",()=>{adv.step=+b.dataset.go;adv.showErr=false;renderAdvisor()}));
