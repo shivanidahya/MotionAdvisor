@@ -1392,6 +1392,22 @@ const PERSONAS=CFG.assessment.personas;
 const adv={step:-1,answers:{},ack:false,showErr:false,fromReview:false,fromMotion:null};
 const STEP_REVIEW=SECTIONS.length, STEP_RESULT=SECTIONS.length+1;
 
+/* Opening the document viewer from a question: remember where the user was, so the viewer's
+   "Back to the assessment" can bring them back to the same question. Multiple-choice answers only. */
+const RESUME_KEY="motionAdvisor.resume",RESUME_MAX=6*3600e3;
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("a.q-doc");if(!a)return;
+  const q=a.closest(".q")&&a.closest(".q").querySelector(".q-text");
+  try{localStorage.setItem(RESUME_KEY,JSON.stringify({answers:adv.answers,step:adv.step,ack:adv.ack,fromReview:adv.fromReview,q:q?q.id:"",t:Date.now()}))}catch(err){}});
+function resumeFromViewer(){
+  const u=new URL(location.href);if(!u.searchParams.has("resume"))return null;
+  u.searchParams.delete("resume");history.replaceState(null,"",u.pathname+u.search+u.hash);
+  let r=null;try{r=JSON.parse(localStorage.getItem(RESUME_KEY)||"null");localStorage.removeItem(RESUME_KEY)}catch(err){}
+  if(!r||Date.now()-r.t>RESUME_MAX||typeof r.step!=="number")return null;
+  adv.answers=ENG.normalize(r.answers||{});adv.step=Math.max(-1,Math.min(r.step,STEP_REVIEW));adv.ack=!!r.ack;adv.fromReview=!!r.fromReview;
+  return r.q||"";
+}
+function focusResumed(qid){const el=qid&&document.getElementById(qid);if(!el)return;
+  el.setAttribute("tabindex","-1");el.scrollIntoView({block:"center"});el.focus({preventScroll:true})}
 function sectionComplete(i){return SECTIONS[i].qs.every(q=>ENG.answered(q,adv.answers))}
 function allComplete(){return SECTIONS.every((s,i)=>sectionComplete(i))}
 
@@ -2587,7 +2603,8 @@ renderRules();
 renderParts();
 $("#m-grid").addEventListener("click",e=>{const b=e.target.closest("[data-assess]");if(b)assessMotion(MOTIONS[+b.dataset.assess].n,b)});
 $("#ap-real").addEventListener("click",e=>{e.preventDefault();openMotion(MOTIONS.findIndex(m=>m.n==="Motion to Strike"))});
-renderAdvisor(); renderLastReport(); initStartAssessment(); initOR(); renderMethod(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route(); initRuleLinks();
+const RESUMED=resumeFromViewer();
+renderAdvisor(); renderLastReport(); initStartAssessment(); initOR(); renderMethod(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route(); initRuleLinks(); if(RESUMED!==null)setTimeout(()=>focusResumed(RESUMED),60);
 })();
 </script>
 </body></html>

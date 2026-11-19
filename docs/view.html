@@ -168,6 +168,13 @@ main{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
     var t;addEventListener("resize",function(){clearTimeout(t);t=setTimeout(function(){if(fitMode)rezoom(fitScale(pages[0].getViewport({scale:1})),true)},150)});
   }).catch(function(){fail("The document couldn’t be displayed in this browser.")});
 
+  /* Back: this viewer usually opens in its own tab, so close it and return to the assessment tab,
+     which still shows the question. If the browser won't close it, reopen the assessment at that question. */
+  $(".back").addEventListener("click",function(e){
+    e.preventDefault();var url="../index.html?resume=1#advisor";
+    if(history.length<=1){try{window.close()}catch(err){}setTimeout(function(){if(!window.closed)location.href=url},250)}
+    else location.href=url;
+  });
   $("#prev").addEventListener("click",function(){go(current-1)});
   $("#next").addEventListener("click",function(){go(current+1)});
   $("#pg").addEventListener("change",function(e){var n=parseInt(e.target.value,10);if(n)go(n);else setCurrent(current)});
