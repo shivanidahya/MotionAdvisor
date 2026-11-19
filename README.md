@@ -13,6 +13,7 @@ Live site: <https://motionadvisor.vercel.app>
   - a workflow, a checklist and the rules to check
 
   The result can be downloaded as a PDF. The latest result is saved in this browser only.
+- **Draft scanner** (question 4, when the answer is "Not sure"): checks a pasted or uploaded draft (.docx incl. headers and footers, .pdf, .txt) for personal identifiers, likely names, minors, privilege markers and sensitive categories. It runs entirely in the browser: the draft is never sent anywhere or saved, and the result never changes the score. Keyword lists live in `config.js`; name detection combines legal-document patterns with the [compromise](https://github.com/spencermountain/compromise) library (MIT), served from `vendor/`. Test drafts are in `tests/scanner-fixtures/`.
 - **Options Report** (optional, from "Compare your options →" on the result): rates four ways of using AI on the same six sections from the same answers. It contains:
   - the safest useful option first
   - Low/Moderate/High risk chips, with a detail panel for each cell
@@ -35,6 +36,8 @@ config.js              # ALL scoring content: questions, answer scores, weights,
 engine.js              # Pure, deterministic functions that apply config.js
 tests/engine.test.js   # Automated tests (node:test), incl. parity with the original scoring
 tests/original-compute.js # The original scoring code, kept for the parity test
+tests/scanner-fixtures/   # Test drafts for the draft scanner (.txt, .docx, .pdf)
+vendor/                # compromise 14.19.0 (name detection, MIT licence)
 docs/DESIGN.md         # Design rationale, test results, values flagged for review
 package.json           # `npm test`
 ```

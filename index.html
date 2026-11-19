@@ -989,10 +989,15 @@ body.modal-open{overflow:hidden}
 .scan-doc{max-height:280px;overflow:auto;white-space:pre-wrap;word-break:break-word;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-size:.9rem;line-height:1.7}
 mark.sc{padding:1px 3px;border-radius:4px;color:var(--ink)}
 .sc-lbl{display:inline-block;font-family:var(--f-ui);font-size:.62rem;font-weight:700;letter-spacing:.04em;padding:0 4px;margin-right:3px;border-radius:3px;vertical-align:1px;color:var(--surface)}
-mark.sc-identifier,.sc-lbl.sc-identifier{background:var(--bad-bg)}mark.sc-identifier .sc-lbl,.sc-lbl.sc-identifier{background:var(--bad)}
-mark.sc-minor{background:var(--warn-bg)}mark.sc-minor .sc-lbl,.sc-lbl.sc-minor{background:var(--warn)}
-mark.sc-privilege{background:color-mix(in srgb,var(--accent) 16%,var(--paper))}mark.sc-privilege .sc-lbl,.sc-lbl.sc-privilege{background:var(--accent)}
-mark.sc-sensitive{background:var(--verify-bg)}mark.sc-sensitive .sc-lbl,.sc-lbl.sc-sensitive{background:var(--verify)}
+mark.sc-g-person{background:var(--bad-bg)}mark.sc-g-person .sc-lbl,.sc-lbl.sc-g-person{background:var(--bad)}
+mark.sc-g-minor{background:var(--warn-bg)}mark.sc-g-minor .sc-lbl,.sc-lbl.sc-g-minor{background:var(--warn)}
+mark.sc-g-privilege{background:color-mix(in srgb,var(--accent) 16%,var(--paper))}mark.sc-g-privilege .sc-lbl,.sc-lbl.sc-g-privilege{background:var(--accent)}
+mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-lbl.sc-g-sensitive{background:var(--verify)}
+.scan-counts{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.86rem;color:var(--muted)}
+.scan-counts li.has{color:var(--ink)}
+.scan-names{display:grid;gap:4px}
+.scan-names label{font-weight:600;font-size:.9rem}
+.scan-names input{padding:.55em .7em;border:1px solid var(--line);border-radius:6px;background:var(--paper);font:inherit;font-size:.92rem;min-width:0}
 .scan-list{margin:0;padding-left:1.3em;display:grid;gap:8px;font-size:.88rem}
 .scan-list li>span:last-child .auth-chips{display:inline-flex;margin-left:4px}
 .scan-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;font-size:.8rem;color:var(--muted)}
@@ -1460,34 +1465,66 @@ function scanPanelHTML(open){const SC=CFG.scanner;
     <h3 id="scan-h">Not sure? Scan your draft.</h3>
     <p class="scan-priv"><span class="lock-ic" aria-hidden="true"></span>${esc(SC.privacy)}</p>
     <div class="scan-drop" id="scan-drop"><label for="scan-text" class="sr-only">Draft text to scan</label><textarea id="scan-text" rows="7" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Paste your draft here, or drop a .docx, .pdf or .txt file onto this box"></textarea></div>
+    <div class="scan-names"><label for="scan-names">Names to check for (optional)</label><input type="text" id="scan-names" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="e.g. your client's name, separated by commas" aria-describedby="scan-names-hint"><span id="scan-names-hint" class="why-line">Every exact match is flagged. Like the draft, these names stay on this device and are never saved.</span></div>
     <div class="scan-actions"><button type="button" class="btn primary sm" id="scan-go">Scan draft</button><input type="file" id="scan-file" class="sr-only scan-file-in" accept=".docx,.pdf,.txt,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><label class="btn sm" for="scan-file">Upload .docx, .pdf or .txt</label><button type="button" class="btn ghost sm" id="scan-clear">Clear</button><span class="scan-status" id="scan-status" role="status"></span></div>
     <div id="scan-out"></div></section></div></div>`}
-function scanClear(){const t=$("#scan-text"),o=$("#scan-out"),f=$("#scan-file"),st=$("#scan-status");if(t)t.value="";if(o)o.innerHTML="";if(f)f.value="";if(st)st.textContent=""}
+function scanClear(){const t=$("#scan-text"),o=$("#scan-out"),f=$("#scan-file"),st=$("#scan-status"),n=$("#scan-names");if(t)t.value="";if(n)n.value="";if(o)o.innerHTML="";if(f)f.value="";if(st)st.textContent=""}
+/* Name detection uses the compromise library, served from this site (vendor/) and run in the browser.
+   If it can't load, the name patterns still run. */
+const NLP_URL="vendor/compromise.min.js";
+async function scanNlp(){try{await loadLib(NLP_URL,()=>window.nlp);return window.nlp}catch(e){return null}}
+/* .docx: body text plus headers, footers, footnotes and comments (where "Privileged & Confidential" often sits) */
+async function docxExtras(buf){
+  if(!("DecompressionStream" in window))return "";
+  const u8=new Uint8Array(buf),dv=new DataView(buf),td=new TextDecoder();let e=u8.length-22;
+  while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)return "";
+  const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const out=[];
+  for(let i=0;i<n;i++){if(dv.getUint32(p,true)!==0x02014b50)break;
+    const method=dv.getUint16(p+10,true),csize=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),xl=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),off=dv.getUint32(p+42,true);
+    const name=td.decode(u8.subarray(p+46,p+46+nl));p+=46+nl+xl+cl;
+    if(!/^word\/(header|footer|footnotes|endnotes|comments)\d*\.xml$/.test(name))continue;
+    const ln=dv.getUint16(off+26,true),lx=dv.getUint16(off+28,true),data=u8.subarray(off+30+ln+lx,off+30+ln+lx+csize);
+    let xml;if(method===0)xml=td.decode(data);else if(method===8)xml=await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).text();else continue;
+    const txt=xml.replace(/<w:tab\/>/g," ").replace(/<\/w:p>/g,"\n").replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&apos;/g,"'").trim();
+    if(txt)out.push(txt)}
+  return out.join("\n")}
+async function readForScan(file){
+  const body=await readDraftFile(file);
+  if(!file.name.toLowerCase().endsWith(".docx"))return body;
+  let extra="";try{extra=await docxExtras(await file.arrayBuffer())}catch(e){}
+  return extra?body+"\n\n"+extra:body}
 function scanToggle(open){const w=$("#scan-wrap");if(!w)return;w.classList.toggle("open",open);
   if(open){w.removeAttribute("inert");w.removeAttribute("aria-hidden")}else{w.setAttribute("inert","");w.setAttribute("aria-hidden","true");scanClear()}}
-function scanRender(text){
-  const SC=CFG.scanner,R=ENG.scanDraft(text),out=$("#scan-out");if(!out)return;
+async function scanRun(text){
+  const st=$("#scan-status");if(st)st.textContent="Scanning on this device…";
+  const nlp=await scanNlp();
+  const names=($("#scan-names")?$("#scan-names").value:"").split(",").map(x=>x.trim()).filter(Boolean);
+  scanRender(text,ENG.scanDraft(text,{nlp,names}),!!nlp)}
+function scanRender(text,R,nlpOn){
+  const SC=CFG.scanner,out=$("#scan-out");if(!out)return;
+  const grp=c=>"sc-g-"+SC.categories[c].group;
   let html="",pos=0;
-  R.flags.forEach((f,i)=>{html+=esc(text.slice(pos,f.start))+`<mark class="sc sc-${f.cat}" id="scf-${i}"><span class="sc-lbl">${esc(SC.categories[f.cat].tag)}</span>${esc(f.text)}</mark>`;pos=f.end});
+  R.flags.forEach((f,i)=>{html+=esc(text.slice(pos,f.start))+`<mark class="sc ${grp(f.cat)}" id="scf-${i}"><span class="sc-lbl">${esc(SC.categories[f.cat].tag)}</span>${esc(f.text)}</mark>`;pos=f.end});
   html+=esc(text.slice(pos));
   const sugg=R.suggestions.map(s=>`<p class="scan-sugg s-${s.kind}">${esc(s.text)}</p>`).join("");
   out.innerHTML=`<div class="scan-res">
-    <p class="scan-sum"><b>${esc(R.summary)}</b></p>
-    <p class="sr-only" role="status">${esc(R.summary)} ${esc(R.suggestions.map(s=>s.text).join(" "))}</p>
+    <p class="scan-sum"><b>${R.total?`Found ${R.total} flagged item${R.total===1?"":"s"}.`:"Nothing flagged."}</b></p>
+    <ul class="scan-counts" aria-label="Count by category">${Object.keys(SC.categories).map(c=>`<li class="${R.counts[c]?"has":""}"><span class="sc-lbl ${grp(c)}">${esc(SC.categories[c].tag)}</span>${esc(SC.categories[c].label)}: <b>${R.counts[c]}</b></li>`).join("")}</ul>
+    <p class="sr-only" role="status">${esc(R.summary)}. ${esc(R.suggestions.map(s=>s.text).join(" "))}</p>
     ${sugg}
+    ${R.counts.name?`<p class="scan-limits" role="note"><span class="ic" aria-hidden="true">i</span>${esc(R.nameNotice)}${nlpOn?"":" The name-finding library didn’t load, so only name patterns were checked."}</p>`:""}
     <p class="scan-limits" role="note"><span class="ic" aria-hidden="true">i</span>${esc(R.limits)}</p>
     ${R.flags.length?`<h4>Your draft, with flagged items</h4><div class="scan-doc" tabindex="0" role="region" aria-label="Your draft with flagged items highlighted">${html}</div>
-    <h4>What was flagged</h4><ol class="scan-list">${R.flags.map(f=>`<li><span class="sc-lbl sc-${f.cat}">${esc(SC.categories[f.cat].tag)}</span><span><b>${esc(f.name)}:</b> “${esc(f.text)}”. ${esc(f.explain)} ${authHTML(f.authorities)}</span></li>`).join("")}</ol>`:""}
-    <p class="scan-legend">${Object.keys(SC.categories).map(c=>`<span><span class="sc-lbl sc-${c}">${esc(SC.categories[c].tag)}</span>${esc(SC.categories[c].label)}</span>`).join("")}</p>
+    <h4>What was flagged</h4><ol class="scan-list">${R.flags.map(f=>`<li><span class="sc-lbl ${grp(f.cat)}">${esc(SC.categories[f.cat].tag)}</span><span><b>${esc(f.name)}:</b> “${esc(f.text)}”. ${esc(f.explain)} ${authHTML(f.authorities)}</span></li>`).join("")}</ol>`:""}
     <p><a href="#redaction">Practice redacting in the Redaction Game →</a></p></div>`;
   const st=$("#scan-status");if(st)st.textContent="Scan complete."}
 function bindScanner(){
   const go=$("#scan-go");if(!go)return;
-  go.addEventListener("click",()=>{const t=$("#scan-text").value;if(!t.trim()){$("#scan-status").textContent="Paste or upload a draft first.";$("#scan-text").focus();return}scanRender(t)});
+  go.addEventListener("click",()=>{const t=$("#scan-text").value;if(!t.trim()){$("#scan-status").textContent="Paste or upload a draft first.";$("#scan-text").focus();return}scanRun(t)});
   $("#scan-clear").addEventListener("click",()=>{scanClear();$("#scan-text").focus()});
   const load=async file=>{const st=$("#scan-status");if(!file)return;st.textContent="Reading "+file.name+" on this device…";
-    try{const t=await readDraftFile(file);$("#scan-text").value=t;st.textContent="";scanRender(t)}
-    catch(e){st.textContent=e&&e.message==="type"?"That file type isn’t supported. Use .docx, .pdf or .txt, or paste the text.":"The file couldn’t be read here. Paste the text instead."}};
+    try{const t=await readForScan(file);$("#scan-text").value=t;st.textContent="";await scanRun(t)}
+    catch(e){const o=$("#scan-out");if(o)o.innerHTML="";$("#scan-text").value="";st.textContent=e&&e.message==="type"?"That file type isn’t supported. Use .docx, .pdf or .txt, or paste the text.":"The file couldn’t be read here. Paste the text instead."}};
   $("#scan-file").addEventListener("change",e=>{load(e.target.files[0]);e.target.value=""});
   const drop=$("#scan-drop");
   drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("over")});

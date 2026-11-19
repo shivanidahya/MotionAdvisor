@@ -7,6 +7,8 @@ const E = require("../engine.js")(CONFIG);
 const ORIGINAL = require("./original-compute.js");
 const P = Object.fromEntries(CONFIG.assessment.personas.map((p) => [p.name, p.a]));
 const SOLO = P["Solo practitioner, routine extension"], TWO = P["Two-lawyer firm, motion to compel"], NEW = P["New associate, summary judgment"];
+const fs = require("node:fs"), path = require("node:path");
+const nlp = require("../vendor/compromise.min.js");
 const ids = (list) => list.map((o) => o.id);
 
 test("1. One selected task scores exactly as the original single-choice version did (personas + 3,000 random answer sets; old saved strings too)", () => {
@@ -118,15 +120,17 @@ test("10. Options Report uses every selected task the option allows", () => {
   assert.deepEqual(org.asAnswer.slice().sort(), ["outline", "summarize"]);
 });
 
-test("11. Draft scanner: finds identifiers, minors, privilege and sensitive terms; suggests without choosing", () => {
+test("11. Draft scanner: identifiers, minors, privilege and medical terms; summary lists every category; suggests without choosing", () => {
   const t = "PRIVILEGED & CONFIDENTIAL. Client SSN 123-45-6789, DOB 03/14/1985, card 4111 1111 1111 1111, email a@b.com. Her child, age 9, was treated for depression. Our strategy is to settle.";
   const r = E.scanDraft(t);
-  assert.ok(r.counts.identifier >= 4 && r.counts.minor === 2 && r.counts.privilege === 2 && r.counts.sensitive === 1);
+  assert.equal(r.counts.identifier, 4); assert.equal(r.counts.minor, 2); assert.equal(r.counts.privilege, 3); assert.equal(r.counts.medical, 2);
   assert.deepEqual(r.suggestions.map((s) => s.kind), ["privilege", "identifying"]);
-  assert.match(r.summary, /^Found \d+ personal identifiers, 2 minors' information signals, 2 privilege markers and 1 sensitive-category keyword\.$/);
+  // every category appears in the summary with its count, zeros included
+  Object.values(CONFIG.scanner.categories).forEach((c) => assert.match(r.summary, new RegExp(c.label + ": \\d+")));
+  assert.match(r.summary, /Personal identifiers: 4/); assert.match(r.summary, /Possible names: 0/);
   r.flags.forEach((f) => assert.equal(t.slice(f.start, f.end), f.text));
   // ordinary legal citations and dates aren't flagged
-  const clean = E.scanDraft("Motion to dismiss under Rule 12(b)(6). See 550 U.S. 544 (2007); 28 U.S.C. § 1332. Filed Nov. 3, 2026. Docket No. 1:24-cv-10123. Page 12 of 20.");
+  const clean = E.scanDraft("Motion to dismiss under Rule 12(b)(6). See 550 U.S. 544 (2007); 28 U.S.C. § 1332. Filed Nov. 3, 2026. Docket No. 1:24-cv-10123. Page 12 of 20.", { nlp });
   assert.equal(clean.flags.length, 0);
   assert.equal(clean.suggestions[0].kind, "none");
   // a 16-digit number that fails the card checksum isn't a card; ages 18+ aren't minors
@@ -134,7 +138,45 @@ test("11. Draft scanner: finds identifiers, minors, privilege and sensitive term
   assert.equal(E.scanDraft("She is age 34.").flags.length, 0);
 });
 
-test("12. The scanner never changes the score", () => {
+test("11b. Keywords match in any case, across line breaks, double spaces, hyphen and dash variants, and in plural or variant forms", () => {
+  ["privileged", "Privileged", "PRIVILEGED", "attorney-client", "attorney\u2013client", "attorney\u2011client", "attorney client", "work\nproduct", "work  product", "work\u00a0product", "do not\r\ndisclose"].forEach((w) =>
+    assert.ok(E.scanDraft("The memo: " + w + ".").counts.privilege >= 1, JSON.stringify(w)));
+  [["diagnosis", "medical"], ["diagnosed", "medical"], ["hospitalized", "medical"], ["disabilities", "medical"], ["immigrant", "immigration"], ["visas", "immigration"], ["green card", "immigration"],
+   ["conviction", "criminal"], ["convicted", "criminal"], ["criminal records", "criminal"], ["CORI", "criminal"], ["impounded", "sealed"], ["under seal", "sealed"], ["juvenile", "minor"], ["routing number", "financial"], ["tax returns", "financial"]].forEach(([w, cat]) =>
+    assert.ok(E.scanDraft("Note that " + w + " appears here.").counts[cat] >= 1, w + " -> " + cat));
+  // whole words only
+  assert.equal(E.scanDraft("The visage and the minority report were unprivileged news.").total, 0);
+});
+
+test("11c. Names: typed-in names match in any case; a name found once is flagged everywhere", () => {
+  const r = E.scanDraft("We spoke with the client about the lease. jane q. doe agreed.", { names: ["Jane Q. Doe"] });
+  assert.equal(r.counts.name, 1);
+  assert.deepEqual(r.suggestions.map((s) => s.kind), ["names"]);
+  assert.equal(E.scanDraft("Nothing to see.", { names: ["Jane Q. Doe"] }).counts.name, 0);
+});
+
+/* STEP 5 fixtures: the same expectations with and without the in-browser name library */
+const FIX = (f) => fs.readFileSync(path.join(__dirname, "scanner-fixtures", f), "utf8");
+[["no library", {}], ["with compromise", { nlp }]].forEach(([how, opts]) => {
+  test("12. Fixtures (" + how + ")", () => {
+    const n = E.scanDraft(FIX("1-names.txt"), opts);
+    ["Jane Smith", "Acme Corp.", "Mr. Robert Jones", "Maria Lopez", "Daniel Park"].forEach((nm) => assert.ok(n.flags.some((f) => f.cat === "name" && f.text === nm), nm));
+    assert.ok(!n.flags.some((f) => /Court|Massachusetts|Superior|Plaintiff|March/.test(f.text)), "no court, place, label or month words");
+    assert.ok(n.suggestions.some((s) => s.kind === "names"));
+    assert.doesNotMatch(n.suggestions.map((s) => s.text).join(" "), /Nothing flagged|No common identifiers/);
+    const p = E.scanDraft(FIX("2-privilege.txt"), opts);
+    assert.deepEqual(p.flags.map((f) => f.text), ["PRIVILEGED", "attorney work product"]);
+    const m = E.scanDraft(FIX("3-medical-immigration.txt"), opts);
+    assert.equal(m.counts.medical, 2); assert.equal(m.counts.immigration, 1);
+    const i = E.scanDraft(FIX("4-identifiers.txt"), opts);
+    assert.equal(i.counts.identifier, 3);
+    const c = E.scanDraft(FIX("5-clean.txt"), opts);
+    assert.equal(c.counts.name, 0, c.flags.map((f) => f.text).join(", "));
+    assert.equal(c.total, 0);
+  });
+});
+
+test("13. The scanner never changes the score", () => {
   const before = E.assess(Object.assign({}, TWO, { clientInfo: "unsure" }));
   E.scanDraft("SSN 123-45-6789 privileged");
   assert.deepEqual(E.assess(Object.assign({}, TWO, { clientInfo: "unsure" })), before);

@@ -161,27 +161,57 @@
     /* ========================================================================
        DRAFT SCANNER (question "Would client-identifying or privileged information
        be entered into the tool?", shown only for "Not sure").
-       Runs entirely in the browser with the patterns and keyword lists below.
-       Nothing is sent anywhere or saved, and the scan never changes the score:
-       only the answer the user chooses counts.
+       Runs entirely in the browser. Nothing is sent anywhere or saved, and the
+       scan never changes the score: only the answer the user chooses counts.
        Categories follow Fed. R. Civ. P. 5.2(a) (redacted filings), SJC Rule 1:24
        (personal identifying information in Massachusetts filings) and Mass. R.
-       Prof. C. 1.6 (confidentiality). Patterns are deliberately simple; they miss
-       names and facts and can flag harmless text.  REVIEW
+       Prof. C. 1.6 (confidentiality).  REVIEW
+
+       HOW TO EDIT THE KEYWORD LISTS ("keywords" below)
+       - Matching ignores case and works across line breaks, extra spaces, curly
+         quotes and every kind of hyphen or dash.
+       - Plurals are matched automatically ("record" also finds "records").
+       - End a word with * to match any ending: "diagnos*" finds diagnosis,
+         diagnosed and diagnoses.
+       - A space or hyphen inside a phrase matches either one, so "work product"
+         also finds "work-product" and "work\nproduct".
        ====================================================================== */
     scanner: {
       question: "clientInfo",
       showFor: "unsure",
+      /* Shown in this order in the summary. tag = the text label on each highlight. */
       categories: {
-        identifier: { label: "Personal identifier", plural: "personal identifiers", tag: "ID" },
-        minor: { label: "Minor's information", plural: "minors' information signals", singular: "minors' information signal", tag: "MINOR" },
-        privilege: { label: "Privilege marker", plural: "privilege markers", tag: "PRIV" },
-        sensitive: { label: "Sensitive category", plural: "sensitive-category keywords", singular: "sensitive-category keyword", tag: "SENS" }
+        name: { label: "Possible names", one: "possible name", tag: "NAME", group: "person", authorities: ["rule:rpc-1-6", "rule:frcp-5-2"] },
+        identifier: { label: "Personal identifiers", one: "personal identifier", tag: "ID", group: "person" },
+        financial: { label: "Financial", one: "financial term", tag: "FIN", group: "person", authorities: ["rule:frcp-5-2", "rule:sjc-1-24", "rule:rpc-1-6"],
+          explain: "Financial details can identify the client and are often protected." },
+        minor: { label: "Minors", one: "minors' information signal", tag: "MINOR", group: "minor" },
+        privilege: { label: "Privilege markers", one: "privilege marker", tag: "PRIV", group: "privilege", authorities: ["rule:rpc-1-6", "rule:aba-512"],
+          explain: "Suggests privileged or confidential material. Entering it into a tool risks disclosure and waiver." },
+        medical: { label: "Medical", one: "medical term", tag: "MED", group: "sensitive", authorities: ["rule:rpc-1-6"],
+          explain: "Medical and mental health information is highly sensitive client information." },
+        immigration: { label: "Immigration", one: "immigration term", tag: "IMM", group: "sensitive", authorities: ["rule:rpc-1-6"],
+          explain: "Immigration status is highly sensitive client information." },
+        criminal: { label: "Criminal", one: "criminal-history term", tag: "CRIM", group: "sensitive", authorities: ["rule:rpc-1-6"],
+          explain: "Criminal history is sensitive and its use may be restricted." },
+        sealed: { label: "Sealed or protected", one: "sealed or protected marker", tag: "SEAL", group: "sensitive", authorities: ["rule:rpc-1-6"],
+          explain: "Sealed, impounded or protected material must stay out of AI tools and public filings." }
       },
-      /* Each rule: category, a JavaScript regular expression (source + flags),
-         an optional extra check, the one-line explanation and the rules behind it. */
+      keywords: {
+        privilege: ["privileged", "confidential", "attorney-client", "attorney work product", "work product", "do not disclose", "do not distribute", "not for distribution",
+          "settlement offer", "settlement negotiations", "for settlement purposes", "our strategy", "litigation strategy", "legal strategy", "legal advice", "mental impressions",
+          "draft - privileged", "mediation statement"],
+        medical: ["medical", "diagnos*", "treatment", "treated", "prescription", "prescribed", "medication", "therapist", "therapy", "psychiatric", "psychiatrist",
+          "psychological", "mental health", "mental illness", "HIPAA", "hospital*", "disabilit*", "disabled", "PTSD", "depression", "anxiety disorder", "surgery"],
+        immigration: ["immigration status", "immigra*", "undocumented", "visa", "green card", "asylum", "deportation", "deported", "removal proceedings", "DACA", "noncitizen"],
+        criminal: ["arrest*", "conviction", "convicted", "criminal record", "criminal history", "probation", "parole", "indictment", "indicted", "CORI", "prior offense"],
+        sealed: ["sealed", "impounded", "impoundment", "under seal", "protective order", "confidential pursuant to", "filed under seal"],
+        minor: ["minor", "juvenile", "child", "children", "infant", "guardian ad litem", "next friend"],
+        financial: ["bank account", "routing number", "credit card", "debit card", "tax return", "salary", "income", "wages", "net worth"]
+      },
+      /* Pattern rules for identifiers (JavaScript regular expressions). */
       rules: [
-        { id: "ssn", cat: "identifier", name: "Social Security number", re: "\\b(?!000|666|9\\d\\d)\\d{3}[-\\u2010\\u2011 ]\\d{2}[-\\u2010\\u2011 ]\\d{4}\\b", flags: "g",
+        { id: "ssn", cat: "identifier", name: "Social Security number", re: "\\b(?!000|666|9\\d\\d)\\d{3}[- ]\\d{2}[- ]\\d{4}\\b", flags: "g",
           explain: "Looks like a Social Security number. Filings may show only the last four digits.", authorities: ["rule:frcp-5-2", "rule:sjc-1-24", "rule:rpc-1-6"] },
         { id: "ssn-labeled", cat: "identifier", name: "Social Security number", re: "\\b(?:SSN|SS#|Social Security(?: No\\.?| Number| #)?)\\s*[:#]?\\s*\\d{9}\\b", flags: "gi",
           explain: "A labelled Social Security number. Filings may show only the last four digits.", authorities: ["rule:frcp-5-2", "rule:sjc-1-24", "rule:rpc-1-6"] },
@@ -203,29 +233,39 @@
           explain: "A phone number can identify the client or a witness.", authorities: ["rule:rpc-1-6"] },
         { id: "address", cat: "identifier", name: "Street address", re: "\\b\\d{1,6}\\s+(?:[A-Z][A-Za-z.'-]*\\s+){1,4}(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Place|Pl|Way|Terrace|Ter|Circle|Cir|Highway|Hwy|Parkway|Pkwy|Square|Sq)\\b\\.?", flags: "g",
           explain: "A street address can identify the client or a witness.", authorities: ["rule:rpc-1-6"] },
-        { id: "minor-word", cat: "minor", name: "Reference to a minor", re: "\\b(?:minor|minors|child|children|juvenile|infant|guardian ad litem|next friend)\\b", flags: "gi",
-          explain: "Mentions a minor. Federal filings may name a minor only by initials.", authorities: ["rule:frcp-5-2", "rule:rpc-1-6"] },
-        { id: "minor-age", cat: "minor", name: "Age of a minor", re: "\\b(?:age[d]? (\\d{1,2})|(\\d{1,2})[- ]years?[- ]old)\\b", flags: "gi", check: "under18",
-          explain: "Gives an age under 18. Federal filings may name a minor only by initials.", authorities: ["rule:frcp-5-2", "rule:rpc-1-6"] },
-        { id: "privilege", cat: "privilege", name: "Privilege or confidentiality marker", re: "\\b(?:privileged(?: (?:&|and) confidential)?|confidential|attorney[- ]client|work product|do not disclose|do not distribute|settlement offer|for settlement purposes|our strategy|litigation strategy|legal strategy|mediation statement)\\b", flags: "gi",
-          explain: "Suggests privileged or confidential material. Entering it into a tool risks disclosure and waiver.", authorities: ["rule:rpc-1-6", "rule:aba-512"] },
-        { id: "medical", cat: "sensitive", name: "Medical information", re: "\\b(?:medical|diagnos(?:is|ed|es)|treatment|prescription|medication|HIPAA|surgery|hospitali[sz]ed)\\b", flags: "gi",
-          explain: "Medical information is highly sensitive client information.", authorities: ["rule:rpc-1-6"] },
-        { id: "mental", cat: "sensitive", name: "Mental health information", re: "\\b(?:mental health|psychiatric|psychological|therapy|therapist|counseling|depression|anxiety disorder|PTSD)\\b", flags: "gi",
-          explain: "Mental health information is highly sensitive client information.", authorities: ["rule:rpc-1-6"] },
-        { id: "immigration", cat: "sensitive", name: "Immigration status", re: "\\b(?:immigration status|undocumented|asylum|green card|visa status|deportation|removal proceedings|DACA)\\b", flags: "gi",
-          explain: "Immigration status is highly sensitive client information.", authorities: ["rule:rpc-1-6"] },
-        { id: "criminal", cat: "sensitive", name: "Criminal history", re: "\\b(?:criminal (?:history|record)|CORI|prior conviction|convicted|arrest(?:ed)?|probation|parole)\\b", flags: "gi",
-          explain: "Criminal history is sensitive and may be restricted.", authorities: ["rule:rpc-1-6"] },
-        { id: "sealed", cat: "sensitive", name: "Sealed or impounded material", re: "\\b(?:sealed|under seal|impounded|impoundment)\\b", flags: "gi",
-          explain: "Sealed or impounded material must stay out of tools and public filings.", authorities: ["rule:rpc-1-6"] }
+        { id: "minor-age", cat: "minor", name: "Age of a minor", re: "\\b(?:age[d]?\\s+(\\d{1,2})|(\\d{1,2})[- ]years?[- ]old)\\b", flags: "gi", check: "under18",
+          explain: "Gives an age under 18. Federal filings may name a minor only by initials.", authorities: ["rule:frcp-5-2", "rule:rpc-1-6"] }
       ],
+      keywordExplain: { minor: { name: "Reference to a minor", explain: "Mentions a minor. Federal filings may name a minor only by initials.", authorities: ["rule:frcp-5-2", "rule:rpc-1-6"] } },
+
+      /* ---- Possible names (approximate) ----
+         Found by the compromise library running in the browser (people it
+         recognizes) plus the patterns below. Words in notNames never count as
+         names on their own. */
+      names: {
+        explain: "Looks like a person's or party's name. Names identify the client, parties and witnesses.",
+        honorifics: ["Mr", "Ms", "Mrs", "Miss", "Mx", "Dr", "Judge", "Justice", "Attorney", "Atty", "Hon", "Officer", "Detective", "Det", "Sgt", "Prof", "Professor", "Rev"],
+        partyLabels: ["Plaintiff", "Plaintiffs", "Defendant", "Defendants", "Petitioner", "Respondent", "Appellant", "Appellee", "Claimant", "Witness", "Affiant", "Deponent", "Debtor", "Creditor", "Client"],
+        notNames: ["Court", "Courts", "Rule", "Rules", "Motion", "Memorandum", "Massachusetts", "Superior", "District", "Federal", "Supreme", "Judicial", "Appeals", "Appellate", "Housing", "Land", "Probate", "Family",
+          "Municipal", "Boston", "Commonwealth", "United", "States", "America", "State", "County", "Plaintiff", "Plaintiffs", "Defendant", "Defendants", "Petitioner", "Respondent", "Appellant", "Appellee",
+          "Civil", "Criminal", "Procedure", "Evidence", "Professional", "Conduct", "Code", "Act", "Section", "Chapter", "Title", "Article", "Amendment", "Constitution", "Order", "Orders", "Standing", "Local",
+          "Judge", "Justice", "Clerk", "Office", "Department", "Docket", "Case", "Cause", "Action", "Complaint", "Answer", "Exhibit", "Exhibits", "Affidavit", "Declaration", "Certificate", "Service", "Conference",
+          "Summary", "Judgment", "Dismiss", "Compel", "Strike", "Discovery", "Opposition", "Reply", "Brief", "Notice", "Hearing", "Trial", "Jury", "Proposed", "Statement", "Facts", "Argument", "Conclusion",
+          "Introduction", "Background", "Standard", "Review", "Relief", "Request", "Requests", "Interrogatories", "Production", "Documents", "Admissions", "Deposition", "Protective", "Sanctions",
+          "Fed", "Mass", "Civ", "Gen", "Laws", "U.S.C", "Stat", "Corp", "Inc", "LLC", "LLP", "Co", "Company", "Bar", "Association", "ABA", "Formal", "Opinion", "Westlaw", "Lexis", "Business", "Litigation", "Session",
+          "Honorable", "Esq", "Counsel", "SSN", "DOB", "EIN", "TIN", "BBO", "PTSD", "HIPAA", "CORI", "DACA", "Commonwealth", "Of", "Re", "Ex", "Rel", "Mr", "Ms", "Mrs", "Dr", "Attorney", "Attorneys", "Firm", "Law", "Legal", "Privileged", "Confidential", "Work", "Product",
+          "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December",
+          "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "The", "This", "That", "These", "Those", "See", "Id", "Cf", "But", "And", "Or", "In", "On", "Of", "For", "To", "By", "With", "At", "As", "If", "It", "We", "Our", "Your", "Their", "His", "Her"],
+        notice: "Name detection is approximate. It may miss some names or flag words that aren't names."
+      },
+
       suggestions: {
-        none: "No common identifiers found. This scan can’t detect names or sensitive facts, so review the draft yourself before choosing.",
-        identifying: "Your draft appears to contain client-identifying information. Consider choosing “{limited}” or “{substantial}”, or anonymize it first.",
+        none: "Nothing flagged: no common identifiers, likely names or sensitive keywords were found. This scan can’t catch everything, so review the draft yourself before choosing.",
+        names: "Your draft appears to name people. Consider choosing “{limited}”, or anonymize the draft first.",
+        identifying: "Your draft appears to contain client-identifying or sensitive information. Consider choosing “{limited}” or “{substantial}”, or anonymize it first.",
         privilege: "Your draft contains privilege or confidentiality markers. Consider choosing “{substantial}”, or remove that material before using AI."
       },
-      limits: "This scan catches common patterns like ID numbers, dates and contact details. It cannot reliably detect names, case facts or privileged strategy. Your own review is still required.",
+      limits: "This scan catches common patterns, likely names and sensitive keywords. It can miss things and flag false matches. Your own review is still required.",
       privacy: "Your draft is scanned on this device and never uploaded or saved."
     },
 
