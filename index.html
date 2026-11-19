@@ -966,6 +966,7 @@ body.modal-open{overflow:hidden}
 .learn-tip{margin:0}
 .q-text a.q-doc{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
 .q-text a.q-doc:hover,.q-text a.q-doc:focus-visible{text-decoration:underline;border-bottom-color:transparent}
+.q-doc-ic{display:inline-block;margin-left:.15em;font-size:.8em;font-weight:600}
 .q-doc-badge{font-family:var(--f-ui);font-size:.72em;font-weight:600;color:var(--muted);letter-spacing:.02em}
 .learn-in{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;font-size:.86rem;line-height:1.45;color:var(--muted);max-height:6em;overflow:hidden;transition:opacity .22s ease,transform .22s ease,max-height .25s ease,margin .25s ease}
 .learn-in.enter,.learn-in.leave{opacity:0;transform:translateY(-4px);max-height:0;margin-top:0}
@@ -1395,7 +1396,7 @@ const STEP_REVIEW=SECTIONS.length, STEP_RESULT=SECTIONS.length+1;
 /* Opening the document viewer from a question: remember where the user was, so the viewer's
    "Back to the assessment" can bring them back to the same question. Multiple-choice answers only. */
 const RESUME_KEY="motionAdvisor.resume",RESUME_MAX=6*3600e3;
-document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("a.q-doc");if(!a)return;
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("a.q-doc[data-resume]");if(!a)return;
   const q=a.closest(".q")&&a.closest(".q").querySelector(".q-text");
   try{localStorage.setItem(RESUME_KEY,JSON.stringify({answers:adv.answers,step:adv.step,ack:adv.ack,fromReview:adv.fromReview,q:q?q.id:"",t:Date.now()}))}catch(err){}});
 function resumeFromViewer(){
@@ -1447,9 +1448,13 @@ function questionHTML(q){
   return `<div class="q"><div class="q-text" id="qt-${q.id}">${qTextHTML(q)}<span class="req" aria-label="required">*</span></div>${q.multi?`<p class="q-hint" id="qh-${q.id}">${esc(q.hint||"Select all that apply")}</p>`:""}<details class="why"><summary>Why we ask this</summary><div>${esc(q.why)}</div></details>${control}${q.learn?`<div class="learn-tip" id="learn-${q.id}" aria-live="polite">${learnShows(q,val)?learnHTML(q):""}</div>`:""}${q.id===CFG.scanner.question?scanPanelHTML(val===CFG.scanner.showFor):""}</div>`;
 }
 /* question text, with an optional document link (question config: textLink) */
-function qTextHTML(q){const L=q.textLink;if(!L||!q.text.includes(L.match))return esc(q.text);
-  const i=q.text.indexOf(L.match);
-  return esc(q.text.slice(0,i))+`<a class="q-doc" href="${esc(L.href)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.match)}</a>${L.badge?` <span class="q-doc-badge" aria-hidden="true">${esc(L.badge)}</span>`:""}`+esc(q.text.slice(i+L.match.length))}
+function qTextHTML(q){
+  const links=(q.textLinks||(q.textLink?[q.textLink]:[])).map(L=>({L,i:q.text.indexOf(L.match)})).filter(x=>x.i>=0).sort((a,b)=>a.i-b.i);
+  let out="",pos=0;
+  links.forEach(({L,i})=>{if(i<pos)return;
+    out+=esc(q.text.slice(pos,i))+`<a class="q-doc" href="${esc(L.href)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}"${L.resume?" data-resume":""}>${esc(L.match)}${L.icon?`<span class="q-doc-ic" aria-hidden="true">${esc(L.icon)}</span>`:""}</a>${L.badge?` <span class="q-doc-badge" aria-hidden="true">${esc(L.badge)}</span>`:""}`;
+    pos=i+L.match.length});
+  return out+esc(q.text.slice(pos))}
 /* a small learning link below the options (question config: learn) */
 function learnShows(q,v){return !!(q.learn&&v&&q.learn.showFor.includes(v))}
 function learnHTML(q){const L=q.learn;return `<p class="learn-in"><span class="ic" aria-hidden="true">i</span><span>${esc(L.lead)} <a href="${esc(L.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.linkText)}<span aria-hidden="true"> ↗</span></a></span></p>`}
