@@ -72,6 +72,7 @@
     {v:"routine",label:"Routine or procedural (extension, continuance, pro hac vice)",score:0,note:"Routine procedural motions are short and formulaic, which keeps AI risk low."},
     {v:"discovery",label:"Discovery (compel, protective order)",score:1,note:"Discovery motions rely on specific record facts and conferral history that AI cannot know."},
     {v:"pleading",label:"Pleading-stage (dismiss, amend, strike)",score:2,note:"Pleading-stage motions turn on legal standards where fabricated or outdated authority is a real risk."},
+    {v:"evidentiary",label:"Evidentiary (in limine, suppress)",score:2,note:"Evidentiary motions turn on the rules of evidence, constitutional law and the specific record, where AI can misstate the standard or invent authority."},  // REVIEW
     {v:"dispositive",label:"Dispositive (summary judgment, judgment on the pleadings)",score:3,note:"Dispositive motions can end a client’s case; every authority and record cite must be exact."},
     {v:"emergency",label:"Emergency or injunctive (TRO, preliminary injunction)",score:3,note:"Emergency motions combine high stakes with time pressure, the condition under which verification gets skipped."},
     {v:"post",label:"Post-trial (new trial, relief from judgment)",score:3,note:"Post-trial motions have strict deadlines and preservation rules that AI frequently misstates."}]},

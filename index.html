@@ -2522,7 +2522,8 @@ const MOTION_TYPE={"Motion to Dismiss":"pleading","Motion for More Definite Stat
   "Motion for Judgment on the Pleadings":"dispositive","Motion for Summary Judgment":"dispositive","Motion for Directed Verdict / JMOL":"dispositive","Renewed Motion for JMOL":"dispositive",
   "Motion to Compel":"discovery","Motion for Protective Order":"discovery","Motion for Discovery Sanctions":"discovery",
   "Temporary Restraining Order":"emergency","Motion for Preliminary Injunction":"emergency",
-  "Motion for New Trial":"post","Motion for Relief from Judgment":"post","Motion to Extend Time":"routine","Motion for Admission Pro Hac Vice":"routine"};
+  "Motion for New Trial":"post","Motion for Relief from Judgment":"post","Motion to Extend Time":"routine","Motion for Admission Pro Hac Vice":"routine",
+  "Motion in Limine":"evidentiary","Motion to Suppress":"evidentiary"};
 function assessMotion(name,trigger){
   startAssessment(trigger,()=>{const t=MOTION_TYPE[name];if(t)adv.answers.motionType=t;adv.fromMotion=t?name:null})}
 

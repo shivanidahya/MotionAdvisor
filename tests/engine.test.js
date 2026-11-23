@@ -16,6 +16,8 @@ test("1. One selected task scores exactly as the original single-choice version 
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   // the citation question now branches; old saved answers ("full", "spot", "none") convert to the branch answers
   const LEGACY = { citeCheck: ["full", "spot", "none"], informed: ["consent", "will", "no"] };
+  // answers added after the original (e.g. the "evidentiary" motion type) can't be compared with it; parity uses the original's own options
+  LEGACY.motionType = ORIGINAL.SECTIONS.flatMap((s) => s.qs).find((q) => q.id === "motionType").options.map((o) => o.v);
   for (let i = 0; i < 3000; i++) { const a = {}; CONFIG.assessment.sections.forEach((s) => s.qs.forEach((q) => { const vs = LEGACY[q.id] || q.options.map((o) => o.v); a[q.id] = vs[Math.floor(rnd() * vs.length)]; })); sets.push(a); }
   sets.forEach((a0) => {
     // the original took one task; the new version takes a list. One selection must score the same.
@@ -303,4 +305,12 @@ test("19. Weight preview: standard weights give the real result; stops still for
   const heavy = E.weighted(TWO, Object.assign(E.defaultWeights(), { juris: 3, comp: 3 }));
   assert.notEqual(heavy.index, E.assess(TWO).index);
   assert.equal(E.weighted(NEW, Object.assign(E.defaultWeights(), { conf: 0, task: 0 })).verdict, "Not recommended");
+});
+
+test("23. Evidentiary motions (in limine, suppress) score the same as pleading-stage motions", () => {
+  const opt = (v) => CONFIG.assessment.sections.flatMap((s) => s.qs).find((q) => q.id === "motionType").options.find((o) => o.v === v);
+  assert.ok(opt("evidentiary"), "evidentiary option exists");
+  assert.equal(opt("evidentiary").score, opt("pleading").score);
+  const a = Object.assign({}, SOLO, { motionType: "pleading" }), b = Object.assign({}, SOLO, { motionType: "evidentiary" });
+  assert.equal(E.assess(b).index, E.assess(a).index);
 });
