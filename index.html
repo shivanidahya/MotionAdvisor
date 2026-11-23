@@ -2473,7 +2473,31 @@ function bindVerify(cases){
     $$("[data-vs]").forEach(td=>{const cc=cases.find(x=>x.gk===td.dataset.vs);const d=cc&&st(cc);td.textContent=d?"✓ Verified":"Open";td.classList.toggle("done",!!d);td.classList.toggle("open",!d)})}))}
 /* ---- Optional checklist exports: Excel, Google Sheets, CSV ---- */
 const EXCELJS_URL="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
-function loadScript(src){return new Promise((res,rej)=>{if(window.ExcelJS)return res();const s=document.createElement("script");s.src=src;s.onload=()=>res();s.onerror=()=>rej(new Error("load"));document.head.appendChild(s)})}
+/* Excel for Microsoft 365 checkboxes: ExcelJS writes TRUE/FALSE cells; this adds what Excel itself writes for
+   Insert › Checkbox (a feature property bag, and a copy of the cell style that points at it). Excel versions
+   without checkboxes ignore the extension and show TRUE/FALSE. */
+async function addExcelCheckboxes(buf){
+  await loadScript(JSZIP_URL,"JSZip");
+  const zip=await window.JSZip.loadAsync(buf),get=f=>zip.file(f).async("string");
+  const sheetPath="xl/worksheets/sheet1.xml";
+  let sheet=await get(sheetPath),styles=await get("xl/styles.xml"),types=await get("[Content_Types].xml"),rels=await get("xl/_rels/workbook.xml.rels");
+  const cx=styles.match(/<cellXfs count="(\d+)">([\s\S]*?)<\/cellXfs>/);if(!cx)return buf;
+  const xfs=cx[2].match(/<xf\b[^>]*?(?:\/>|>[\s\S]*?<\/xf>)/g)||[];
+  const ext='<extLst><ext uri="{C7286773-470A-42A8-94C5-96B5CB345126}" xmlns:xfpb="http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag"><xfpb:xfComplement i="0"/></ext></extLst>';
+  const map={},added=[];
+  sheet=sheet.replace(/<c r="([A-Z]+)(\d+)"((?: s="(\d+)")?) t="b"/g,(m,col,row,sAttr,sIdx)=>{
+    const from=sIdx||"0";if(!(from in map)){const x=xfs[+from]||'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>';
+      added.push(x.endsWith("/>")?x.slice(0,-2)+">"+ext+"</xf>":x.replace(/<\/xf>$/,ext+"</xf>"));map[from]=xfs.length+added.length-1}
+    return `<c r="${col}${row}" s="${map[from]}" t="b"`});
+  if(!added.length)return buf;
+  styles=styles.replace(cx[0],`<cellXfs count="${xfs.length+added.length}">${cx[2]}${added.join("")}</cellXfs>`);
+  zip.file(sheetPath,sheet);zip.file("xl/styles.xml",styles);
+  zip.file("xl/featurePropertyBag/featurePropertyBag.xml",'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<FeaturePropertyBags xmlns="http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag"><bag type="Checkbox"/><bag type="XFControls"><bagId k="CellControl">0</bagId></bag><bag type="XFComplement"><bagId k="XFControls">1</bagId></bag><bag type="XFComplements" extRef="XFComplementsMapperExtRef"><a k="MappedFeaturePropertyBags"><bagId>2</bagId></a></bag></FeaturePropertyBags>');
+  zip.file("[Content_Types].xml",types.replace("</Types>",'<Override PartName="/xl/featurePropertyBag/featurePropertyBag.xml" ContentType="application/vnd.ms-excel.featurepropertybag+xml"/></Types>'));
+  zip.file("xl/_rels/workbook.xml.rels",rels.replace("</Relationships>",'<Relationship Id="rIdMaCbx" Type="http://schemas.microsoft.com/office/2022/11/relationships/FeaturePropertyBag" Target="featurePropertyBag/featurePropertyBag.xml"/></Relationships>'));
+  return zip.generateAsync({type:"arraybuffer",compression:"DEFLATE"})}
+const JSZIP_URL="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+function loadScript(src,global="ExcelJS"){return new Promise((res,rej)=>{if(window[global])return res();const s=document.createElement("script");s.src=src;s.onload=()=>res();s.onerror=()=>rej(new Error("load"));document.head.appendChild(s)})}
 const CHECK_HEADS=["Pulled & read","Pincite supports","Quote matches","Good law"];
 const SHEET_HEADS=["#","Type","Case name","Citation",...CHECK_HEADS,"Verified"];
 function citeRows(){
@@ -2576,9 +2600,9 @@ async function exportXlsx(){
       row.alignment={vertical:"top",wrapText:true};
       row.getCell("cite").font={name:"Consolas"};
       ["c0","c1","c2","c3"].forEach((k,j)=>{const c=row.getCell(k);c.alignment={horizontal:"center",vertical:"top"};
-        if(r.checklist)c.value=!!r.checks[j];else c.value=null});
+        c.value=!!r.checks[j]});
       const v=row.getCell("v");v.alignment={horizontal:"center",vertical:"top"};
-      v.value=r.checklist?{formula:`IF(AND(E${n},F${n},G${n},H${n}),"Verified","Open")`,result:r.checks.every(Boolean)?"Verified":"Open"}:null;
+      v.value={formula:`IF(AND(E${n},F${n},G${n},H${n}),"Verified","Open")`,result:r.checks.every(Boolean)?"Verified":"Open"};
     });
     const last=rows.length+1;
     ws.autoFilter={from:"A1",to:"J1"};
@@ -2588,15 +2612,16 @@ async function exportXlsx(){
     const cnt=(col,crit)=>`COUNTIF('Citation check'!${col}2:${col}${last},"${crit}")`;
     [["Motion Advisor citation checklist",""],["Generated",new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})],["",""],
      ["Authorities found",{formula:`COUNTA('Citation check'!D2:D${last})`,result:lastParse.items.length}],
-     ["Verified (all four checks done)",{formula:cnt("I","Verified"),result:rows.filter(r=>r.checklist&&r.checks.every(Boolean)).length}],
-     ["",""],["Turn on checkboxes","Excel for Microsoft 365: on the Citation check sheet, select columns E to H, then choose Insert › Checkbox. Each TRUE/FALSE becomes a checkbox you can click. (Older Excel: type TRUE or FALSE.)"],["How to use","Tick a box once that check is done. A row shows Verified when all four boxes are ticked."],
+     ["Verified (all four checks done)",{formula:cnt("I","Verified"),result:rows.filter(r=>r.checks.every(Boolean)).length}],
+     ["",""],["Checkboxes","Columns E to H are checkboxes in Excel for Microsoft 365. Older Excel versions show TRUE or FALSE instead; type TRUE when a check is done."],["How to use","Tick a box once that check is done. A row shows Verified when all four boxes are ticked."],
      ["Not legal advice","This checklist lists the citations in your draft. It cannot confirm that a case exists or is good law. The signing attorney must read and verify every authority."]].forEach(d=>sm.addRow(d));
     sm.getRow(1).font={bold:true,size:14,color:{argb:"FF2F5E63"}};
     [4,5,7,8,9].forEach(r=>{sm.getCell("A"+r).font={bold:true}});
     sm.getColumn(2).alignment={wrapText:true,vertical:"top"};
-    const buf=await wb.xlsx.writeBuffer();
+    let buf=await wb.xlsx.writeBuffer();
+    try{buf=await addExcelCheckboxes(buf)}catch(e){/* still a working TRUE/FALSE file */}
     await saveFile("citation-checklist-"+stamp()+".xlsx",new Blob([buf]));
-    toast("Downloaded. In Excel, select columns E to H and choose Insert › Checkbox to turn them into checkboxes.");
+    toast("Downloaded. Tick the boxes in columns E to H as you verify each citation.");
   }catch(e){toast("The Excel file couldn’t be built. Check your connection and try again.")}
   finally{btn.disabled=false;btn.textContent=label}
 }
