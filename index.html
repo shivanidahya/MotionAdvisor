@@ -635,11 +635,6 @@ body.nav-locked{overflow:hidden}
 .ab-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px;align-items:start}
 .ab-toc{position:sticky;top:84px;max-height:calc(100vh - 100px);overflow:auto;font-family:var(--f-ui);font-size:.88rem}
 .ab-toc-h{font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-.ab-toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px;border-left:2px solid var(--line)}
-.ab-toc a{display:block;padding:4px 10px;margin-left:-2px;border-left:2px solid transparent;color:var(--ink-2);text-decoration:none}
-.ab-toc a:hover{color:var(--ink)}
-.ab-toc a.cur{border-left-color:var(--accent);color:var(--ink);font-weight:600}
-.ab-toc a:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
 .ab-main{min-width:0}
 .ab-sec{padding:30px 0;border-top:1px solid var(--line);scroll-margin-top:110px}
 .ab-sec:first-child{border-top:0;padding-top:0}
@@ -665,9 +660,51 @@ body.nav-locked{overflow:hidden}
 .ab-opts b{font-family:var(--f-mono);font-weight:500;white-space:nowrap}
 .ab-tags{list-style:none;margin:6px 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
 .ab-tags li{font-size:.84rem;padding:.2em .7em;border:1px solid var(--line);border-radius:99px;background:var(--surface)}
+.ab-chs{list-style:none;margin:0;padding:0;display:grid;gap:4px;border:0}
+.ab-ch{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;padding:8px 10px;border-radius:8px;cursor:pointer}
+.ab-ch:hover{background:var(--sunk)}
+.ab-ch:focus-visible,.ab-all:focus-visible,.ab-pg:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.ab-ch.on{background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.ab-ch-n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--ink-2);display:grid;place-items:center;font-weight:700;font-size:.78rem;color:var(--ink-2)}
+.ab-ch.on .ab-ch-n{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.ab-ch b{display:block;font-size:.92rem;color:var(--ink)}
+.ab-ch-sub{display:block;font-size:.76rem;color:var(--muted);line-height:1.35;margin-top:1px}
+.ab-subs{list-style:none;margin:2px 0 6px 46px;padding:0;display:none;border-left:2px solid var(--line)}
+.ab-chs>li.open .ab-subs{display:grid}
+.ab-subs a{display:block;padding:3px 10px;margin-left:-2px;border-left:2px solid transparent;color:var(--ink-2);text-decoration:none;font-size:.84rem}
+.ab-subs a.cur{border-left-color:var(--accent);color:var(--ink);font-weight:600}
+.ab-all{margin-top:14px;background:none;border:0;padding:4px 10px;font:inherit;font-size:.82rem;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.ab-pager{display:flex;justify-content:space-between;gap:12px;padding-top:24px;border-top:1px solid var(--line)}
+.ab-pg{display:grid;gap:2px;text-align:left;font:inherit;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;cursor:pointer;color:var(--ink);max-width:48%}
+.ab-pg.next{text-align:right;margin-left:auto}
+.ab-pg span{font-size:.8rem;color:var(--muted)}
+.ab-pg:hover{border-color:var(--ink-2)}
+.ab .ab-sec[hidden]{display:none}
+details.ab-qsec{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:0 16px;margin-bottom:10px}
+details.ab-qsec>summary{list-style:none;cursor:pointer;padding:12px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+details.ab-qsec>summary::-webkit-details-marker{display:none}
+details.ab-qsec>summary::after{content:"";flex:none;width:8px;height:8px;border-right:2px solid var(--ink-2);border-bottom:2px solid var(--ink-2);transform:rotate(45deg);transition:transform .18s}
+details.ab-qsec[open]>summary::after{transform:rotate(-135deg)}
+details.ab-qsec>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+details.ab-qsec h3{margin:0;border:0;padding:0}
+details.ab-qsec .ab-qs{padding-bottom:14px;margin-top:0}
+.ab-expand{margin-top:4px}
+@media (max-width:860px){
+  .ab-toc{padding:10px}
+  .ab-chs{display:flex;overflow-x:auto;gap:6px;scrollbar-width:thin}
+  .ab-chs>li{flex:none}
+  .ab-ch{grid-template-columns:22px auto;padding:6px 10px;border:1px solid var(--line);border-radius:99px;background:var(--paper)}
+  .ab-ch-sub,.ab-subs,.ab-chs>li.open .ab-subs{display:none}
+  .ab-ch b{font-size:.85rem;white-space:nowrap}
+  .ab-toc-h{display:none}
+  .ab-all{margin-top:8px}
+  .ab-pg{max-width:none;flex:1}
+}
+@media print{.ab .ab-sec[hidden]{display:block!important}.ab-toc,.ab-pager{display:none}details.ab-qsec>*{display:block}}
+@media (prefers-reduced-motion:reduce){details.ab-qsec>summary::after{transition:none}}
 @media (max-width:1020px){.ab-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:860px){.ab-layout{grid-template-columns:1fr;gap:16px}.ab-toc{position:static;max-height:none;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}.ab-toc ol{columns:2;column-gap:16px;display:block}.ab-toc li{break-inside:avoid}}
-@media (max-width:520px){.ab-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.ab-toc ol{columns:1}.ab-sec h2{font-size:1.45rem}}
+@media (max-width:860px){.ab-layout{grid-template-columns:1fr;gap:16px}.ab-toc{position:static;max-height:none;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}}
+@media (max-width:520px){.ab-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.ab-sec h2{font-size:1.45rem}}
 /* ---- Motions 101: Motions in brief ---- */
 .mb-lede{font-size:1.15rem;max-width:62ch}
 .mb-alert{display:flex;gap:12px;align-items:flex-start;max-width:62ch;margin:16px 0 26px;padding:12px 16px;background:var(--warn-bg);border-left:4px solid var(--warn);border-radius:8px}
@@ -1677,30 +1714,7 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
     <div class="page-head"><div><div class="eyebrow">About</div><h1>What is Motion Advisor?</h1><p>Motion Advisor helps lawyers decide whether it’s worth using AI to draft a motion. A short assessment calculates the risk and gives a report with suggestions for using AI safely. This page explains the whole application: what each tool does, the questions and scores, the formulas, the legal sources and how the site is built.</p></div></div>
     <dl class="ab-facts" id="ab-facts"></dl>
     <div class="ab-layout">
-      <nav class="ab-toc" aria-label="On this page">
-        <p class="ab-toc-h">On this page</p>
-        <ol>
-          <li><a href="#about" data-ab="ab-overview">Overview</a></li>
-          <li><a href="#about" data-ab="ab-tools">The tools</a></li>
-          <li><a href="#about" data-ab="ab-journey">How a user moves through it</a></li>
-          <li><a href="#about" data-ab="ab-questions">The assessment questions</a></li>
-          <li><a href="#about" data-ab="ab-formulas">Scoring formulas</a></li>
-          <li><a href="#about" data-ab="ab-example">Worked example</a></li>
-          <li><a href="#about" data-ab="ab-stops">Automatic stops</a></li>
-          <li><a href="#about" data-ab="ab-report">The result report</a></li>
-          <li><a href="#about" data-ab="ab-options">Compare Your Options</a></li>
-          <li><a href="#about" data-ab="ab-scanner">Draft scanner</a></li>
-          <li><a href="#about" data-ab="ab-cites">Citation Toolkit</a></li>
-          <li><a href="#about" data-ab="ab-game">Redaction Game</a></li>
-          <li><a href="#about" data-ab="ab-motions">Motions 101</a></li>
-          <li><a href="#about" data-ab="ab-sources">Legal sources</a></li>
-          <li><a href="#about" data-ab="ab-privacy">Privacy and data</a></li>
-          <li><a href="#about" data-ab="ab-tech">How it’s built</a></li>
-          <li><a href="#about" data-ab="ab-tests">Testing and validation</a></li>
-          <li><a href="#about" data-ab="ab-limits">Limits and judgment calls</a></li>
-          <li><a href="#about" data-ab="ab-credits">Who built it</a></li>
-        </ol>
-      </nav>
+      <nav class="ab-toc" id="ab-toc" aria-label="About chapters"></nav>
       <div class="ab-main">
 
         <section class="ab-sec" id="ab-overview" aria-labelledby="ab-overview-h"><h2 id="ab-overview-h">Overview</h2>
@@ -1733,7 +1747,7 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
         </section>
 
         <section class="ab-sec" id="ab-questions" aria-labelledby="ab-questions-h"><h2 id="ab-questions-h">The assessment questions</h2>
-          <p>Every answer carries risk points, from 0 for the safest answer upward. The table below is read directly from config.js, so it always matches the tool.</p>
+          <p>Every answer carries risk points, from 0 for the safest answer upward. Open a section to see its questions and points. The list is read directly from config.js, so it always matches the tool.</p>
           <div id="ab-qtable"></div>
           <h3>Special question types</h3>
           <ul class="ab-list">
@@ -1878,6 +1892,7 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
         <section class="ab-sec" id="ab-credits" aria-labelledby="ab-credits-h"><h2 id="ab-credits-h">Who built it</h2>
           <p>Developed by Shivani Dahya at Suffolk Law School for Decision Making and Choice Management, as a decision-support tool for lawyers adopting AI responsibly. Configuration version <span id="ab-version"></span>.</p>
         </section>
+        <div class="ab-pager" id="ab-pager"></div>
       </div>
     </div>
   </div>
@@ -3362,12 +3377,13 @@ function renderAbout(){
   $("#ab-facts").innerHTML=facts.map(([n,l])=>`<div><dt>${esc(l)}</dt><dd>${esc(n)}</dd></div>`).join("");
   const optList=os=>`<ul class="ab-opts">${os.map(o=>`<li><span>${esc(o.label)}</span><b>${pts(o.score)}</b></li>`).join("")}</ul>`;
   $("#ab-qtable").innerHTML=AS.sections.map(sec=>{const mx=sec.qs.reduce((m,q)=>m+maxQ(q),0);
-    return `<div class="ab-qsec"><h3>${esc(sec.title)} <span class="ab-w">weight ${sec.weight}× · maximum ${mx} points</span></h3><ol class="ab-qs">${sec.qs.map(q=>{
+    return `<details class="ab-qsec"><summary><h3>${esc(sec.title)} <span class="ab-w">${sec.qs.length} questions · weight ${sec.weight}× · maximum ${mx} points</span></h3></summary><ol class="ab-qs">${sec.qs.map(q=>{
       let body;
       if(q.type==="branch"){const fol=Object.entries(q.follow);
         body=`<p class="ab-sub">Main answers: ${q.main.options.map(o=>esc(o.label)).join(" · ")}</p>${fol.map(([k,fs])=>fs.map(x=>`<p class="ab-sub">If “${esc((q.main.options.find(o=>o.v===k)||{}).label||k)}”: ${esc(x.text)} <span class="muted">(${x.options.filter(o=>!o.hidden).map(o=>esc(o.short||o.label)).join(" · ")})</span></p>`).join("")).join("")}<p class="ab-sub"><b>Scored as:</b></p>${optList(q.options)}`}
       else body=`${q.multi?`<p class="ab-sub">Select all that apply; the riskiest selection sets the score.</p>`:""}${optList(q.options)}${q.followUp?`<p class="ab-sub">Follow-up when “${esc((q.options.find(o=>o.v===q.followUp.showFor)||{}).label||"")}”: ${esc(q.followUp.label||q.followUp.text||"")} (no points).</p>`:""}`;
-      return `<li><p class="ab-q">${esc(q.text)}</p>${body}</li>`}).join("")}</ol></div>`}).join("");
+      return `<li><p class="ab-q">${esc(q.text)}</p>${body}</li>`}).join("")}</ol></details>`}).join("")+`<p class="ab-expand"><button type="button" class="rs-link" id="ab-qall">Open all six sections</button></p>`;
+  $("#ab-qall").addEventListener("click",e=>{const ds=$$("#ab-qtable details"),open=!ds.every(d=>d.open);ds.forEach(d=>d.open=open);e.target.textContent=open?"Close all sections":"Open all six sections"});
   $("#ab-levelcuts").textContent=`Below ${AS.levelCuts.moderate} is Low, below ${AS.levelCuts.high} is Moderate, and ${AS.levelCuts.high} or above is High.`;
   $("#ab-weights").textContent="Weights: "+AS.sections.map(x=>`${x.title} ${x.weight}×`).join(", ")+".";
   let lo=0;$("#ab-verdicts").textContent=AS.verdicts.map(v=>{const t=`${lo}–${v.max}: “${v.verdict}”`;lo=v.max+1;return t}).join("; ")+".";
@@ -3388,13 +3404,42 @@ function renderAbout(){
   $("#ab-srcgroups").innerHTML=`<ul class="ab-list">${RULE_GROUPS.map(([g,t,d])=>{const list=RULES.filter(r=>r.g===g);return `<li><b>${esc(t)} (${list.length}):</b> ${list.map(r=>esc(r.short)).join("; ")}.</li>`}).join("")}</ul>`;
   $("#ab-personas").innerHTML=`<div class="rec-scroll"><table class="rec-table ab-table"><thead><tr><th scope="col">Persona</th><th class="n" scope="col">Risk index</th><th scope="col">Verdict</th></tr></thead><tbody>${AS.personas.map(p=>{const r=ENG.assess(p.a);return `<tr><th scope="row">${esc(p.name)}<br><span class="muted">${esc(p.desc)}</span></th><td class="n">${r.index}</td><td>${esc(r.verdict)}</td></tr>`}).join("")}</tbody></table></div>`;
   $("#ab-version").textContent=CFG.version||"";
-  /* table of contents: scroll without changing the route */
-  $$("#v-about [data-ab]").forEach(l=>l.addEventListener("click",e=>{e.preventDefault();const t=$("#"+l.dataset.ab);if(!t)return;const rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;t.scrollIntoView({behavior:rm?"auto":"smooth",block:"start"});const h=t.querySelector("h2");if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}));
-  /* highlight the section being read: the last one whose top has passed under the header */
-  const abSecs=$$(".ab-sec"),links=$$(".ab-toc a");let tick=false;
-  const mark=()=>{tick=false;if($("#v-about").hidden)return;let cur=abSecs[0];abSecs.forEach(x=>{if(x.getBoundingClientRect().top<=140)cur=x});
-    links.forEach(a=>{const on=a.dataset.ab===cur.id;a.classList.toggle("cur",on);if(on)a.setAttribute("aria-current","true");else a.removeAttribute("aria-current")})};
-  window.addEventListener("scroll",()=>{if(!tick){tick=true;requestAnimationFrame(mark)}},{passive:true});mark();
+  /* chapters: one shown at a time, with sub-section links; "Show everything" lists the whole page (and printing always does) */
+  const CH=[["start","Start here","Overview, the tools, the user’s path",["ab-overview","ab-tools","ab-journey"]],
+    ["scoring","How scoring works","Questions and points, formulas, a worked example",["ab-questions","ab-formulas","ab-example"]],
+    ["result","Stops and the result","Automatic stops, what the report shows",["ab-stops","ab-report"]],
+    ["tools","The tools in depth","Compare Your Options, scanner, citations, game, Motions 101",["ab-options","ab-scanner","ab-cites","ab-game","ab-motions"]],
+    ["sources","Sources and privacy","Where the law comes from, what is stored",["ab-sources","ab-privacy"]],
+    ["build","Build and validation","Files, tests, limits, credits",["ab-tech","ab-tests","ab-limits","ab-credits"]]];
+  const title=id=>{const h=$("#"+id+" h2");return h?h.textContent:id};
+  const st={ch:"start",all:false};try{const v=sessionStorage.getItem("motionAdvisor.aboutCh");if(CH.some(c=>c[0]===v))st.ch=v}catch(e){}
+  const toc=$("#ab-toc");
+  toc.innerHTML=`<p class="ab-toc-h" id="ab-toc-h">Chapters</p><ol class="ab-chs">${CH.map(([id,t,sub,secs],i)=>`<li><button type="button" class="ab-ch" data-ch="${id}"><span class="ab-ch-n">${i+1}</span><span><b>${esc(t)}</b><span class="ab-ch-sub">${esc(sub)}</span></span></button><ol class="ab-subs">${secs.map(x=>`<li><a href="#about" data-ab="${x}">${esc(title(x))}</a></li>`).join("")}</ol></li>`).join("")}</ol><button type="button" class="ab-all" id="ab-all" aria-pressed="false">Show everything on one page</button>`;
+  const show=(focus)=>{const cur=CH.find(c=>c[0]===st.ch);
+    CH.forEach(([id,, ,secs])=>secs.forEach(x=>{$("#"+x).hidden=!st.all&&id!==st.ch}));
+    $$(".ab-ch",toc).forEach(b=>{const on=!st.all&&b.dataset.ch===st.ch;b.classList.toggle("on",on);if(on)b.setAttribute("aria-current","true");else b.removeAttribute("aria-current");b.closest("li").classList.toggle("open",on||st.all)});
+    const onb=$(".ab-ch.on",toc);if(onb&&$(".ab-chs",toc).scrollWidth>$(".ab-chs",toc).clientWidth)$(".ab-chs",toc).scrollTo({left:onb.parentElement.offsetLeft-12,behavior:"auto"});
+    $("#ab-all").setAttribute("aria-pressed",st.all);$("#ab-all").textContent=st.all?"Show one chapter at a time":"Show everything on one page";
+    const i=CH.indexOf(cur),pv=CH[i-1],nx=CH[i+1];
+    $("#ab-pager").innerHTML=st.all?"":`${pv?`<button type="button" class="ab-pg prev" data-go="${pv[0]}"><span>← Previous</span><b>${esc(pv[1])}</b></button>`:"<span></span>"}${nx?`<button type="button" class="ab-pg next" data-go="${nx[0]}"><span>Next →</span><b>${esc(nx[1])}</b></button>`:""}`;
+    $$("#ab-pager [data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go,true)));
+    if(focus){const first=$("#"+(st.all?"ab-overview":cur[3][0]));const top=$(".ab-layout").getBoundingClientRect().top+scrollY-90;window.scrollTo({top,behavior:rm()?"auto":"smooth"});const h=first.querySelector("h2");h.tabIndex=-1;h.focus({preventScroll:true})}
+    mark()};
+  const rm=()=>window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const go=(id,focus)=>{st.ch=id;st.all=false;try{sessionStorage.setItem("motionAdvisor.aboutCh",id)}catch(e){}show(focus)};
+  toc.addEventListener("click",e=>{const b=e.target.closest(".ab-ch");if(b){go(b.dataset.ch,true);return}
+    if(e.target.closest("#ab-all")){st.all=!st.all;show(true)}});
+  /* section links (in the chapter list and in the text): open the right chapter, then scroll */
+  $("#v-about").addEventListener("click",e=>{const l=e.target.closest("[data-ab]");if(!l)return;e.preventDefault();const t=$("#"+l.dataset.ab);if(!t)return;
+    const c=CH.find(c=>c[3].includes(l.dataset.ab));if(t.hidden&&c){st.ch=c[0];st.all=false;try{sessionStorage.setItem("motionAdvisor.aboutCh",c[0])}catch(e){}show(false)}
+    t.scrollIntoView({behavior:rm()?"auto":"smooth",block:"start"});const h=t.querySelector("h2");if(h){h.tabIndex=-1;h.focus({preventScroll:true})}});
+  /* highlight the section being read */
+  const links=$$(".ab-subs a",toc);let tick=false;
+  function mark(){tick=false;if($("#v-about").hidden)return;const vis=$$(".ab-sec").filter(x=>!x.hidden);if(!vis.length)return;let cur=vis[0];vis.forEach(x=>{if(x.getBoundingClientRect().top<=140)cur=x});
+    links.forEach(a=>{const on=a.dataset.ab===cur.id;a.classList.toggle("cur",on);if(on)a.setAttribute("aria-current","location");else a.removeAttribute("aria-current")})}
+  window.addEventListener("scroll",()=>{if(!tick&&!$("#v-about").hidden){tick=true;requestAnimationFrame(mark)}},{passive:true});
+  window.addEventListener("hashchange",()=>setTimeout(mark,80));setTimeout(mark,120);
+  show(false);
 }
 
 /* ---------------- RULES & SOURCES ---------------- */
