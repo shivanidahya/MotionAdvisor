@@ -269,9 +269,12 @@ ol.flow{margin:0;padding-left:1.3em;display:grid;gap:9px;font-size:.93rem}
 .why-x{font-size:.92rem}
 @media (max-width:480px){.why-row{grid-template-columns:minmax(0,1fr);gap:4px}}
 .more-btn{width:max-content}
-.res-faq > summary,.src-acc > summary{cursor:pointer;font-family:var(--f-ui);font-weight:600;padding:12px 0}
-.res-faq details{padding:6px 0 6px 14px}.res-faq details summary{cursor:pointer}
-.res-faq details p{margin:6px 0 0;color:var(--ink-2);max-width:68ch}
+.src-acc > summary{cursor:pointer;font-family:var(--f-ui);font-weight:600;padding:12px 0}
+.res-faq{margin-top:40px}
+.res-faq h3{font-size:1.3rem;margin:0 0 6px}
+.res-faq details{border-bottom:1px solid var(--line)}
+.res-faq summary{cursor:pointer;padding:12px 0;font-weight:600}
+.res-faq details p{margin:0 0 14px;color:var(--ink-2);max-width:68ch}
 .plan{margin:0;padding-left:1.6em;display:grid;gap:12px;max-width:72ch}
 .plan label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
 .plan input{margin-top:5px;accent-color:var(--ok);flex-shrink:0}
@@ -1959,7 +1962,6 @@ function resultHTML(r){
       <div class="res-chips" role="group" aria-label="Risk by section. Choose a section to see why.">${r.factors.map(f=>`<button type="button" class="res-chip ${LV(f.level)}" data-chip="${f.id}" aria-expanded="${f===top}" aria-controls="chip-panel"><span class="lv-ic ${LV(f.level)}" aria-hidden="true">${LV_IC[LV(f.level)]}</span><span class="chip-t">${esc(f.title)}</span><span class="chip-l">${esc(f.level)}</span></button>`).join("")}</div>
       <div class="chip-panel" id="chip-panel" role="region" aria-live="polite" aria-label="Section explanation">${factorDetailHTML(top)}</div>
     </div>
-    <details class="res-faq"><summary>Common questions about this result</summary>${FAQ.map(([q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</details>
   </div>
   <div class="res-panel" role="tabpanel" id="rp-plan" aria-labelledby="rt-plan" tabindex="0" ${tab==="plan"?"":"hidden"}>
     <h3>Before you file</h3><p class="muted res-note">Most important first. Tick items off as you go; ticks aren’t saved.</p>
@@ -1972,6 +1974,7 @@ function resultHTML(r){
     <p class="res-link"><a href="#rules">See every source on the Rules &amp; Sources page →</a></p>
   </div>
   <div class="cmp-cta no-print"><p><b>Want to see the tradeoffs?</b></p><button class="btn" id="adv-compare">Compare your options →</button></div>
+  <section class="res-faq" aria-labelledby="res-faq-h"><h3 id="res-faq-h">FAQ</h3>${FAQ.map(([q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</section>
   <p class="muted res-disclaimer">Not legal advice. This result depends on your answers and does not replace attorney judgment or final review.</p>`;
 }
 function bindResult(){
