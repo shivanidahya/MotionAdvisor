@@ -1079,6 +1079,18 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
 .v-ic.ok{background:var(--ok)}.v-ic.warn{background:var(--warn)}.v-ic.bad{background:var(--bad)}
 .or-prev-v{display:grid}.or-prev-v b{font-size:1.1rem}
 .or-prev-n{font-size:.9rem;color:var(--ink-2)}
+.ct-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px;overflow-x:auto}
+.ct-tabs[hidden]{display:none}
+.ct-tabs [role=tab]{all:unset;cursor:pointer;flex-shrink:0;padding:10px 14px;font-family:var(--f-ui);font-weight:600;font-size:.9rem;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.ct-tabs [role=tab][aria-selected=true]{color:var(--ink);border-bottom-color:var(--ink)}
+.ct-tabs [role=tab]:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:4px}
+.ct-n{display:inline-block;margin-left:4px;padding:0 7px;border-radius:999px;background:var(--sunk);font-size:.78rem}
+.ct-n:empty{display:none}
+.ct-panel{max-height:min(70vh,720px);overflow-y:auto;padding-right:4px;overscroll-behavior:contain}
+.ct-panel:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ct-panel .vt-wrap{margin:0}
+.ct-panel .vt thead th{position:sticky;top:0;z-index:1}
+@media (max-width:760px){.ct-panel{max-height:none;overflow:visible}}
 .gs-steps{margin:10px 0 0;padding-left:1.3em;display:grid;gap:6px;color:var(--ink-2)}
 .ma-modal-scrim{position:fixed;inset:0;background:rgba(10,12,30,.45);z-index:90}
 .ma-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:91;width:min(480px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 60px rgba(10,20,40,.3);padding:24px 24px 20px}
@@ -1334,8 +1346,12 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
             <div class="export-row" role="group" aria-label="Download the citation checklist"><span class="muted" style="font-size:.82rem">Optional checklist:</span><button class="btn sm" id="cite-xlsx">Excel (.xlsx)</button><a class="btn sm" id="cite-gsheet" href="https://sheets.new" target="_blank" rel="noopener">Google Sheets ↗</a><button class="btn sm" id="cite-csv">CSV</button><button class="btn sm" id="cite-pdf">PDF</button></div>
           </div>
           
-          <div id="cite-track"></div>
-          <div id="cite-list"></div>
+          <div class="ct-tabs" role="tablist" aria-label="Citation results" hidden>
+            <button type="button" role="tab" id="ctt-list" aria-controls="ctp-list" aria-selected="true">Citations <span class="ct-n" id="ctn-list"></span></button>
+            <button type="button" role="tab" id="ctt-track" aria-controls="ctp-track" aria-selected="false" tabindex="-1">Verification tracker <span class="ct-n" id="ctn-track"></span></button>
+          </div>
+          <div role="tabpanel" id="ctp-list" aria-labelledby="ctt-list" class="ct-panel" tabindex="0"><div id="cite-list"></div></div>
+          <div role="tabpanel" id="ctp-track" aria-labelledby="ctt-track" class="ct-panel" tabindex="0" hidden><div id="cite-track"></div></div>
         </div>
       </div>
     </div>
@@ -2355,7 +2371,8 @@ const VCHECKS=["Pulled & read","Pincite supports","Quote matches","Good law"];
 let lastParse=null;
 function runCites(){
   const text=$("#brief").value; const res=parseCitations(text); lastParse=res;
-  const cases=res.items.filter(i=>i.kind==="Case"),others=res.items.length-cases.length;
+  /* the same citation repeated in the draft is tracked once */
+  const cases=res.items.filter(i=>i.kind==="Case").filter((c,k,arr)=>arr.findIndex(x=>x.cite===c.cite)===k),others=res.items.filter(i=>i.kind!=="Case").length;
   const verified=cases.filter(c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j])).length;
   $("#cite-summary").innerHTML=`<div><b>${res.items.length}</b><span>Citations found</span></div><div><b>${cases.length}</b><span>Cases</span></div><div><b>${others}</b><span>Statutes and rules</span></div><div><b style="color:var(--ok)" id="cite-verified">${verified}/${cases.length}</b><span>Cases verified</span></div>`;
   // highlight
@@ -2365,8 +2382,9 @@ function runCites(){
   html+=esc(text.slice(pos));
   $("#cite-hl").innerHTML=html||'<span class="muted">Nothing to show yet.</span>';
   const list=$("#cite-list");
+  $(".ct-tabs").hidden=!res.items.length;$("#ctn-list").textContent=res.items.length;$("#ctn-track").textContent=cases.length?cases.filter(c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j])).length+"/"+cases.length:"";
   if(!res.items.length){$("#cite-track").innerHTML="";list.innerHTML='<div class="card muted">No citations found. Paste a draft with case, statute or rule citations and select Find citations.</div>';return}
-  $("#cite-track").innerHTML=trackerHTML(cases);
+  $("#cite-track").innerHTML=trackerHTML(cases)||'<p class="muted">No cases to track. Statutes and rules are listed under Citations.</p>';
   list.innerHTML=res.items.map((it,i)=>{const q=encodeURIComponent(it.query),k=kindCls(it.kind);
     return `<div class="cite-item ${k}"><div class="ch"><div style="min-width:0"><div class="ct">${esc(it.cite)}</div>${it.name?`<div class="cn">${esc(it.name)}</div>`:""}</div><span class="pill ${k}">${esc(it.kind)}</span></div>
     <div class="vlinks"><a href="https://1.next.westlaw.com/Link/Document/FullText?findType=Y&cite=${encodeURIComponent(it.query.replace(/"/g,""))}" target="_blank" rel="noopener">Westlaw ↗</a><a href="https://plus.lexis.com/" target="_blank" rel="noopener" data-copy="${esc(it.query.replace(/"/g,""))}">Lexis+ AI ↗</a><a href="https://www.courtlistener.com/?q=${q}" target="_blank" rel="noopener">CourtListener ↗</a></div>
@@ -2374,6 +2392,10 @@ function runCites(){
   $$("[data-copy]").forEach(a=>a.addEventListener("click",()=>{const c=a.dataset.copy;const fail=()=>toast("Paste this citation into Lexis+ AI: "+c);try{navigator.clipboard?navigator.clipboard.writeText(c).then(()=>toast("Copied “"+c+"”. Paste it into Lexis+ AI."),fail):fail()}catch(e){fail()}}));
   bindVerify(cases);
 }
+/* results tabs: Citations | Verification tracker (each scrolls on its own, so a long draft doesn't make an endless page) */
+function initCiteTabs(){const tabs=$$(".ct-tabs [role=tab]");
+  const sel=(t,f)=>{tabs.forEach(b=>{const on=b===t;b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1;$("#"+b.getAttribute("aria-controls")).hidden=!on});if(f)t.focus()};
+  tabs.forEach((b,i)=>{b.addEventListener("click",()=>sel(b));b.addEventListener("keydown",e=>{let n=null;if(e.key==="ArrowRight")n=(i+1)%tabs.length;else if(e.key==="ArrowLeft")n=(i-1+tabs.length)%tabs.length;else if(e.key==="Home")n=0;else if(e.key==="End")n=tabs.length-1;if(n!==null){e.preventDefault();sel(tabs[n],true)}})})}
 function kindCls(k){return k==="Case"?"k-case":k==="Rule"?"k-rule":"k-stat"}
 /* the tracker: one row per case, one column per check; its boxes and the cards' boxes stay in sync */
 function trackerHTML(cases){
@@ -2389,7 +2411,7 @@ function bindVerify(cases){
     $$("[data-vk]").forEach(x=>{if(x.dataset.vk===k)x.checked=c.checked});
     const v=cases.filter(st).length;$("#cite-verified").textContent=v+"/"+cases.length;
     VCHECKS.forEach((x,j)=>{const t=$(`[data-vcount="${j}"]`);if(t)t.textContent=cases.filter(cc=>verifyState[cc.cite+"|"+j]).length+"/"+cases.length});
-    const a=$('[data-vcount="all"]');if(a)a.textContent=v+"/"+cases.length;
+    const a=$('[data-vcount="all"]');if(a)a.textContent=v+"/"+cases.length;const tn=$("#ctn-track");if(tn)tn.textContent=v+"/"+cases.length;
     $$("[data-vs]").forEach(td=>{const cc=cases.find(x=>x.cite===td.dataset.vs);const d=cc&&st(cc);td.textContent=d?"✓ Verified":"Open";td.classList.toggle("done",!!d);td.classList.toggle("open",!d)})}))}
 /* ---- Optional checklist exports: Excel, Google Sheets, CSV ---- */
 const EXCELJS_URL="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
@@ -2564,7 +2586,7 @@ function initCites(){
   $("#cite-xlsx").addEventListener("click",exportXlsx);
   $("#cite-csv").addEventListener("click",exportCsv);
   $("#cite-pdf").addEventListener("click",exportPdf);
-  $("#cite-gsheet").addEventListener("click",exportGsheet);initGs();
+  $("#cite-gsheet").addEventListener("click",exportGsheet);initGs();initCiteTabs();
 
 
   runCites();
