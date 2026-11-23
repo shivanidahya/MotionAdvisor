@@ -424,16 +424,12 @@
        ====================================================================== */
     optionsReport: {
       options: [
-        { id: "none", name: "Draft without AI", noAI: true, usefulness: 0,
-          desc: "You research and write the motion yourself. No AI tool sees any part of it." },
+        { id: "none", name: "Draft without AI", noAI: true, usefulness: 0,},
         { id: "format", name: "AI for formatting and proofreading only", taskAs: "format", allows: ["format"], usefulness: 1,
-          notCounted: ["citeCheck"],     // proofreading adds no citations  REVIEW
-          desc: "AI tidies the layout and catches typos in text you wrote. It adds no law or facts." },
+          notCounted: ["citeCheck"],     // proofreading adds no citations  REVIEW},
         { id: "organize", name: "AI to organize and summarize your own material", taskAs: "summarize", allows: ["format", "outline", "summarize"], usefulness: 2,
-          halfCounted: ["citeCheck"],    // you supply the authorities; AI summaries can still misstate them  REVIEW
-          desc: "AI outlines your arguments or summarizes documents you give it. You supply every authority." },
-        { id: "draft", name: "AI to draft argument sections (with full verification)", taskAs: "draft", allows: ["format", "outline", "summarize", "draft"], usefulness: 3,
-          desc: "AI writes first drafts of argument sections, and you check every citation and fact." }
+          halfCounted: ["citeCheck"],    // you supply the authorities; AI summaries can still misstate them  REVIEW },
+        { id: "draft", name: "AI to draft argument sections (with full verification)", taskAs: "draft", allows: ["format", "outline", "summarize", "draft"], usefulness: 3 }
       ],
       /* Which options each automatic stop blocks. "Draft without AI" is never blocked. */
       blocks: {
