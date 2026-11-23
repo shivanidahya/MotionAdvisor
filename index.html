@@ -906,21 +906,77 @@ table.mx tfoot tr+tr th,table.mx tfoot tr+tr td{border-top:1px solid var(--line)
 .rec-sub:first-child{margin-top:0}
 .rec-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 /* How this works */
-.mflow{list-style:none;margin:0 0 34px;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:30px}
-.mflow li{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 16px 14px;display:grid;gap:6px;align-content:start}
-.mflow li:not(:last-child)::after{content:"→";position:absolute;right:-24px;top:50%;transform:translateY(-50%);font-family:var(--f-ui);font-size:1.2rem;color:var(--accent-2)}
-.mflow .fn{font-family:var(--f-mono);font-size:.78rem;color:var(--accent-2)}
-.mflow b{font-family:var(--f-display);font-weight:400;font-size:1.3rem;line-height:1.1}
-.mflow p{font-size:.86rem;color:var(--muted)}
-.mflow .branch{margin-top:4px;font-size:.8rem;font-family:var(--f-ui);color:var(--bad);display:flex;gap:6px;align-items:center}
-.method-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.method-grid .card h2{font-size:1.4rem;margin-bottom:8px}
-.method-grid .card p+p,.method-grid .card p+ul,.method-grid .card ul+p{margin-top:8px}
-.method-grid .card ul{margin:0;padding-left:1.1em;display:grid;gap:4px;font-size:.94rem}
-.method-grid .wide{grid-column:1/-1}
+/* ---- How this works ---- */
+.hw .page-head{padding-bottom:6px}
+.hw .page-head p.hw-quiet,.hw-quiet{color:var(--muted);font-size:.92rem;margin-top:10px}
+.hw a{color:var(--ink);text-underline-offset:3px}
+.hw .btn.primary{color:var(--accent-ink)}
+.hw-sec{margin-top:60px}
+.hw-sec:first-of-type{margin-top:30px}
+.hw-h{font-size:1.55rem;margin-bottom:16px}
+.hw .formula{white-space:normal}
+.hw-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:36px;row-gap:16px}
+.hw-card{grid-row:1;position:relative;display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:12px 12px;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 16px 18px;cursor:pointer;align-content:start;transition:border-color .15s,box-shadow .15s}
+.hw-card:hover{border-color:var(--ink-2)}
+.hw-card:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.hw-card[aria-expanded="true"]{border-color:var(--ink-2);box-shadow:0 6px 20px color-mix(in srgb,var(--ink) 10%,transparent)}
+.hw-card:not(#hw-b1)::before{content:"→";position:absolute;left:-29px;top:50%;transform:translateY(-50%);font-family:var(--f-ui);font-size:1.2rem;color:var(--muted)}
+.hw-num{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-ui);font-weight:700;font-size:.95rem}
+.hw-ic{width:26px;height:26px;fill:none;stroke:var(--ink-2);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hw-chev{grid-row:1;grid-column:3;justify-self:end;margin-right:4px;width:9px;height:9px;border-right:2px solid var(--ink-2);border-bottom:2px solid var(--ink-2);transform:rotate(45deg) translate(-2px,-2px);transition:transform .18s}
+.hw-card[aria-expanded="true"] .hw-chev{transform:rotate(-135deg) translate(-2px,-2px)}
+.hw-t{grid-column:1/-1;display:grid;gap:4px}
+.hw-t b{font-family:var(--f-display);font-weight:500;font-size:1.32rem;line-height:1.15}
+.hw-sub{font-size:.88rem;color:var(--ink-2)}
+.hw-panel{grid-column:1/-1;grid-row:2;background:var(--sunk);border-radius:12px;padding:18px 22px;display:grid;gap:10px;justify-items:start}
+.hw-panel:not([hidden]){animation:hwIn .2s ease-out}
+.hw-panel p,.hw-more p{max-width:78ch}
+.hw-panel .rec-scroll{width:100%;max-width:520px}
+@keyframes hwIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.hw-link{background:none;border:0;padding:2px 0;font:inherit;font-size:.92rem;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;justify-self:start}
+.hw-link::after{content:" ▾";text-decoration:none;display:inline-block;margin-left:4px;font-size:.8em}
+.hw-link[aria-expanded="true"]::after{content:" ▴"}
+.hw-link:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:3px}
+.hw-more{display:grid;gap:10px;margin-top:10px;width:100%}
+.hw-bar{display:flex;gap:4px;height:12px}
+.hw-bar span{border-radius:99px}
+.hw-bar .ok,.hw-scale .ok .hw-vi{background:var(--ok)}.hw-bar .warn,.hw-scale .warn .hw-vi{background:var(--warn)}.hw-bar .bad,.hw-scale .bad .hw-vi{background:var(--bad)}
+.hw-scale{list-style:none;margin:12px 0 0;padding:0;display:flex;gap:4px}
+.hw-scale li{display:flex;gap:10px;align-items:flex-start;min-width:0;padding-right:8px}
+.hw-vi{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:var(--surface)}
+.hw-scale .bad .hw-vi{border-radius:6px}
+.hw-vi svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.hw-scale .rng{display:block;font-family:var(--f-mono);font-size:.8rem;color:var(--ink-2)}
+.hw-scale .lbl{font-weight:600;font-size:.98rem;line-height:1.3}
+.hw-stops{background:var(--bad-bg);border-left:4px solid var(--bad);border-radius:10px;padding:18px 22px}
+.hw-stops h2{font-family:var(--f-ui);font-size:1.02rem;font-weight:700;display:flex;gap:10px;align-items:center;outline:none}
+.hw-stop-ic{flex:none;width:22px;height:22px;fill:none;stroke:var(--bad);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hw-stop-list{margin:12px 0 0;padding-left:1.2em;display:grid;gap:6px;font-size:.95rem}
+.hw-stops .hw-link{margin-top:10px}
+.hw-not{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.hw-not li{background:var(--sunk);border-radius:12px;padding:16px 18px;display:grid;gap:6px;align-content:start}
+.hw-not b{font-family:var(--f-ui);font-size:.98rem}
+.hw-not span{font-size:.9rem;color:var(--ink-2)}
+.hw-not+.hw-quiet{margin-top:14px}
+.hw-rev summary{cursor:pointer;font-family:var(--f-ui);font-weight:600;padding:6px 0;width:fit-content;max-width:100%}
+.hw-rev summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:3px}
+.hw-rev-in{display:grid;gap:10px;margin-top:10px;padding-left:18px}
+.hw-rev-in p{max-width:78ch}
+.hw-end{margin:64px 0 28px;display:flex;justify-content:center}
+@media (max-width:1020px){.hw-not{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:900px){
+  .hw-flow{grid-template-columns:1fr;row-gap:10px}
+  .hw-card,.hw-panel{grid-row:auto}
+  .hw-card:not(#hw-b1){margin-top:26px}
+  .hw-card:not(#hw-b1)::before{content:"↓";left:28px;top:-27px;transform:none}
+  .hw-scale{flex-direction:column;gap:12px}
+  .hw-scale li{flex:none!important}
+}
+@media (max-width:600px){.hw-not{grid-template-columns:1fr}.hw-sec{margin-top:48px}.hw-end .btn-xl{width:100%;box-sizing:border-box;justify-content:center;text-align:center}.hw-panel{padding:16px 16px}.hw-stops{padding:16px 16px}}
+@media (prefers-reduced-motion:reduce){.hw-panel:not([hidden]){animation:none}.hw-chev,.hw-card{transition:none}}
 .formula{font-family:var(--f-mono);font-size:.86rem;background:var(--sunk);border-radius:6px;padding:10px 12px;margin:8px 0;overflow-x:auto;white-space:nowrap}
-@media (max-width:1020px){.mx-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"w" "m" "r" "u"}.mx-layout>.a-r{position:static}.mflow{grid-template-columns:1fr;gap:26px}.mflow li:not(:last-child)::after{content:"↓";right:auto;left:50%;top:auto;bottom:-24px;transform:translateX(-50%)}}
-@media (max-width:760px){.stagebar{grid-template-columns:repeat(4,minmax(0,1fr))}.stagebar button{flex-direction:column;gap:4px;padding:8px 4px;text-align:center;font-size:.76rem}.stagebar .lbl-long{display:none}.gate-card dl{grid-template-columns:1fr}.gate-card dd{margin-bottom:6px}.dec-summary{grid-template-columns:1fr}.method-grid{grid-template-columns:1fr}.record{padding:20px 18px}.rec-dl{grid-template-columns:1fr}.rec-dl dd{margin-bottom:6px}
+@media (max-width:1020px){.mx-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"w" "m" "r" "u"}.mx-layout>.a-r{position:static}}
+@media (max-width:760px){.stagebar{grid-template-columns:repeat(4,minmax(0,1fr))}.stagebar button{flex-direction:column;gap:4px;padding:8px 4px;text-align:center;font-size:.76rem}.stagebar .lbl-long{display:none}.gate-card dl{grid-template-columns:1fr}.gate-card dd{margin-bottom:6px}.dec-summary{grid-template-columns:1fr}.record{padding:20px 18px}.rec-dl{grid-template-columns:1fr}.rec-dl dd{margin-bottom:6px}
   .wt-row{grid-template-columns:minmax(0,1fr) 34px auto}.wt-row .txt{grid-column:1/-1;grid-row:auto}.wt-row .ctl{grid-column:1/2;grid-row:auto}.wt-row output{grid-column:2/3;grid-row:auto}.wt-row .end{grid-column:3/4;grid-row:auto}}
 @media (min-width:761px){.stagebar .lbl-short{display:none}}
 @media (max-width:760px){.choose .opt{flex-wrap:wrap}.choose .opt>span:not(.rk){flex:1 1 calc(100% - 40px)}.choose .opt .rk{margin-left:26px;padding-left:0}table.mx th[scope=row]{min-width:118px}}
@@ -1245,7 +1301,7 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
   <div class="band"><div class="wrap">
     <div class="band-head"><div><div class="eyebrow">The portal</div><h2>Four tools, one drafting decision</h2></div><p>The assessment reports whether and how to use AI. The other three tools help you build the skills: a citation checklist, learn what information is sensitive information, and learn which motion you are drafting.</p></div>
     <div class="feature-grid">
-      <a class="feature" href="#advisor" data-start-assessment><span class="eyebrow">Assessment</span><h3>Drafting Advisor</h3><p>Answer a few questions about your motion and AI tool, and get a report on the risks and how to use AI safely.</p><div class="tags"><span class="tag">7 questions</span><span class="tag">Risk level</span><span class="tag">Your Report</span></div><span class="go">Start assessment →</span></a>
+      <a class="feature" href="#advisor" data-start-assessment><span class="eyebrow">Assessment</span><h3>Drafting Advisor</h3><p>Answer a few questions about your motion and AI tool, and get a report on the risks and how to use AI safely.</p><div class="tags"><span class="tag"><span data-cfg="qnum">13</span> questions</span><span class="tag">Risk level</span><span class="tag">Your Report</span></div><span class="go">Start assessment →</span></a>
       <a class="feature" href="#citations"><span class="eyebrow">Verification</span><h3>Citation Toolkit</h3><p>Paste your draft, and Motion Advisor will list every case and statute for you to verify.</p><div class="tags"><span class="tag">Every citation listed</span><span class="tag">Verification checklist</span><span class="tag">Excel, Sheets, PDF</span></div><span class="go">Check a draft →</span></a>
       <a class="feature" href="#redaction"><span class="eyebrow">Confidentiality</span><h3>Redaction Game</h3><p>Practice blacking out information that shouldn’t be filed or entered into an AI tool.</p><div class="tags"><span class="tag">3 rounds</span><span class="tag">Scored</span><span class="tag">Rule explanations</span></div><span class="go">Play a round →</span></a>
       <a class="feature" href="#motions"><span class="eyebrow">Learn</span><h3>Motions 101</h3><p>Learn what your motion is, its parts and how it moves through court, with a library of common motions.</p><div class="tags"><span class="tag">20 motions</span><span class="tag">Federal &amp; Mass.</span><span class="tag">Quiz</span></div><span class="go">Open the library →</span></a>
@@ -1289,33 +1345,87 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
 
 <!-- ============ HOW THIS WORKS ============ -->
 <section class="view" id="v-method" hidden>
-  <div class="wrap">
-    <div class="page-head"><div><div class="eyebrow">How this works</div><h1>How Motion Advisor scores your answers</h1><p>Motion Advisor helps you decide whether it’s worth using AI to draft your motion. Complete a short assessment, and Motion Advisor will calculate the risks and give you a report with those risks and suggestions for using AI safely. No AI model runs in the tool, so the same answers always produce the same result.</p></div></div>
+  <div class="wrap hw">
+    <div class="page-head"><div><div class="eyebrow">How this works</div><h1>How Motion Advisor scores your answers</h1><p>Motion Advisor helps you decide whether it’s worth using AI to draft your motion. Answer a short assessment, and it calculates your risk and gives you a report with suggestions for using AI safely.</p><p class="hw-quiet">No AI runs in this tool. The same answers always give the same result.</p></div></div>
 
-    <ol class="mflow" aria-label="How your answers become a result, in order">
-      <li><span class="fn">Step 1</span><b>13 questions</b><p>Six sections: Task, Confidentiality, Competence, Verification, Jurisdiction and Client communication.</p></li>
-      <li><span class="fn">Step 2</span><b>Risk index</b><p>Each answer carries risk points. Confidentiality and Verification count 1.5×.</p></li>
-      <li><span class="fn">Step 3</span><b>Automatic stops</b><p>Some answers force “Not recommended” whatever the score.</p><span class="branch"><span class="lock-ic" aria-hidden="true"></span>No score overrides them</span></li>
-      <li><span class="fn">Step 4</span><b>Your result</b><p>A verdict, a level for each section, a workflow, a checklist and the rules to check.</p></li>
-      <li><span class="fn">Optional</span><b>Options Report</b><p>Four ways of using AI compared on the same six sections.</p></li>
-    </ol>
+    <section class="hw-sec" aria-labelledby="hw-flow-h">
+      <h2 id="hw-flow-h" class="sr-only">The four steps</h2>
+      <div class="hw-flow" id="hw-flow">
+        <button type="button" class="hw-card" id="hw-b1" aria-expanded="false" aria-controls="hw-p1"><span class="hw-num" aria-hidden="true">1</span><svg class="hw-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17"/></svg><span class="hw-t"><b>Answer <span data-cfg="qnum">13</span> questions</b><span class="hw-sub">Multiple choice, about four minutes.</span></span><span class="hw-chev" aria-hidden="true"></span></button>
+        <div class="hw-panel" id="hw-p1" role="region" aria-labelledby="hw-b1" hidden>
+          <p><span data-cfg="qword-cap">Thirteen</span> multiple-choice questions in <span data-cfg="sword">six</span> sections, one section per screen: <span data-cfg="snames">Task, Confidentiality, Competence, Verification, Jurisdiction and Client communication</span>.</p>
+          <p>Each question explains why it’s asked. No free-text fields, and you review every answer before seeing your result.</p>
+          <div id="method-sections"></div>
+        </div>
+        <button type="button" class="hw-card" id="hw-b2" aria-expanded="false" aria-controls="hw-p2"><span class="hw-num" aria-hidden="true">2</span><svg class="hw-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17a8 8 0 1 1 16 0"/><path d="m12 17 4-5"/><circle cx="12" cy="17" r="1.2"/></svg><span class="hw-t"><b>We calculate your risk</b><span class="hw-sub">Your answers become a score from 0 to 100.</span></span><span class="hw-chev" aria-hidden="true"></span></button>
+        <div class="hw-panel" id="hw-p2" role="region" aria-labelledby="hw-b2" hidden>
+          <p>Each answer adds risk points. <span data-cfg="heavy">Confidentiality and Verification count extra (1.5×)</span> because mistakes there cause the most harm.</p>
+          <p>Your total becomes a risk score from 0 to 100. Lower is safer.</p>
+          <button type="button" class="hw-link" aria-expanded="false" aria-controls="hw-formula">See the exact formula</button>
+          <div id="hw-formula" class="hw-more" hidden>
+            <p class="formula">Risk index = Σ (section points × weight) ÷ Σ (section maximum × weight) × 100</p>
+            <p>Each section is also rated Low, Moderate or High from its own share of the maximum.</p>
+          </div>
+        </div>
+        <button type="button" class="hw-card" id="hw-b3" aria-expanded="false" aria-controls="hw-p3"><span class="hw-num" aria-hidden="true">3</span><svg class="hw-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 3h7.6L21 8.2v7.6L15.8 21H8.2L3 15.8V8.2z"/><path d="M8 12h8"/></svg><span class="hw-t"><b>Some answers stop everything</b><span class="hw-sub">They force “Not recommended” whatever the score.</span></span><span class="hw-chev" aria-hidden="true"></span></button>
+        <div class="hw-panel" id="hw-p3" role="region" aria-labelledby="hw-b3" hidden>
+          <p>Certain answers force “Not recommended” no matter what the score is. <a href="#hw-stops-h" data-hw-jump>See the list below</a>.</p>
+        </div>
+        <button type="button" class="hw-card" id="hw-b4" aria-expanded="false" aria-controls="hw-p4"><span class="hw-num" aria-hidden="true">4</span><svg class="hw-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg><span class="hw-t"><b>Get your report</b><span class="hw-sub">A verdict, a plan and the rules for your court.</span></span><span class="hw-chev" aria-hidden="true"></span></button>
+        <div class="hw-panel" id="hw-p4" role="region" aria-labelledby="hw-b4" hidden>
+          <p>Your report shows your verdict, a risk level for each section, a “Before you file” plan and the rules to check for your court.</p>
+          <p>Download it as a PDF. Your latest result is saved only in this browser.</p>
+        </div>
+      </div>
+    </section>
 
-    <div class="method-grid">
-      <div class="card"><h2>1. The questions</h2><p>Thirteen multiple-choice questions in six sections, one section per screen, each with a “Why we ask this” note. There are no free-text fields, and you review every answer before seeing your result.</p><div id="method-sections"></div></div>
-      <div class="card"><h2>2. The risk index</h2><p>Every answer has a risk score, from 0 for the safest answer upward. Each section’s score is weighted, and the total is scaled to a risk index from 0 to 100.</p>
-        <p class="formula">Risk index = Σ (section points × weight) ÷ Σ (section maximum × weight) × 100</p>
-        <p>An index of 30 or less is “Recommended with safeguards”, 31 to 55 is “Use with limits”, and above 55 is “Not recommended”. Each section is also rated Low, Moderate or High from its own share of the maximum.</p></div>
-      <div class="card"><h2>3. Automatic stops</h2><p>These answers force “Not recommended”, whatever the risk index:</p><div id="method-stops"></div></div>
-      <div class="card"><h2>4. Your result</h2><p>The result shows the verdict and the risk index, any automatic stops, a Low, Moderate or High rating for each section with an explanation, a recommended workflow, a verification checklist and the rules to check for your court. Download it as a PDF. Your latest result is saved only in this browser.</p></div>
-      <div class="card wide"><h2>5. The Options Report (optional)</h2><p>From your result, “Compare your options →” opens a separate report that rates four ways of using AI on the same six sections, using the same answers. It starts with the safest useful option: the way of using AI with the lowest overall risk for your answers, or drafting without AI if every AI option is blocked or high risk. It greys out any option an automatic stop rules out. Select any cell to see why it has its rating, which answers caused it and the rule behind it.</p><div id="method-options"></div></div>
-      <div class="card"><h2>What the tool deliberately doesn’t do</h2><ul>
-        <li>It doesn’t decide for you. The result supports your professional judgment.</li>
-        <li>It doesn’t read your draft, your client’s facts or the AI tool’s terms. It relies on your answers.</li>
-        <li>It doesn’t check whether a court has an AI order; it asks you whether you checked.</li>
-        <li>It doesn’t verify citations. Use the Citation Toolkit and a citator for that.</li>
-        <li>It isn’t legal advice, and a low risk index never replaces final review by the signing attorney.</li></ul></div>
-      <div class="card"><h2>Where the numbers live</h2><p>Every question, answer score, weight, threshold, automatic stop and Options Report rule lives in one file, <a href="https://github.com/shivanidahya/MotionAdvisor/blob/main/config.js" target="_blank" rel="noopener noreferrer">config.js ↗</a>. The tables on this page are drawn from that file, so they always match the tool.</p><p>The values are judgment calls by the developer, not measured data, and are marked for review by a practising attorney.</p></div>
-    </div>
+    <section class="hw-sec" aria-labelledby="hw-scale-h">
+      <h2 id="hw-scale-h" class="hw-h">What your score means</h2>
+      <div id="hw-scale"></div>
+    </section>
+
+    <section class="hw-sec" aria-labelledby="hw-stops-h">
+      <div class="hw-stops" id="hw-stops">
+        <h2 id="hw-stops-h" tabindex="-1"><svg class="hw-stop-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 3h7.6L21 8.2v7.6L15.8 21H8.2L3 15.8V8.2z"/><path d="M8 12h8"/></svg>These answers always mean “Not recommended”:</h2>
+        <div id="method-stops"></div>
+      </div>
+    </section>
+
+    <section class="hw-sec" aria-labelledby="hw-not-h">
+      <h2 id="hw-not-h" class="hw-h">What this tool doesn’t do</h2>
+      <ul class="hw-not">
+        <li><b>Doesn’t decide for you</b><span>It supports your professional judgment.</span></li>
+        <li><b>Doesn’t read your draft</b><span>It relies only on your answers, not your client’s facts or the AI tool’s terms.</span></li>
+        <li><b>Doesn’t check court orders</b><span>It asks whether you checked your judge’s standing orders.</span></li>
+        <li><b>Doesn’t verify citations</b><span>Use the <a href="#citations">Citation Toolkit</a> and a citator for that.</span></li>
+      </ul>
+      <p class="hw-quiet">This is not legal advice. A low risk score never replaces final review by the signing attorney.</p>
+    </section>
+
+    <section class="hw-sec" aria-labelledby="hw-or-h">
+      <h2 id="hw-or-h" class="sr-only">Compare Your Options</h2>
+      <p>Want to compare approaches? After your result, Compare Your Options shows <span data-cfg="oword">four</span> ways of using AI side by side.</p>
+      <button type="button" class="hw-link" aria-expanded="false" aria-controls="hw-or-more">How it works</button>
+      <div id="hw-or-more" class="hw-more" hidden>
+        <p>It starts with the safest useful option for your answers, greys out options an automatic stop rules out, and lets you click any rating to see why.</p>
+        <p>If every AI option is blocked or high risk, it starts with drafting without AI. Each rating shows which answers caused it and the rule behind it.</p>
+        <div id="method-options"></div>
+      </div>
+    </section>
+
+    <section class="hw-sec">
+      <details class="hw-rev">
+        <summary>For reviewers and instructors: how the scoring is built</summary>
+        <div class="hw-rev-in">
+          <p class="formula">Risk index = Σ (section points × weight) ÷ Σ (section maximum × weight) × 100</p>
+          <p>Each section is rated Low, Moderate or High from its own share of the maximum. Verdict thresholds and section weights are shown above.</p>
+          <p>Every question, answer score, weight, threshold, automatic stop and Options Report rule lives in one file, <a href="https://github.com/shivanidahya/MotionAdvisor/blob/main/config.js" target="_blank" rel="noopener noreferrer">config.js ↗</a>. The steps, scale, stops and tables on this page are drawn from that file, so they always match the tool.</p>
+          <p>The values are judgment calls by the developer, not measured data, and are marked for review by a practicing attorney.</p>
+        </div>
+      </details>
+    </section>
+
+    <div class="hw-end"><a class="btn primary btn-xl" href="#advisor" data-start-assessment>Start the assessment <span aria-hidden="true">→</span></a></div>
   </div>
 </section>
 
@@ -1445,19 +1555,19 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
       <div>
         <div class="about-sec"><h2>What the platform does</h2><ul>
           <li><b>AI Drafting Advisor.</b> A short assessment that calculates the risks of using AI on your motion and gives you a report, downloadable as a PDF, with the risks identified and suggestions for using AI safely.</li>
-          <li><b>Compare Your Options.</b> An optional, advanced page that weighs five ways of using AI side by side, filled in from your answers.</li>
+          <li><b>Compare Your Options.</b> An optional, advanced page that weighs <span data-cfg="oword">four</span> ways of using AI side by side, filled in from your answers.</li>
           <li><b>Citation Toolkit.</b> Pulls out every case, statute and rule citation in a pasted or uploaded draft so you can verify each one, and tracks your verification. Export to Excel, Google Sheets, CSV or PDF.</li>
           <li><b>Redaction Game.</b> Three practice rounds on what must come out of a court filing or an AI prompt.</li>
           <li><b>Motions 101.</b> What a motion is, its parts, its life from draft to order, and a library of 20 common motions.</li>
         </ul></div>
-        <div class="about-sec"><h2>How the advisor works out your risk</h2><p>Seven multiple-choice questions cover the court, the motion, the AI tool, what information would go into it, which parts of the motion AI would help with, how the work will be checked, and your safeguards. Hard stops come first: confidential information in a tool that may keep it, citations nobody will check, or AI-drafted sworn statements make that use “Not recommended”. Each part of the motion then gets risk points from your answers, which become a Low, Moderate or High level.</p><p>Your report explains every risk, links the rule behind it, and suggests safer ways to use AI. For a deeper look, the optional Compare Your Options page weighs different ways of using AI side by side. No AI model runs in the tool, and every rule comes from one commented configuration file. <a href="#method">Read how it works</a>.</p></div>
+        <div class="about-sec"><h2>How the advisor works out your risk</h2><p><span data-cfg="qword-cap">Thirteen</span> multiple-choice questions in <span data-cfg="sword">six</span> sections cover your task, confidentiality, competence, verification, jurisdiction and client communication. Each answer adds risk points that become a score from 0 to 100, and some answers force “Not recommended” whatever the score. No AI runs in the tool. <a href="#method">See how it works →</a></p></div>
         <div class="about-sec"><h2>Where the legal sources come from</h2><p>Every explanation traces to a primary source: the ABA Model Rules of Professional Conduct and ABA Formal Opinion 512; the Massachusetts Rules of Professional Conduct and court rules published by the Supreme Judicial Court and Trial Court on mass.gov; the Federal Rules of Civil Procedure; the Local Rules of the U.S. District Court for the District of Massachusetts; and published decisions on AI-fabricated citations.</p><p>Each source is listed with what it requires, where the site relies on it, and a link to the official text. Federal and Massachusetts civil-rule citations open on courtrules.net; the official Massachusetts text is published in the <a href="https://www.mass.gov/law-library/massachusetts-rules-of-civil-procedure" target="_blank" rel="noopener noreferrer">Massachusetts Rules of Civil Procedure on Mass.gov ↗</a>.</p><p><a class="btn primary" href="#rules">Open Rules &amp; Sources →</a></p></div>
       </div>
       <aside class="about-side">
         <div class="card"><h3>Good to know</h3><ul class="about-list">
           <li><b>Not legal advice.</b> The ranking depends on your answers, weights and ratings, and never replaces attorney judgment or final review.</li>
-          <li><b>Private by design.</b> Nothing you enter leaves your browser. Your answers and your last decision are kept only for this browser session and are cleared when you close the tab.</li>
-          <li><b>Limits.</b> The citation checker reads format; it cannot confirm that a case exists or is still good law. Names and documents in the Redaction Game are fictional.</li>
+          <li><b>Private by design.</b> Nothing you enter leaves your browser. Your latest result is saved only in this browser, and you can clear it at any time.</li>
+          <li><b>Limits.</b> The Citation Toolkit lists the citations in a draft; it cannot confirm that a case exists or is still good law. Names and documents in the Redaction Game are fictional.</li>
           <li><b>Best on a desktop.</b> Every tool works on phones and tablets, but long drafts and checklists are easier on a larger screen.</li>
           <li><b>Reviewed November 2026.</b> Bar guidance and court rules change; check current text before filing.</li>
         </ul></div>
@@ -1736,7 +1846,7 @@ function introHTML(){
   return `<div class="intro-grid"><div class="card">
     <div class="notice"><strong>Disclaimer.</strong> Motion Advisor is an educational decision-support tool. It is not legal advice and does not replace your professional judgment, supervisor review, or the rules and standing orders of your court. A low-risk result never means a filing can skip attorney review. Results rely on your own answers.</div>
     <h3 style="font-size:1.5rem;margin:22px 0 8px">What you’ll do</h3>
-    <p class="muted">Thirteen multiple-choice questions in six sections, about four minutes. Each question has a “Why we ask this” note. You can go back and edit at any time, and you’ll review all answers before the result.</p>
+    <p class="muted">${cfgFacts()["qword-cap"]} multiple-choice questions in ${cfgFacts().sword} sections, about four minutes. Each question has a “Why we ask this” note. You can go back and edit at any time, and you’ll review all answers before the result.</p>
     ${adv.fromMotion?`<p class="prefill-note">Pre-filled from Motions 101: <b>${esc(adv.fromMotion)}</b>. The motion type is already answered.</p>`:""}
     <p class="muted" style="margin-top:10px">Answer for one specific motion. Don’t think about client names or facts; nothing here asks for them, and nothing leaves your browser.</p>
     <label class="check-line"><input type="checkbox" id="adv-ack" ${adv.ack?"checked":""}><span>I understand this is not legal advice and that I remain responsible for reviewing anything I file.</span></label>
@@ -2304,12 +2414,39 @@ const MOTION_TYPE={"Motion to Dismiss":"pleading","Motion for More Definite Stat
 function assessMotion(name,trigger){
   startAssessment(trigger,()=>{const t=MOTION_TYPE[name];if(t)adv.answers.motionType=t;adv.fromMotion=t?name:null})}
 
-/* ---------------- HOW THIS WORKS (tables drawn from config.js) ---------------- */
+/* ---------------- HOW THIS WORKS (counts, scale, stops and tables drawn from config.js) ---------------- */
+const NUMW=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty"];
+function cfgFacts(){
+  const AS=CFG.assessment,secs=AS.sections,q=secs.reduce((n,x)=>n+x.qs.length,0);
+  const w=n=>NUMW[n]||String(n),cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+  const list=a=>a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1];
+  const heavy=secs.filter(x=>x.weight>1);
+  return {qnum:String(q),qword:w(q),"qword-cap":cap(w(q)),sword:w(secs.length),"sword-cap":cap(w(secs.length)),snames:list(secs.map(x=>x.title)),
+    heavy:heavy.length?`${list(heavy.map(x=>x.title))} count${heavy.length===1?"s":""} extra (${[...new Set(heavy.map(x=>x.weight))].map(x=>x+"×").join(", ")})`:"Every section counts the same",
+    oword:w(ORC.options.length),onum:String(ORC.options.length)}}
+/* every count on the site that comes from config.js: <span data-cfg="qnum">13</span> */
+function fillCfg(){const f=cfgFacts();$$("[data-cfg]").forEach(el=>{const v=f[el.dataset.cfg];if(v!=null)el.textContent=v})}
+const VICON={ok:'<svg viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7"/></svg>',warn:'<svg viewBox="0 0 16 16"><path d="M8 3.5v5.5M8 12.4v.1"/></svg>',bad:'<svg viewBox="0 0 16 16"><path d="m4.5 4.5 7 7M11.5 4.5l-7 7"/></svg>'};
 function renderMethod(){
-  const AS=CFG.assessment;
-  const s=$("#method-sections");if(s)s.innerHTML=`<div class="rec-scroll"><table class="rec-table"><thead><tr><th>Section</th><th class="n">Questions</th><th class="n">Weight</th></tr></thead><tbody>${AS.sections.map(x=>`<tr><td>${esc(x.title)}</td><td class="n">${x.qs.length}</td><td class="n">${x.weight}×</td></tr>`).join("")}</tbody></table></div>`;
-  const st=$("#method-stops");if(st)st.innerHTML=`<ul>${AS.stops.map(x=>`<li>${esc(x.text)}</li>`).join("")}</ul>`;
-  const o=$("#method-options");if(o)o.innerHTML=`<div class="rec-scroll"><table class="rec-table"><thead><tr><th>Option</th><th>Blocked by</th></tr></thead><tbody>${ORC.options.map((x,i)=>`<tr><td><b>${i+1}. ${esc(x.name)}</b><br><span class="muted">${esc(x.desc)}</span></td><td>${x.noAI?"Never blocked":AS.stops.filter(z=>(ORC.blocks[z.id]||[]).includes(x.id)).map(z=>esc(z.text.split(".")[0])).join("; ")}</td></tr>`).join("")}</tbody></table></div>`;
+  const AS=CFG.assessment;fillCfg();
+  const s=$("#method-sections");if(s)s.innerHTML=`<div class="rec-scroll"><table class="rec-table"><caption class="sr-only">Questions and weight per section</caption><thead><tr><th>Section</th><th class="n">Questions</th><th class="n">Weight</th></tr></thead><tbody>${AS.sections.map(x=>`<tr><td>${esc(x.title)}</td><td class="n">${x.qs.length}</td><td class="n">${x.weight}×</td></tr>`).join("")}</tbody></table></div>`;
+  /* verdict scale: thresholds straight from config.js verdicts */
+  let lo=0;const bands=AS.verdicts.map(v=>{const b={lo,hi:v.max,verdict:v.verdict,cls:v.cls};lo=v.max+1;return b});
+  const sc=$("#hw-scale");if(sc)sc.innerHTML=`<div class="hw-bar" aria-hidden="true">${bands.map(b=>`<span class="${esc(b.cls)}" style="flex:${b.hi-b.lo+1}"></span>`).join("")}</div>
+    <ul class="hw-scale" aria-label="Risk score ranges">${bands.map(b=>`<li class="${esc(b.cls)}" style="flex:${b.hi-b.lo+1}"><span class="hw-vi" aria-hidden="true">${VICON[b.cls]||""}</span><span><span class="rng">${b.lo}–${b.hi}</span><span class="lbl">${esc(b.verdict)}</span></span></li>`).join("")}</ul>`;
+  /* automatic stops: first three, the rest behind "+N more" */
+  const SHOW=3,stops=AS.stops,st=$("#method-stops");
+  if(st){st.innerHTML=`<ul class="hw-stop-list" id="hw-stop-list">${stops.map((x,i)=>`<li${i>=SHOW?" hidden":""}>${esc(x.text)}</li>`).join("")}</ul>${stops.length>SHOW?`<button type="button" class="hw-link" id="hw-stops-more" aria-expanded="false" aria-controls="hw-stop-list">+${stops.length-SHOW} more</button>`:""}`;
+    const more=$("#hw-stops-more");if(more)more.addEventListener("click",()=>{const open=more.getAttribute("aria-expanded")!=="true";more.setAttribute("aria-expanded",open);
+      $$("#hw-stop-list li").forEach((li,i)=>{if(i>=SHOW)li.hidden=!open});more.textContent=open?"Show fewer":`+${stops.length-SHOW} more`})}
+  const o=$("#method-options");if(o)o.innerHTML=`<div class="rec-scroll"><table class="rec-table"><caption class="sr-only">The ways of using AI and the automatic stops that rule each out</caption><thead><tr><th>Option</th><th>Ruled out by</th></tr></thead><tbody>${ORC.options.map((x,i)=>`<tr><td><b>${i+1}. ${esc(x.name)}</b><br><span class="muted">${esc(x.desc)}</span></td><td>${x.noAI?"Never ruled out":AS.stops.filter(z=>(ORC.blocks[z.id]||[]).includes(x.id)).map(z=>esc(z.text.split(".")[0])).join("; ")||"No automatic stop"}</td></tr>`).join("")}</tbody></table></div>`;
+  /* the four steps: one open at a time */
+  const cards=$$("#hw-flow .hw-card");
+  cards.forEach(b=>b.addEventListener("click",()=>{const open=b.getAttribute("aria-expanded")!=="true";
+    cards.forEach(c=>{c.setAttribute("aria-expanded","false");$("#"+c.getAttribute("aria-controls")).hidden=true});
+    if(open){b.setAttribute("aria-expanded","true");$("#"+b.getAttribute("aria-controls")).hidden=false}}));
+  $$("#v-method .hw-link[aria-controls]:not(#hw-stops-more)").forEach(b=>b.addEventListener("click",()=>{const open=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",open);$("#"+b.getAttribute("aria-controls")).hidden=!open}));
+  $$("[data-hw-jump]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const h=$("#hw-stops-h");const rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;h.scrollIntoView({behavior:rm?"auto":"smooth",block:"center"});h.focus({preventScroll:true})}));
 }
 
 /* ======================================================
