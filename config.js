@@ -166,7 +166,7 @@
     {when:{all:[{field:"citeProcess",equals:"yes"},{field:"citeScope",equals:"every"},{field:"citeMethods",hasNone:["keycite","shepards","bcite","legacy"]}]},level:"nocitator"},
     {when:{all:[{field:"citeProcess",equals:"yes"},{field:"citeScope",equals:"every"}]},level:"full"}],
    // results saved before the question branched
-   legacy:{full:{citeProcess:"yes",citeMethods:["legacy"],citeScope:"every"},nocitator:{citeProcess:"yes",citeMethods:["pincites"],citeScope:"every"},spot:{citeProcess:"yes",citeMethods:["legacy"],citeScope:"some"},none:{citeProcess:"no",citeIdeas:"no"}},
+   legacy:{full:{citeProcess:"yes",citeMethods:["legacy"],citeScope:"every"},spot:{citeProcess:"yes",citeMethods:["legacy"],citeScope:"some"},none:{citeProcess:"no",citeIdeas:"no"}},
    ideas:{title:"Ideas for checking citations",items:[
     {text:"Pull and read every case you cite; don’t rely on summaries or AI descriptions."},
     {text:"Run each case through KeyCite, Shepard’s or BCite to check that it’s still good law."},
@@ -263,7 +263,7 @@
     {when:{all:[{field:"clientTold",equals:"yes"},{field:"informedConsent",equals:"no"}]},level:"toldnoconsent"},
     {when:{all:[{field:"clientTold",equals:"yes"},{field:"informedConsent",equals:"yes"}]},level:"consent"}],
    // results saved before the question branched
-   legacy:{consent:{clientTold:"yes",informedConsent:"yes"},toldnoconsent:{clientTold:"yes",informedConsent:"no"},will:{clientTold:"notyet"},no:{clientTold:"no",clientConfShared:"unknown",disclosureRequired:"unknown"}},
+   legacy:{consent:{clientTold:"yes",informedConsent:"yes"},will:{clientTold:"notyet"},no:{clientTold:"no",clientConfShared:"unknown",disclosureRequired:"unknown"}},
    // warning when the client hasn't been told and either "No" follow-up is answered Yes (a pop-up, then a note that stays)
    warning:{branch:"no",ifYes:["clientConfShared","disclosureRequired"],title:"Before you continue",
     points:["Make sure no client information is entered into the AI tool.","Tell the client that you plan to use AI on their matter."],
