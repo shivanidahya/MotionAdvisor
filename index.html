@@ -2149,7 +2149,7 @@ function renderOR(){
     <div class="or-grid-wrap"><table class="or-grid"><caption class="sr-only">Options Report: risk level for each way of using AI in each risk area</caption><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>
     <div class="or-mobile"><div class="or-tabs" role="tablist" aria-label="Options">${tabs}</div>${panels}</div>
     <details class="or-adv" id="or-adv" ${OR_STATE.advOpen?"open":""}><summary>Adjust what matters to you</summary>
-      <p class="card-sub">Each risk area counts as much as it did in your assessment: 1.5× for Confidentiality and Verification, 1× for the rest. Change how much each area counts and the recommended option at the top updates. The rating in each cell doesn’t change.</p>
+      <p class="card-sub">Move a slider to make a risk area count more or less. The recommended option at the top will update; the table stays the same.</p>
       ${secs.map(s=>`<div class="or-w"><label for="orw-${s.id}">${esc(s.title)}</label><input type="range" id="orw-${s.id}" data-orw="${s.id}" min="${W.min}" max="${W.max}" step="${W.step}" value="${w[s.id]}"><output id="orwo-${s.id}" for="orw-${s.id}">${w[s.id]}×</output></div>`).join("")}
       <button type="button" class="btn sm" id="or-reset" ${orChanged()?"":"hidden"}>Reset to default</button></details>
     <p class="rp-disc">This report is general information to support your professional judgment, not legal advice. You remain responsible for the accuracy of every filing.</p>`;
