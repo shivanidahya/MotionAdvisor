@@ -971,8 +971,11 @@ body.modal-open{overflow:hidden}
 .term-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
 .term-tip{display:none;position:absolute;left:0;top:calc(100% + 8px);z-index:30;width:min(360px,80vw);padding:12px 14px;border-radius:10px;background:var(--ink);color:var(--paper);font-family:var(--f-body);font-size:.86rem;font-weight:400;line-height:1.5;box-shadow:0 10px 30px -10px rgba(0,0,0,.45)}
 .term-tip b{font-weight:600}
-.term-src{opacity:.8;font-style:italic}
-.term:hover .term-tip,.term-btn:focus+.term-tip,.term.open .term-tip{display:block}
+.term-src{opacity:.9;font-size:.82rem}
+.term:hover .term-tip,.term:focus-within .term-tip,.term.open .term-tip{display:block}
+.term-tip::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.term-src{display:block;margin-top:6px}
+.term-tip a{color:inherit;font-weight:600;text-decoration:underline;font-style:normal}
 .term.dismissed .term-tip{display:none}
 @media (max-width:560px){.term-tip{position:fixed;left:16px;right:16px;top:auto;bottom:16px;width:auto}}
 .learn-in.art-note{max-height:none;overflow:visible}
@@ -1470,14 +1473,16 @@ function radioGroup(id,opts,val,label){return `<div class="opts" role="radiogrou
 function checkGroup(id,opts,vals,label,hint){return `<div class="opts" role="group" aria-labelledby="${label}" aria-describedby="${hint}">${opts.filter(o=>!o.hidden).map(o=>`<label class="opt ${vals.includes(o.v)?"sel":""}"><input type="checkbox" name="q-${id}" id="q-${id}-${o.v}" value="${o.v}" data-q="${id}" ${vals.includes(o.v)?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`}
 /* a term with a definition shown on hover, focus or tap (config: term) */
 function termHTML(f){const T=f.term;if(!T||!f.text.includes(T.match))return esc(f.text);const i=f.text.indexOf(T.match),id="term-"+f.id;
-  return esc(f.text.slice(0,i))+`<span class="term"><button type="button" class="term-btn" aria-describedby="${id}" aria-expanded="false">${esc(T.match)}</button><span class="term-tip" role="tooltip" id="${id}"><b>${esc(T.match.charAt(0).toUpperCase()+T.match.slice(1))}:</b> ${esc(T.def)} <span class="term-src">— ${esc(T.source)}</span></span></span>`+esc(f.text.slice(i+T.match.length))}
+  return esc(f.text.slice(0,i))+`<span class="term"><button type="button" class="term-btn" aria-describedby="${id}" aria-expanded="false">${esc(T.match)}</button><span class="term-tip" role="tooltip" id="${id}"><b>${esc(T.match.charAt(0).toUpperCase()+T.match.slice(1))}:</b> ${esc(T.def)} <span class="term-src">Full definition: ${T.sourceUrl?`<a href="${esc(T.sourceUrl)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(T.sourceAria||T.source+" (opens in new tab)")}">${esc(T.source)}<span aria-hidden="true"> ↗</span></a>`:esc(T.source)}</span></span></span>`+esc(f.text.slice(i+T.match.length))}
 function bindTerms(){$$(".term-btn").forEach(b=>{const t=b.closest(".term");
   const set=o=>{t.classList.toggle("open",o);b.setAttribute("aria-expanded",String(o))};
   /* focus shows it (CSS); a click or tap keeps it open until Escape or the focus moves */
   b.addEventListener("click",e=>{e.preventDefault();set(!t.classList.contains("open"))});
   b.addEventListener("keydown",e=>{if(e.key==="Escape"){set(false);t.classList.add("dismissed")}});
   b.addEventListener("focus",()=>t.classList.remove("dismissed"));
-  b.addEventListener("blur",()=>set(false))})}
+  t.addEventListener("mouseleave",()=>t.classList.remove("dismissed"));
+  t.addEventListener("focusout",e=>{if(!t.contains(e.relatedTarget))set(false)});
+  t.addEventListener("keydown",e=>{if(e.key==="Escape"){b.focus();set(false);t.classList.add("dismissed")}})})}
 function followHTML(f){const A=adv.answers,lab="qt-"+f.id;
   return `<div class="q sub"><div class="q-text" id="${lab}">${termHTML(f)}<span class="req" aria-label="required">*</span></div>${f.type==="multi"?`<p class="q-hint" id="qh-${f.id}">${esc(f.hint||"Select all that apply")}</p>`+checkGroup(f.id,f.options,Array.isArray(A[f.id])?A[f.id]:[],lab,"qh-"+f.id):radioGroup(f.id,f.options,A[f.id],lab)}${f.learn?`<div class="learn-tip" id="learn-${f.id}" aria-live="polite">${learnShows(f,A[f.id])?learnHTML(f,learnEntry(f,A[f.id])):""}</div>`:""}</div>`}
 function ideaHTML(it){if(!it.link||!it.text.includes(it.link.match))return esc(it.text);const L=it.link,i=it.text.indexOf(L.match);
@@ -2615,6 +2620,7 @@ const RULE_GROUPS=[
  ["cases","Cases","Decisions showing what happens when unverified AI output reaches a court."],
  ["resources","Trackers and learning resources","Guides and trackers linked from the assessment, for learning how AI fails and checking which courts and judges have AI rules."]];
 const RULES=[
+ {risk:["warn","Get the client’s informed consent before AI use that puts their information at risk."],g:"ethics",id:"rpc-1-0",short:"Rule 1.0(e)",title:"Informed consent (definition)",cite:"Model Rule 1.0(e) · Mass. R. Prof. C. 1.0",says:"“Informed consent” means the client agrees after the lawyer explains the material risks of, and reasonably available alternatives to, the proposed course of conduct. Several rules, including Rule 1.6 on confidentiality, require it.",used:"AI Drafting Advisor: the Client communication section (the “informed consent” definition).",link:"https://www.americanbar.org/groups/professional_responsibility/publications/model_rules_of_professional_conduct/rule_1_0_terminology/",linkLabel:"Read Rule 1.0 (ABA)",aliases:["informed consent","rule 1.0","terminology"]},
  {risk:["warn","You must understand the tool’s limits, such as invented citations and outdated law, before relying on its output."],g:"ethics",id:"rpc-1-1",short:"Rule 1.1",title:"Competence",cite:"Model Rule 1.1 & cmt. 8 · Mass. R. Prof. C. 1.1",says:"Lawyers must provide competent representation, which includes keeping up with the benefits and risks of relevant technology. ABA Opinion 512 applies this to generative AI: understand how a tool can fail, including invented citations.",used:"AI Drafting Advisor: the Accuracy, Quality and Professional development factors; the AI-care notes in Motions 101.",link:MA_RPC,linkLabel:"Massachusetts rules (SJC Rule 3:07)",aliases:["rule 1.1","1.1","competence"]},
  {risk:["warn","Clients may need to be told how AI is used on their matter, especially before their information goes into a tool."],g:"ethics",id:"rpc-1-4",short:"Rule 1.4",title:"Communication with the client",cite:"Model Rule 1.4 · Mass. R. Prof. C. 1.4",says:"Explain matters to the client enough for informed decisions. Under ABA Opinion 512 that can include telling the client how AI will be used, and getting informed consent before confidential information goes into a self-learning tool.",used:"AI Drafting Advisor: the Client expectations and consent factor and the client question in Stage 1.",link:MA_RPC,linkLabel:"Massachusetts rules (SJC Rule 3:07)",aliases:["rule 1.4","1.4","communication"]},
  {risk:["warn","Bill actual time, not time the tool saved. Tool costs and AI-assisted work must be reasonable and explained."],g:"ethics",id:"rpc-1-5",short:"Rule 1.5",title:"Fees",cite:"Model Rule 1.5 · Mass. R. Prof. C. 1.5",says:"Fees must be reasonable. Under ABA Opinion 512, bill hourly clients for the time actually spent, not the time AI saved, and don’t charge for learning a general-purpose tool.",used:"AI Drafting Advisor: the Time saved, Cost and Client factors; the billing suggestion in Your Report.",link:MA_RPC,linkLabel:"Massachusetts rules (SJC Rule 3:07)",aliases:["rule 1.5","1.5","fees","billing"]},
@@ -2651,7 +2657,7 @@ function renderRules(){
   $$("[data-rjump]").forEach(b=>b.addEventListener("click",()=>$("#rg-"+b.dataset.rjump).scrollIntoView({behavior:"smooth",block:"start"})));
 }
 const TOOLS={advisor:["AI Drafting Advisor","#advisor"],citations:["Citation Toolkit","#citations"],redaction:["Redaction Game","#redaction"],motions:["Motions 101","#motions"]};
-const RULE_TOOLS={"rpc-1-1":["advisor"],"rpc-1-4":["advisor"],"rpc-1-5":["advisor"],"rpc-1-6":["advisor","redaction"],"rpc-3-3":["advisor","citations"],"rpc-5-1":["advisor"],"aba-512":["advisor"],"ma-obc":["advisor","citations"],"ma-obc-wildwest":["advisor"],"sjc-genai":["advisor"],"aba-512-news":["advisor"],"bls-bench-notes":["advisor"],"ncsc-hallucinations":["advisor"],"mass-ai-law":["advisor"],"ncsc-state-courts":["advisor"],"law360-tracker":["advisor"],"lag-court-orders":["advisor"],"caseread-ai-clause":["advisor"],"aba-disclose-ai":["advisor"],"frcp-11":["advisor","citations"],"mrcp-11":["advisor"],"frcp-5-2":["redaction"],"sjc-1-24":["redaction"],"sup-9a":["motions"],"dmass-7-1":["motions","advisor"],"mata":["citations","advisor"],"park":["citations"],"smith":["citations","advisor"],"standing-orders":["advisor"]};
+const RULE_TOOLS={"rpc-1-1":["advisor"],"rpc-1-4":["advisor"],"rpc-1-5":["advisor"],"rpc-1-6":["advisor","redaction"],"rpc-3-3":["advisor","citations"],"rpc-5-1":["advisor"],"aba-512":["advisor"],"ma-obc":["advisor","citations"],"ma-obc-wildwest":["advisor"],"sjc-genai":["advisor"],"aba-512-news":["advisor"],"bls-bench-notes":["advisor"],"ncsc-hallucinations":["advisor"],"mass-ai-law":["advisor"],"ncsc-state-courts":["advisor"],"law360-tracker":["advisor"],"lag-court-orders":["advisor"],"caseread-ai-clause":["advisor"],"rpc-1-0":["advisor"],"aba-disclose-ai":["advisor"],"frcp-11":["advisor","citations"],"mrcp-11":["advisor"],"frcp-5-2":["redaction"],"sjc-1-24":["redaction"],"sup-9a":["motions"],"dmass-7-1":["motions","advisor"],"mata":["citations","advisor"],"park":["citations"],"smith":["citations","advisor"],"standing-orders":["advisor"]};
 function openRule(id){location.hash="#rules";setTimeout(()=>{const el=$("#rule-"+id);if(!el)return;el.scrollIntoView({behavior:"smooth",block:"start"});el.focus({preventScroll:true});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2400)},60)}
 
 /* ---------------- SEARCH ---------------- */

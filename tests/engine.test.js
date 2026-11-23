@@ -284,5 +284,5 @@ test("17. Client communication branches: told / not yet / no, follow-ups, the st
   assert.deepEqual(E.normalize({ informed: "consent" }), { clientTold: "yes", informedConsent: "yes" });
   assert.equal(E.prepare({ informed: "no" }).informed, "no");
   assert.equal(E.branchSummary(q, no.a), "No. Confidential information will be shared. Disclosure required in filings.");
-  assert.ok(q.follow.yes[0].term.def.startsWith("Informed consent denotes"));
+  assert.ok(q.follow.yes[0].term.def.length < 120, "plain-language definition"); assert.match(q.follow.yes[0].term.sourceUrl, /rule_1_0_terminology/);
 });

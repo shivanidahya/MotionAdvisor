@@ -241,7 +241,9 @@
     yes:[
      {id:"informedConsent",type:"choice",text:"Have they provided their informed consent?",
       // shown as a definition when the user hovers over or focuses the term
-      term:{match:"informed consent",def:"Informed consent denotes the agreement by a person to a proposed course of conduct after the lawyer has communicated adequate information and explanation about the material risks of and reasonably available alternatives to the proposed course of conduct.",source:"ABA Model Rule 1.0(e)"},
+      // plain-language version of ABA Model Rule 1.0(e); the full text is linked and on Rules & Sources
+      term:{match:"informed consent",def:"The client says yes to your plan after you’ve explained the risks and the other reasonable options.",
+       source:"ABA Model Rule 1.0(e)",sourceUrl:"https://www.americanbar.org/groups/professional_responsibility/publications/model_rules_of_professional_conduct/rule_1_0_terminology/",sourceAria:"ABA Model Rule 1.0, Terminology, full definition of informed consent (opens in new tab)"},
       options:[{v:"yes",label:"Yes",short:"Informed consent given"},{v:"no",label:"No",short:"No informed consent yet"}]}],
     notyet:[],
     no:[
