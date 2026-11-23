@@ -164,6 +164,11 @@
             var bn = q.type === "branch" && q.notes && q.notes[a[q.main.id]]; if (bn) ex.links.push({ text: bn.linkText, url: bn.url, ariaLabel: bn.ariaLabel, sub: bn.rule }); });
           if (ex.notes.length) f.notes = ex.notes.concat(f.notes);
           if (ex.links.length) f.links = ex.links;
+          /* why: each question's answer and how much risk it adds, for the results page.
+             extra: section lines that aren't tied to one answer (e.g. the Massachusetts court). */
+          f.why = s.lines.map(function (l) { var q = QUESTIONS.filter(function (x) { return x.id === l.q; })[0], mx = q ? maxScore(q) : 0, r = mx ? l.score / mx : 0;
+            return { q: l.q, question: l.question, answer: l.answer, note: l.note, ratio: r, level: levelOf(r) }; });
+          f.extra = ex.notes;
           return f;
         })
       };

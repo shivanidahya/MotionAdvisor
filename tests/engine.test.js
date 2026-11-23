@@ -25,7 +25,7 @@ test("1. One selected task scores exactly as the original single-choice version 
     if (single.citeProcess) { single.citeCheck = E.prepare(single).citeCheck; delete single.citeProcess; delete single.citeMethods; delete single.citeScope; delete single.citeIdeas; }
     const listed = Object.assign({}, single, { aiTask: [single.aiTask] });
     ORIGINAL.adv.answers = single; const o = ORIGINAL.compute(); delete o.date;
-    [listed, single].forEach((a) => { const e = E.assess(a); delete e.stopIds; e.factors.forEach((f) => { delete f.id; delete f.links; f.notes = f.notes.map((n) => n.replace(/ Methods you use: .*$/, "")); }); assert.deepEqual(e, o); });
+    [listed, single].forEach((a) => { const e = E.assess(a); delete e.stopIds; e.factors.forEach((f) => { delete f.id; delete f.links; delete f.why; delete f.extra; f.notes = f.notes.map((n) => n.replace(/ Methods you use: .*$/, "")); }); assert.deepEqual(e, o); });
   });
 });
 
@@ -285,4 +285,15 @@ test("17. Client communication branches: told / not yet / no, follow-ups, the st
   assert.equal(E.prepare({ informed: "no" }).informed, "no");
   assert.equal(E.branchSummary(q, no.a), "No. Confidential information will be shared. Disclosure required in filings.");
   assert.ok(q.follow.yes[0].term.def.length < 120, "plain-language definition"); assert.match(q.follow.yes[0].term.sourceUrl, /rule_1_0_terminology/);
+});
+
+test("18. Each section explains why: every answer with its own risk level, drivers match the section", () => {
+  [SOLO, TWO, NEW].forEach((a) => E.assess(a).factors.forEach((f) => {
+    const sec = CONFIG.assessment.sections.find((s) => s.id === f.id);
+    assert.equal(f.why.length, sec.qs.length);
+    f.why.forEach((w) => { assert.ok(w.answer, f.id + " " + w.q); assert.ok(["Low", "Moderate", "High"].includes(w.level)); });
+    // the section's level never exceeds its riskiest answer
+    const rank = { Low: 1, Moderate: 2, High: 3 };
+    assert.ok(Math.max(...f.why.map((w) => rank[w.level])) >= rank[f.level], f.id);
+  }));
 });
