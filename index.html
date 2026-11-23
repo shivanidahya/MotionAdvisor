@@ -204,7 +204,64 @@ ol.flow{margin:0;padding-left:1.3em;display:grid;gap:9px;font-size:.93rem}
 .faq details{border-top:1px solid var(--line);padding-block:10px}
 .faq summary{cursor:pointer;font-weight:600;font-size:.94rem}
 .faq p{margin-top:6px;font-size:.9rem;color:var(--ink-2)}
-.res-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.res-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+/* results page */
+.res-top{border-radius:14px;padding:28px 28px 24px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));border-left:6px solid var(--accent);display:grid;gap:8px}
+.res-top.ok{border-left-color:var(--ok)}.res-top.warn{border-left-color:var(--warn)}.res-top.bad{border-left-color:var(--bad)}
+.res-top h2{display:flex;align-items:center;gap:12px;font-size:2rem;margin:2px 0 0}
+.v-ic{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;color:#fff;font-family:var(--f-ui);font-size:1.15rem;font-weight:800;flex-shrink:0}
+.res-top.ok .v-ic{background:var(--ok)}.res-top.warn .v-ic{background:var(--warn)}.res-top.bad .v-ic{background:var(--bad)}
+.res-index{margin:0;color:var(--muted);font-size:.88rem}
+.res-sum{margin:6px 0 0;max-width:62ch}
+.res-next{margin:4px 0 0;max-width:62ch}
+.res-fix{margin:6px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;color:var(--bad);font-weight:500}
+.fix-ic{display:inline-grid;place-items:center;flex-shrink:0;width:20px;height:20px;margin-top:2px;border-radius:50%;background:var(--bad);color:#fff;font-family:var(--f-ui);font-size:.78rem;font-weight:800}
+.link-btn{all:unset;cursor:pointer;color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.link-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.btn.quiet{background:transparent;border-color:transparent;color:var(--ink-2);text-decoration:underline;text-underline-offset:3px}
+.btn.quiet:hover{color:var(--ink);background:var(--sunk)}
+.res-tabs{display:flex;gap:4px;margin-top:36px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:thin}
+.res-tabs [role=tab]{all:unset;flex-shrink:0;cursor:pointer;padding:12px 18px;font-family:var(--f-ui);font-weight:600;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.res-tabs [role=tab][aria-selected=true]{color:var(--ink);border-bottom-color:var(--ink)}
+.res-tabs [role=tab]:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:4px}
+.res-panel{padding-top:28px;display:grid;gap:32px}
+.res-panel:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:4px}
+.res-panel h3{font-size:1.3rem;margin:0 0 12px}
+.res-panel > h3{margin-bottom:-24px}
+.res-note{font-size:.88rem;margin:0}
+.stop-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.stop-list li{display:flex;gap:10px;align-items:flex-start;max-width:70ch}
+.res-chips{display:flex;flex-wrap:wrap;gap:8px}
+.res-chip{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:999px;background:var(--sunk);font-family:var(--f-ui);font-size:.9rem}
+.res-chip .chip-l{color:var(--muted);font-weight:600}
+.res-chip[aria-expanded=true]{background:var(--ink);color:var(--paper)}.res-chip[aria-expanded=true] .chip-l{color:inherit;opacity:.85}
+.res-chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lv-ic{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;color:#fff;font-size:.72rem;font-weight:800;flex-shrink:0}
+.lv-ic.ok{background:var(--ok)}.lv-ic.warn{background:var(--warn)}.lv-ic.bad{background:var(--bad)}
+.chip-panel{margin-top:16px;max-width:68ch;display:grid;gap:8px}
+.chip-panel.in{animation:chipin .18s ease}
+@keyframes chipin{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.chip-h{display:flex;align-items:center;gap:8px;font-size:1.05rem;margin:0}
+.chip-panel p{margin:0;color:var(--ink-2)}
+.more-body{display:grid;gap:8px}
+.more-btn{width:max-content}
+.res-faq > summary,.src-acc > summary{cursor:pointer;font-family:var(--f-ui);font-weight:600;padding:12px 0}
+.res-faq details{padding:6px 0 6px 14px}.res-faq details summary{cursor:pointer}
+.res-faq details p{margin:6px 0 0;color:var(--ink-2);max-width:68ch}
+.plan{margin:0;padding-left:1.6em;display:grid;gap:12px;max-width:72ch}
+.plan label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.plan input{margin-top:5px;accent-color:var(--ok);flex-shrink:0}
+.plan input:checked+span{text-decoration:line-through;color:var(--muted)}
+.res-link{margin:0;font-size:.92rem}
+.src-acc{border-bottom:1px solid var(--line)}
+.src-acc ul{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:12px}
+.src-acc li{display:grid;gap:2px;max-width:70ch;font-size:.93rem}
+.src-acc a{font-weight:600}
+.res-disclaimer{font-size:.84rem;margin-top:28px}
+#v-advisor .cmp-cta{margin-top:48px;border:0;background:var(--sunk);border-radius:12px;padding:18px 22px}
+#v-advisor .cmp-cta p{margin:0}
+@media (max-width:640px){.res-top{padding:22px 18px}.res-top h2{font-size:1.6rem}.res-tabs [role=tab]{padding:12px 14px}}
+@media (prefers-reduced-motion:reduce){.chip-panel.in{animation:none}}
 .export-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .disclaimer-row{display:flex;align-items:center;gap:12px}
 .disclaimer-row>span{flex:1;min-width:0}
@@ -1741,35 +1798,54 @@ function bindSteps(){
 function compute(){ /* scoring in engine.js, rules in config.js */
   const r=ENG.assess(adv.answers);r.date=adv.at?new Date(adv.at):new Date();return r;
 }
-function workflow(A){
-  const steps=["Write down, in one sentence, what the AI will do on this motion and what it will not do (no legal research, no final language without review)."];
-  if(A.clientInfo!=="no")steps.push("Strip names, dates, account numbers and other identifiers before any prompt. Use placeholders such as [Client] and [Date].");
-  if(A.tool!=="legal")steps.push("Confirm the tool’s data-retention and training terms in writing before use, or switch to a tool under a firm contract.");
+/* The recommended workflow, tagged for the results page's "Before you file" list.
+   key: what the step is about; covers: checklist items it already includes; prio: lower = more important.
+   workflow(A) returns the plain text, in the original order, for the PDF. */
+function workflowItems(A){
+  const out=[],push=(text,key,prio,covers)=>out.push({text,key,prio,covers:covers||[]});
+  push("Write down, in one sentence, what the AI will do on this motion and what it will not do (no legal research, no final language without review).","scope",60);
+  if(A.clientInfo!=="no")push("Strip names, dates, account numbers and other identifiers before any prompt. Use placeholders such as [Client] and [Date].","strip",30,["identifiers"]);
+  if(A.tool!=="legal")push("Confirm the tool’s data-retention and training terms in writing before use, or switch to a tool under a firm contract.","tool-terms",35);
   const t={format:"Use AI only on a blank firm template and on your finished text for proofreading. Do not let it add or change citations.",
     outline:"Prepare your own list of authorities first. Ask AI to organize your points, not to supply law.",
     summarize:"Have AI summarize only documents you provide, then spot-check each summary against the record before relying on it.",
     draft:"Give AI your outline and verified authorities, and treat its prose as a first draft to rewrite in your own voice.",
     research:"Do not use general AI to find authority. Research in Westlaw, Lexis, Fastcase or a court database; use AI only to explain concepts."};
   const tasks=Array.isArray(A.aiTask)?A.aiTask:[A.aiTask];
-  SECTIONS[0].qs.find(q=>q.id==="aiTask").options.forEach(o=>{if(tasks.includes(o.v))steps.push(t[o.v])});
+  SECTIONS[0].qs.find(q=>q.id==="aiTask").options.forEach(o=>{if(tasks.includes(o.v))push(t[o.v],"task",o.v==="research"?28:50)});
   {const P=ENG.prepare(A),IQ=QUESTIONS.find(q=>q.id==="informed");
-    if(P.informed==="will")steps.push("Before drafting, tell the client you’ll use AI, add an AI-use clause to your engagement letter, and get their informed consent in writing.");
-    if(P.informed==="toldnoconsent")steps.push("Get the client’s informed consent to AI use in writing before any prompt includes their information.");
-    if(P.informed==="no"){if(IQ&&IQ.warning&&IQ.warning.ifYes.some(f=>A[f]==="yes"))steps.push(IQ.warning.workflow);
-      steps.push("Tell the client how you’ll use AI on their matter, and get informed consent before entering any confidential information.");
-      if(A.disclosureRequired==="yes")steps.push("Add the AI-use disclosure the law, court rule or standing order requires to the filing.");
-      else if(A.disclosureRequired==="unsure")steps.push("Check whether a law, court rule or standing order requires disclosing AI use in the filing.")}}
+    if(P.informed==="will")push("Before drafting, tell the client you’ll use AI, add an AI-use clause to your engagement letter, and get their informed consent in writing.","client-tell",25);
+    if(P.informed==="toldnoconsent")push("Get the client’s informed consent to AI use in writing before any prompt includes their information.","client-tell",25);
+    if(P.informed==="no"){if(IQ&&IQ.warning&&IQ.warning.ifYes.some(f=>A[f]==="yes"))push(IQ.warning.workflow,"client-keepout",15,["identifiers"]);
+      push("Tell the client how you’ll use AI on their matter, and get informed consent before entering any confidential information.","client-tell",24);
+      if(A.disclosureRequired==="yes")push("Add the AI-use disclosure the law, court rule or standing order requires to the filing.","disclose",20);
+      else if(A.disclosureRequired==="unsure")push("Check whether a law, court rule or standing order requires disclosing AI use in the filing.","disclose",40)}}
   const CQ=QUESTIONS.find(q=>q.id==="citeCheck"),CL=ENG.prepare(A).citeCheck;
-  if(CL==="none"&&CQ&&CQ.ideas){steps.push("Set up a citation check before you file. Ideas:");CQ.ideas.items.forEach((it,i)=>steps.push("Citation idea "+(i+1)+": "+it.text))}
-  else{if(CL==="nocitator")steps.push("Add a citator check (KeyCite or Shepard’s) for every case: a case can exist and still be bad law.");
-    steps.push("Treat every citation as unverified until pulled, read and checked for negative history. Run the draft through the Citation Toolkit.")}
-  steps.push(A.finalReview==="signer"?"The signing attorney reads the entire final motion line by line before filing.":"Make the signing attorney, not the drafter, read the entire final motion before filing (Rules 5.1, 5.3; Fed. R. Civ. P. 11).");
+  if(CL==="none"&&CQ&&CQ.ideas){push("Set up a citation check before you file. Ideas:","cite-setup",10);
+    const cov=[["pull"],["citator"],["pincite","quote"],[],[],[]];
+    CQ.ideas.items.forEach((it,i)=>push("Citation idea "+(i+1)+": "+it.text,"cite-setup",10+(i+1)/100,cov[i]))}
+  else{if(CL==="nocitator")push("Add a citator check (KeyCite or Shepard’s) for every case: a case can exist and still be bad law.","cite-citator",18,["citator"]);
+    push("Treat every citation as unverified until pulled, read and checked for negative history. Run the draft through the Citation Toolkit.","cite-verify",20,["pull","citator"])}
+  push(A.finalReview==="signer"?"The signing attorney reads the entire final motion line by line before filing.":"Make the signing attorney, not the drafter, read the entire final motion before filing (Rules 5.1, 5.3; Fed. R. Civ. P. 11).","final",A.finalReview==="signer"?22:12,["final"]);
   const court=courtOf(A);
-  if(court)steps.push(A.standing==="none"?`Check ${court.name}’s rules and your judge’s standing orders again the week you file; they change.`:`Check ${court.name}’s rules and your judge’s standing orders, and add any required AI disclosure or certification.`);
-  else steps.push(A.standing==="none"?"Re-check the judge’s standing orders the week you file; they change.":"Check the judge’s standing orders and add any required AI disclosure or certification.");
-  steps.push("Redact personal identifiers under Fed. R. Civ. P. 5.2 or SJC Rule 1:24 before filing.");
-  steps.push("Note AI use in the file memo and bill only actual time spent.");
-  return steps;
+  if(court)push(A.standing==="none"?`Check ${court.name}’s rules and your judge’s standing orders again the week you file; they change.`:`Check ${court.name}’s rules and your judge’s standing orders, and add any required AI disclosure or certification.`,"standing",40,["standing"]);
+  else push(A.standing==="none"?"Re-check the judge’s standing orders the week you file; they change.":"Check the judge’s standing orders and add any required AI disclosure or certification.","standing",A.standing==="restricts"?8:40,["standing"]);
+  push("Redact personal identifiers under Fed. R. Civ. P. 5.2 or SJC Rule 1:24 before filing.","redact",42,["redact"]);
+  push("Note AI use in the file memo and bill only actual time spent.","memo",70);
+  return out;
+}
+function workflow(A){return workflowItems(A).map(x=>x.text)}
+/* checklist items: what each one is about, so "Before you file" can drop the ones a workflow step already covers */
+const CHECKLIST_KEYS=["pull","pincite","quote","citator","statutes","record","identifiers","standing","redact","final"];
+const CHECKLIST_PRIO={pull:21,pincite:44,quote:44,citator:21,statutes:46,record:46,identifiers:31,standing:41,redact:43,final:23};
+/* stops push their related steps to the top, in stop order */
+const STOP_KEYS={"no-cite-check":["cite-setup"],"no-final-review":["final"],"client-info-unsafe-tool":["tool-terms","strip","client-keepout"],"client-info-no-safeguards":["strip","client-keepout"],"privileged-no-client":["client-keepout","client-tell"],"court-restricts":["standing"]};
+/* "Before you file": workflow + checklist, duplicates removed, most important first */
+function planFor(A,r){
+  const wf=workflowItems(A),covered=new Set(wf.flatMap(x=>x.covers));
+  const items=wf.map((x,i)=>Object.assign({},x,{i})).concat(checklistFor(A).map((t,k)=>({text:t,key:"check-"+CHECKLIST_KEYS[k],prio:CHECKLIST_PRIO[CHECKLIST_KEYS[k]],i:100+k,checkKey:CHECKLIST_KEYS[k]})).filter(x=>!covered.has(x.checkKey)));
+  (r.stopIds||[]).forEach((id,si)=>items.forEach(x=>{if((STOP_KEYS[id]||[]).includes(x.key))x.prio=Math.min(x.prio,-100+si+(x.prio%1))}));
+  return items.sort((a,b)=>a.prio-b.prio||a.i-b.i);
 }
 function absUrl(u){try{return new URL(u,location.href).href}catch(e){return u}}
 function courtOf(A){const q=QUESTIONS.find(x=>x.followUp);return q?ENG.followUpOpt(q,ENG.normalize(A||{})):null}
@@ -1793,29 +1869,93 @@ function rulesBase(j){
 }
 const FAQ=[["Does a low-risk result mean I can skip review?","No. Every result assumes the signing attorney reviews the full motion and verifies every citation. The score measures the risk of using AI, not whether review is needed."],["Why did I get “Not recommended” with a low score?","Some answers are stop conditions: no citation check, no final review, client information in a consumer tool, or a court order restricting AI. They override the score."],["Is anything I entered saved?","Only on your own device. Your latest answers and result are saved in this browser so the home page can show your last report. Nothing is sent anywhere. Use Clear on the home page to remove it."],["What should I do if my court has no AI rule?","Your existing duties still apply: competence, confidentiality, candor and Rule 11. Re-check standing orders before filing, because they change."]];
 
+/* ---------------- RESULTS PAGE ----------------
+   Layout only: the scoring, stops and PDF are unchanged. */
+const SOURCE_GROUPS=[["rules","Rules"],["ethics","Ethics guidance"],["trackers","Court trackers"],["articles","Articles"]];
+function sourceType(t){
+  if(/tracker|NCSC|state courts|Bench Notes/i.test(t))return "trackers";
+  if(/\(PDF\)|engagement letter|disclose AI use/i.test(t))return "articles";
+  if(/Opinion|Model Rules|R\. Prof\. C\.|bar AI opinions|Professional Conduct|guidance/i.test(t))return "ethics";
+  return "rules"}
+function sourcesFor(A,r){
+  const seen=new Map(),add=(title,desc,url,href,resume)=>{const k=url||title;if(seen.has(k))return;seen.set(k,{title,desc,url,href:href||url,resume,type:sourceType(title)})};
+  rulesFor(A.jurisdiction,A).forEach(([a,b,u,h])=>add(a,b,u,h,!!h));
+  r.factors.forEach(f=>(f.links||[]).forEach(l=>add(l.text,l.sub||"",l.pdf||l.url,l.url,!!l.resume)));
+  return [...seen.values()]}
+function firstSentence(t){const m=String(t).match(/^.*?[.!?](\s|$)/);return m?m[0].trim():t}
+const LV=l=>l==="Low"?"ok":l==="Moderate"?"warn":"bad";
+const LV_IC={ok:"✓",warn:"!",bad:"✕"};
+const RES_TAB_KEY="motionAdvisor.resultTab";
+function resTab(){try{const t=sessionStorage.getItem(RES_TAB_KEY);return ["summary","plan","sources"].includes(t)?t:"summary"}catch(e){return "summary"}}
+function factorDetailHTML(f){
+  const notes=f.notes.filter(Boolean),lead=notes.length?firstSentence(notes[0]):"";
+  const rest=(notes.length?[notes[0].slice(lead.length).trim()].concat(notes.slice(1)):[]).filter(Boolean);
+  const links=(f.links||[]).map(l=>`<p class="factor-link"><a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(l.ariaLabel)}"${l.resume?" data-resume":""}>${esc(l.text)}<span aria-hidden="true"> ↗</span></a>${l.sub?`<br><span class="muted">${esc(l.sub)}</span>`:""}</p>`).join("");
+  const more=rest.length||links;
+  return `<h4 class="chip-h"><span class="lv-ic ${LV(f.level)}" aria-hidden="true">${LV_IC[LV(f.level)]}</span>${esc(f.title)}: ${esc(f.level)} risk</h4>
+    <p>${esc(lead)}</p>${more?`<div class="more-body" id="more-${f.id}" hidden>${rest.map(n=>`<p>${esc(n)}</p>`).join("")}${links}</div><button type="button" class="link-btn more-btn" aria-expanded="false" aria-controls="more-${f.id}">More</button>`:""}`}
 function resultHTML(r){
-  const A=adv.answers;
-  const lv=l=>l==="Low"?"ok":l==="Moderate"?"warn":"bad";
-  return `<div class="verdict ${r.cls}"><div><div class="eyebrow">Your result · ${r.date.toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})}</div><h2>${r.verdict}</h2><p style="max-width:62ch">${esc(r.summary)}</p></div><div class="gauge"><div class="num" style="color:var(--${r.cls})">${r.index}</div><div class="muted" style="font-size:.8rem">Risk index / 100</div><div class="meter" style="margin-top:8px"><i style="width:${r.index}%;background:var(--${r.cls})"></i></div></div></div>
-  ${r.overrides.length?`<div class="override"><h4>Automatic stop conditions</h4><ul>${r.overrides.map(o=>`<li>${esc(o)}</li>`).join("")}</ul></div>`:""}
-  <div class="res-grid">
-    <div class="card"><h3>Key factors</h3>${r.factors.map(f=>`<div class="factor"><div class="fh"><h4>${f.title}</h4><span class="pill ${lv(f.level)}">${f.level}</span></div><div class="meter"><i style="width:${Math.max(4,Math.round(f.ratio*100))}%;background:var(--${lv(f.level)})"></i></div>${f.notes.map(n=>`<p>${esc(n)}</p>`).join("")}${(f.links||[]).map(l=>`<p class="factor-link"><a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(l.ariaLabel)}"${l.resume?" data-resume":""}>${esc(l.text)}<span aria-hidden="true"> ↗</span></a>${l.sub?`<br><span class="muted">${esc(l.sub)}</span>`:""}</p>`).join("")}</div>`).join("")}</div>
-    <div style="display:grid;gap:20px;align-content:start">
-      <div class="card"><h3>Recommended workflow</h3><ol class="flow">${workflow(A).map(s=>`<li>${esc(s)}</li>`).join("")}</ol></div>
-      <div class="card"><h3>Verification checklist</h3><ul class="checklist">${checklistFor(A).map((c,i)=>`<li><label><input type="checkbox" id="chk-${i}"><span>${esc(c)}</span></label></li>`).join("")}</ul><p style="margin-top:12px;font-size:.88rem"><a href="#citations">Open the Citation Toolkit →</a></p></div>
+  const A=adv.answers,tab=resTab(),stops=r.overrides,FIX=CFG.assessment.stopFix||{};
+  const plan=planFor(A,r),src=sourcesFor(A,r);
+  const first=r.stopIds&&r.stopIds[0],fix=first&&FIX[first];
+  const next=fix?fix.fix:plan[0].text;
+  const rank={High:3,Moderate:2,Low:1};
+  const top=r.factors.reduce((b,f)=>(rank[f.level]>rank[b.level]||(rank[f.level]===rank[b.level]&&f.ratio>b.ratio))?f:b,r.factors[0]);
+  const tabBtn=(id,label)=>`<button type="button" role="tab" id="rt-${id}" aria-controls="rp-${id}" aria-selected="${tab===id}" tabindex="${tab===id?0:-1}">${label}</button>`;
+  return `<section class="res-top ${r.cls}" aria-labelledby="res-verdict">
+    <div class="eyebrow">Your result · ${r.date.toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})}</div>
+    <h2 id="res-verdict"><span class="v-ic" aria-hidden="true">${LV_IC[r.cls]}</span>${esc(r.verdict)}</h2>
+    <p class="res-index">Risk index: ${r.index} / 100</p>
+    <p class="res-sum">${esc(firstSentence(r.summary))}</p>
+    <p class="res-next"><b>Next step:</b> ${esc(next)}</p>
+    ${first?`<p class="res-fix"><span class="fix-ic" aria-hidden="true">!</span><span><b>Fix this first:</b> ${esc(fix?fix.short:stops[0])}${stops.length>1?` <button type="button" class="link-btn" id="res-more-stops">+${stops.length-1} more</button>`:""}</span></p>`:""}
+  </section>
+  <div class="res-actions no-print"><button class="btn primary" id="adv-pdf">Download PDF</button><button class="btn quiet" id="adv-edit">Edit answers</button><button class="btn quiet" id="adv-restart" data-start-assessment>Start over</button></div>
+  <div class="res-tabs" role="tablist" aria-label="Result details">${tabBtn("summary","Summary")}${tabBtn("plan","Your plan")}${tabBtn("sources","Sources")}</div>
+  <div class="res-panel" role="tabpanel" id="rp-summary" aria-labelledby="rt-summary" tabindex="0" ${tab==="summary"?"":"hidden"}>
+    ${stops.length?`<div class="res-block"><h3 id="res-stops-h" tabindex="-1">Automatic stops</h3><ul class="stop-list">${stops.map(o=>`<li><span class="fix-ic" aria-hidden="true">!</span>${esc(o)}</li>`).join("")}</ul></div>`:""}
+    <div class="res-block"><h3>Risk by section</h3>
+      <div class="res-chips" role="group" aria-label="Risk by section. Choose a section to see why.">${r.factors.map(f=>`<button type="button" class="res-chip ${LV(f.level)}" data-chip="${f.id}" aria-expanded="${f===top}" aria-controls="chip-panel"><span class="lv-ic ${LV(f.level)}" aria-hidden="true">${LV_IC[LV(f.level)]}</span><span class="chip-t">${esc(f.title)}</span><span class="chip-l">${esc(f.level)}</span></button>`).join("")}</div>
+      <div class="chip-panel" id="chip-panel" role="region" aria-live="polite" aria-label="Section explanation">${factorDetailHTML(top)}</div>
     </div>
-    <div class="card"><h3>Rules to check</h3><div class="rules">${rulesFor(A.jurisdiction,A).map(([a,b,u,h])=>`<div><b>${u?`<a href="${esc(h||u)}"${h?" data-resume":""} target="_blank" rel="noopener noreferrer" aria-label="${esc(a)} (opens in new tab)">${esc(a)}<span aria-hidden="true"> ↗</span></a>`:esc(a)}</b><span class="muted">${esc(b)}</span></div>`).join("")}</div><p style="margin-top:12px;font-size:.88rem"><a href="#rules">See every source on the Rules &amp; Sources page →</a></p></div>
-    <div class="card faq"><h3>FAQ</h3>${FAQ.map(([q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</div>
+    <details class="res-faq"><summary>Common questions about this result</summary>${FAQ.map(([q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</details>
   </div>
-  <div class="cmp-cta no-print"><div><b>Want to see your options side by side?</b><p>Compare four ways of using AI on this motion, built from the same answers.</p></div><button class="btn primary" id="adv-compare">Compare your options →</button></div>
-  <div class="res-actions"><button class="btn primary" id="adv-pdf">Download PDF report</button><button class="btn" id="adv-edit">Review or change answers</button><button class="btn ghost" id="adv-restart" data-start-assessment>Start over</button></div>
-  <p class="info-note"><span class="ic" aria-hidden="true">i</span>Starting a new assessment will delete this result. Download the PDF first if you want to keep it.</p>
-  <p class="muted" style="font-size:.84rem;margin-top:12px">Not legal advice. This result depends on your answers and does not replace attorney judgment or final review.</p>`;
+  <div class="res-panel" role="tabpanel" id="rp-plan" aria-labelledby="rt-plan" tabindex="0" ${tab==="plan"?"":"hidden"}>
+    <h3>Before you file</h3><p class="muted res-note">Most important first. Tick items off as you go; ticks aren’t saved.</p>
+    <ol class="plan">${plan.map((x,k)=>`<li><label><input type="checkbox" id="plan-${k}"><span>${esc(x.text)}</span></label></li>`).join("")}</ol>
+    <p class="res-link"><a href="#citations">Open the Citation Toolkit →</a></p>
+  </div>
+  <div class="res-panel" role="tabpanel" id="rp-sources" aria-labelledby="rt-sources" tabindex="0" ${tab==="sources"?"":"hidden"}>
+    ${SOURCE_GROUPS.map(([k,label])=>{const g=src.filter(x=>x.type===k);if(!g.length)return "";
+      return `<details class="src-acc"><summary>${label} · ${g.length}</summary><ul>${g.map(x=>`<li>${x.href?`<a href="${esc(x.href)}" target="_blank" rel="noopener noreferrer"${x.resume?" data-resume":""} aria-label="${esc(x.title)} (opens in new tab)">${esc(x.title)}<span aria-hidden="true"> ↗</span></a>`:`<b>${esc(x.title)}</b>`}${x.desc?`<span class="muted">${esc(x.desc)}</span>`:""}</li>`).join("")}</ul></details>`}).join("")}
+    <p class="res-link"><a href="#rules">See every source on the Rules &amp; Sources page →</a></p>
+  </div>
+  <div class="cmp-cta no-print"><p><b>Want to see the tradeoffs?</b></p><button class="btn" id="adv-compare">Compare your options →</button></div>
+  <p class="muted res-disclaimer">Not legal advice. This result depends on your answers and does not replace attorney judgment or final review.</p>`;
 }
 function bindResult(){
+  const r=compute();
   $("#adv-pdf").addEventListener("click",()=>makePDF(compute()));
   $("#adv-compare").addEventListener("click",()=>{OR_STATE.tab=0;location.hash="#compare";renderOR();setTimeout(()=>{const h=$("#v-compare h1");if(h){h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}},40)});
   $("#adv-edit").addEventListener("click",()=>{adv.step=STEP_REVIEW;renderAdvisor();scrollTop()});
+  /* tabs */
+  const tabs=$$('[role="tab"]',$("#adv-root"));
+  const select=(t,focus)=>{tabs.forEach(b=>{const on=b===t;b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1;$("#"+b.getAttribute("aria-controls")).hidden=!on});
+    try{sessionStorage.setItem(RES_TAB_KEY,t.id.slice(3))}catch(e){}if(focus)t.focus();t.scrollIntoView({block:"nearest",inline:"nearest"})};
+  tabs.forEach((b,k)=>{b.addEventListener("click",()=>select(b));
+    b.addEventListener("keydown",e=>{let n=null;if(e.key==="ArrowRight")n=(k+1)%tabs.length;else if(e.key==="ArrowLeft")n=(k-1+tabs.length)%tabs.length;else if(e.key==="Home")n=0;else if(e.key==="End")n=tabs.length-1;
+      if(n!==null){e.preventDefault();select(tabs[n],true)}})});
+  const more=$("#res-more-stops");if(more)more.addEventListener("click",()=>{select($("#rt-summary"));const h=$("#res-stops-h");if(h){h.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});h.focus({preventScroll:true})}});
+  /* chips: one explanation at a time */
+  const panel=$("#chip-panel");
+  const bindMore=()=>$$(".more-btn",panel).forEach(b=>b.addEventListener("click",()=>{const body=$("#"+b.getAttribute("aria-controls")),open=body.hidden;body.hidden=!open;b.setAttribute("aria-expanded",String(open));b.textContent=open?"Less":"More"}));
+  bindMore();
+  $$(".res-chip").forEach(c=>c.addEventListener("click",()=>{const open=c.getAttribute("aria-expanded")==="true";
+    $$(".res-chip").forEach(x=>x.setAttribute("aria-expanded","false"));
+    if(open){panel.hidden=true;return}
+    c.setAttribute("aria-expanded","true");const f=r.factors.find(x=>x.id===c.dataset.chip);panel.innerHTML=factorDetailHTML(f);panel.hidden=false;
+    if(!matchMedia("(prefers-reduced-motion: reduce)").matches){panel.classList.remove("in");void panel.offsetWidth;panel.classList.add("in")}
+    bindMore()}));
 }
 
 const QBYID=Object.fromEntries(QUESTIONS.map(q=>[q.id,q]));

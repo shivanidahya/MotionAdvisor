@@ -282,6 +282,17 @@
 ],
 
       /* Test scenarios from the project plan's testing section. */
+      /* Results page: what to show at the top when an automatic stop fires.
+         short = "Fix this first: …"; fix = the next step. Keyed by stop id. */
+      stopFix: {
+        "no-cite-check": { short: "no citation-checking process", fix: "Set up a citation-checking process before using AI." },
+        "no-final-review": { short: "no final review before filing", fix: "Have the signing attorney review the whole motion before filing." },
+        "client-info-unsafe-tool": { short: "client information in a consumer or unknown tool", fix: "Keep client information out of consumer AI tools, or switch to a tool under a firm contract." },
+        "client-info-no-safeguards": { short: "client information with no data protections", fix: "Put data-protection protocols in place before entering any client information." },
+        "privileged-no-client": { short: "privileged information without telling the client", fix: "Tell the client and get informed consent before entering privileged information." },
+        "court-restricts": { short: "the court restricts AI-drafted filings", fix: "Follow the court’s order on AI: draft without AI unless the order allows your use." }
+      },
+
       personas: [
  {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeProcess:"yes",citeMethods:["keycite","pincites"],citeScope:"every",finalReview:"signer",jurisdiction:"ma",maCourt:"district",standing:"none",clientTold:"notyet",billing:"actual"}},
  {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeProcess:"yes",citeMethods:["shepards","spreadsheet","second"],citeScope:"every",finalReview:"signer",jurisdiction:"fed",standing:"unknown",clientTold:"yes",informedConsent:"yes",billing:"actual"}},
