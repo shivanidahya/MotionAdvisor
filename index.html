@@ -459,6 +459,27 @@ header.top::after,footer.site::before{content:"";display:block;height:8px;backgr
 .highlighted mark.verify{background:color-mix(in srgb,var(--verify) 26%,var(--surface))}
 .highlighted mark.short{background:color-mix(in srgb,var(--short) 42%,var(--surface))}
 .highlighted mark.ok{background:color-mix(in srgb,var(--ok) 26%,var(--surface))}
+/* citation types: case blue, rule brown, statute orange */
+:root{--k-case:#2563A8;--k-rule:#8A5A2B;--k-stat:#D0731E;--on-k:#FFFFFF}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--k-case:#6EA8E6;--k-rule:#C39265;--k-stat:#F0A256;--on-k:#10181C}}
+:root[data-theme="dark"]{--k-case:#6EA8E6;--k-rule:#C39265;--k-stat:#F0A256;--on-k:#10181C}
+.highlighted mark.k-case{background:color-mix(in srgb,var(--k-case) 22%,var(--surface));color:var(--ink);box-shadow:inset 0 -2px var(--k-case);border-radius:3px}
+.highlighted mark.k-rule{background:color-mix(in srgb,var(--k-rule) 24%,var(--surface));color:var(--ink);box-shadow:inset 0 -2px var(--k-rule);border-radius:3px}
+.highlighted mark.k-stat{background:color-mix(in srgb,var(--k-stat) 28%,var(--surface));color:var(--ink);box-shadow:inset 0 -2px var(--k-stat);border-radius:3px}
+.pill.k-case{background:var(--k-case);color:var(--on-k)}.pill.k-rule{background:var(--k-rule);color:var(--on-k)}.pill.k-stat{background:var(--k-stat);color:var(--on-k)}
+.cite-item.k-case{border-left:4px solid var(--k-case)}.cite-item.k-rule{border-left:4px solid var(--k-rule)}.cite-item.k-stat{border-left:4px solid var(--k-stat)}
+/* verification tracker */
+.vt-wrap{overflow-x:auto;margin:0 0 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.vt{width:100%;border-collapse:collapse;font-size:.84rem}
+.vt th,.vt td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+.vt th:first-child,.vt td:first-child{text-align:left}
+.vt thead th{font-family:var(--f-ui);font-weight:600;color:var(--ink-2);background:var(--sunk);font-size:.78rem}
+.vt td.vt-c{font-family:var(--f-mono);font-size:.8rem;min-width:150px}
+.vt td.vt-c span{display:block;font-family:var(--f-body);color:var(--muted);font-size:.76rem}
+.vt input{width:18px;height:18px;accent-color:var(--ok);cursor:pointer}
+.vt .vt-s{font-family:var(--f-ui);font-weight:600;font-size:.78rem;white-space:nowrap}
+.vt .vt-s.done{color:var(--ok)}.vt .vt-s.open{color:var(--muted)}
+.vt tfoot td{font-family:var(--f-ui);font-weight:600;border-bottom:0;background:var(--sunk);font-size:.8rem}
 .hl-legend{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .auth{border-left-color:var(--copper)}
 /* Reading text: Inter (body). UI: Roboto (navigation, controls, labels, status chips). */
@@ -1058,6 +1079,7 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
 .v-ic.ok{background:var(--ok)}.v-ic.warn{background:var(--warn)}.v-ic.bad{background:var(--bad)}
 .or-prev-v{display:grid}.or-prev-v b{font-size:1.1rem}
 .or-prev-n{font-size:.9rem;color:var(--ink-2)}
+.gs-steps{margin:10px 0 0;padding-left:1.3em;display:grid;gap:6px;color:var(--ink-2)}
 .ma-modal-scrim{position:fixed;inset:0;background:rgba(10,12,30,.45);z-index:90}
 .ma-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:91;width:min(480px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 60px rgba(10,20,40,.3);padding:24px 24px 20px}
 .ma-modal[hidden],.ma-modal-scrim[hidden]{display:none!important}
@@ -1300,7 +1322,7 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
           </div>
           <p class="muted" id="brief-file-status" style="font-size:.84rem;margin-top:8px">Upload a Word (.docx), PDF or text file. It’s read in your browser and never uploaded anywhere.</p>
           <div style="margin-top:18px">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:8px"><span class="eyebrow">Highlighted draft</span><span class="hl-legend" aria-label="Highlight colors"><span class="pill verify">Citation</span><span class="pill short">Short form (Id.)</span></span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:8px"><span class="eyebrow">Highlighted draft</span><span class="hl-legend" aria-label="Highlight colors"><span class="pill k-case">Case</span><span class="pill k-stat">Statute</span><span class="pill k-rule">Rule</span></span></div>
             <div class="highlighted" id="cite-hl"></div>
           </div>
           <div class="rulebox" style="margin-top:14px"><b>Four checks no software replaces.</b> Read the opinion. Confirm the pincite supports your sentence. Compare every quotation word for word. Run KeyCite or Shepard’s for negative history.</div>
@@ -1311,7 +1333,8 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
             <span class="eyebrow">Citations to verify</span>
             <div class="export-row" role="group" aria-label="Download the citation checklist"><span class="muted" style="font-size:.82rem">Optional checklist:</span><button class="btn sm" id="cite-xlsx">Excel (.xlsx)</button><a class="btn sm" id="cite-gsheet" href="https://sheets.new" target="_blank" rel="noopener">Google Sheets ↗</a><button class="btn sm" id="cite-csv">CSV</button><button class="btn sm" id="cite-pdf">PDF</button></div>
           </div>
-          <p class="rulebox" id="gsheet-hint" hidden style="margin:0 0 10px"></p><textarea id="gsheet-tsv" class="brief" hidden readonly aria-label="Rows to paste into Google Sheets" style="min-height:110px;margin-bottom:10px"></textarea>
+          
+          <div id="cite-track"></div>
           <div id="cite-list"></div>
         </div>
       </div>
@@ -1448,6 +1471,14 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
   <h2 id="warn-title"><span class="warn-ic" aria-hidden="true">!</span><span></span></h2>
   <div id="warn-body"></div>
   <div class="ma-modal-actions"><button type="button" class="btn primary" id="warn-ok">I understand</button></div>
+</div>
+<div class="ma-modal-scrim" id="gs-scrim" hidden></div>
+<div class="ma-modal" id="gs-dlg" role="dialog" aria-modal="true" aria-labelledby="gs-title" hidden>
+  <h2 id="gs-title">Rows copied</h2>
+  <div id="gs-copied"><p>Your citation checklist is on the clipboard. Next:</p></div>
+  <div id="gs-manual" hidden><p>Your browser didn’t allow automatic copying. Copy the selected rows below (Ctrl+C or ⌘C), then:</p><textarea id="gs-tsv" class="brief" readonly aria-label="Rows to paste into Google Sheets" style="min-height:110px;margin-top:8px"></textarea></div>
+  <ol class="gs-steps"><li>Open a new Google Sheet.</li><li>Click cell A1 and paste.</li><li>Select columns E to H and choose <b>Insert › Checkbox</b>. Column I shows “Verified” once all four boxes in a row are ticked.</li></ol>
+  <div class="ma-modal-actions"><button type="button" class="btn" id="gs-close">Close</button><a class="btn primary" id="gs-open" href="https://sheets.new" target="_blank" rel="noopener noreferrer">Open Google Sheets ↗</a></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="config.js"></script>
@@ -2329,20 +2360,37 @@ function runCites(){
   $("#cite-summary").innerHTML=`<div><b>${res.items.length}</b><span>Citations found</span></div><div><b>${cases.length}</b><span>Cases</span></div><div><b>${others}</b><span>Statutes and rules</span></div><div><b style="color:var(--ok)" id="cite-verified">${verified}/${cases.length}</b><span>Cases verified</span></div>`;
   // highlight
   let html="",pos=0;
-  const marks=res.items.map(it=>({start:it.start,end:it.end,cls:"verify",title:it.kind})).concat(res.idPos.map(p=>({start:p[0],end:p[1],cls:"short",title:"Short form"}))).sort((a,b)=>a.start-b.start);
+  const marks=res.items.map(it=>({start:it.start,end:it.end,cls:kindCls(it.kind),title:it.kind})).sort((a,b)=>a.start-b.start);
   marks.forEach(mk=>{if(mk.start<pos)return;html+=esc(text.slice(pos,mk.start));html+=`<mark class="${mk.cls}" title="${esc(mk.title)}">${esc(text.slice(mk.start,mk.end))}</mark>`;pos=mk.end});
   html+=esc(text.slice(pos));
   $("#cite-hl").innerHTML=html||'<span class="muted">Nothing to show yet.</span>';
   const list=$("#cite-list");
-  if(!res.items.length){list.innerHTML='<div class="card muted">No citations found. Paste a draft with case, statute or rule citations and select Find citations.</div>';return}
-  list.innerHTML=(res.ids?`<div class="cite-item sev-short"><div class="ch"><span class="ct">Id. × ${res.ids}</span><span class="pill short">Short form</span></div><ul class="issues"><li class="info">Each “Id.” must refer to the immediately preceding authority. Re-check after moving or deleting any sentence.</li></ul></div>`:"")+
-  res.items.map((it,i)=>{const q=encodeURIComponent(it.query);
-    return `<div class="cite-item sev-verify"><div class="ch"><div style="min-width:0"><div class="ct">${esc(it.cite)}</div>${it.name?`<div class="cn">${esc(it.name)}</div>`:""}</div><span class="pill verify">${esc(it.kind)}</span></div>
+  if(!res.items.length){$("#cite-track").innerHTML="";list.innerHTML='<div class="card muted">No citations found. Paste a draft with case, statute or rule citations and select Find citations.</div>';return}
+  $("#cite-track").innerHTML=trackerHTML(cases);
+  list.innerHTML=res.items.map((it,i)=>{const q=encodeURIComponent(it.query),k=kindCls(it.kind);
+    return `<div class="cite-item ${k}"><div class="ch"><div style="min-width:0"><div class="ct">${esc(it.cite)}</div>${it.name?`<div class="cn">${esc(it.name)}</div>`:""}</div><span class="pill ${k}">${esc(it.kind)}</span></div>
     <div class="vlinks"><a href="https://1.next.westlaw.com/Link/Document/FullText?findType=Y&cite=${encodeURIComponent(it.query.replace(/"/g,""))}" target="_blank" rel="noopener">Westlaw ↗</a><a href="https://plus.lexis.com/" target="_blank" rel="noopener" data-copy="${esc(it.query.replace(/"/g,""))}">Lexis+ AI ↗</a><a href="https://www.courtlistener.com/?q=${q}" target="_blank" rel="noopener">CourtListener ↗</a></div>
     ${it.kind==="Case"?`<div class="vchecks">${VCHECKS.map((v,j)=>`<label><input type="checkbox" id="vc-${i}-${j}" data-vk="${esc(it.cite+"|"+j)}" ${verifyState[it.cite+"|"+j]?"checked":""}>${v}</label>`).join("")}</div>`:""}</div>`}).join("");
   $$("[data-copy]").forEach(a=>a.addEventListener("click",()=>{const c=a.dataset.copy;const fail=()=>toast("Paste this citation into Lexis+ AI: "+c);try{navigator.clipboard?navigator.clipboard.writeText(c).then(()=>toast("Copied “"+c+"”. Paste it into Lexis+ AI."),fail):fail()}catch(e){fail()}}));
-  $$("[data-vk]").forEach(c=>c.addEventListener("change",()=>{verifyState[c.dataset.vk]=c.checked;const v=cases.filter(cc=>VCHECKS.every((x,j)=>verifyState[cc.cite+"|"+j])).length;$("#cite-verified").textContent=v+"/"+cases.length}));
+  bindVerify(cases);
 }
+function kindCls(k){return k==="Case"?"k-case":k==="Rule"?"k-rule":"k-stat"}
+/* the tracker: one row per case, one column per check; its boxes and the cards' boxes stay in sync */
+function trackerHTML(cases){
+  if(!cases.length)return "";
+  const st=c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j]);
+  return `<div class="vt-wrap"><table class="vt"><caption class="sr-only">Verification tracker: checks done for each case</caption>
+    <thead><tr><th scope="col">Case</th>${VCHECKS.map(v=>`<th scope="col">${esc(v)}</th>`).join("")}<th scope="col">Status</th></tr></thead>
+    <tbody>${cases.map(c=>`<tr><td class="vt-c">${esc(c.cite)}${c.name?`<span>${esc(c.name)}</span>`:""}</td>${VCHECKS.map((v,j)=>`<td><input type="checkbox" data-vk="${esc(c.cite+"|"+j)}" aria-label="${esc(v)}: ${esc(c.name||c.cite)}" ${verifyState[c.cite+"|"+j]?"checked":""}></td>`).join("")}<td class="vt-s ${st(c)?"done":"open"}" data-vs="${esc(c.cite)}">${st(c)?"✓ Verified":"Open"}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td>Done</td>${VCHECKS.map((v,j)=>`<td data-vcount="${j}">${cases.filter(c=>verifyState[c.cite+"|"+j]).length}/${cases.length}</td>`).join("")}<td data-vcount="all">${cases.filter(st).length}/${cases.length}</td></tr></tfoot></table></div>`}
+function bindVerify(cases){
+  const st=c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j]);
+  $$("[data-vk]").forEach(c=>c.addEventListener("change",()=>{const k=c.dataset.vk;verifyState[k]=c.checked;
+    $$("[data-vk]").forEach(x=>{if(x.dataset.vk===k)x.checked=c.checked});
+    const v=cases.filter(st).length;$("#cite-verified").textContent=v+"/"+cases.length;
+    VCHECKS.forEach((x,j)=>{const t=$(`[data-vcount="${j}"]`);if(t)t.textContent=cases.filter(cc=>verifyState[cc.cite+"|"+j]).length+"/"+cases.length});
+    const a=$('[data-vcount="all"]');if(a)a.textContent=v+"/"+cases.length;
+    $$("[data-vs]").forEach(td=>{const cc=cases.find(x=>x.cite===td.dataset.vs);const d=cc&&st(cc);td.textContent=d?"✓ Verified":"Open";td.classList.toggle("done",!!d);td.classList.toggle("open",!d)})}))}
 /* ---- Optional checklist exports: Excel, Google Sheets, CSV ---- */
 const EXCELJS_URL="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
 function loadScript(src){return new Promise((res,rej)=>{if(window.ExcelJS)return res();const s=document.createElement("script");s.src=src;s.onload=()=>res();s.onerror=()=>rej(new Error("load"));document.head.appendChild(s)})}
@@ -2350,7 +2398,6 @@ const CHECK_HEADS=["Pulled & read","Pincite supports","Quote matches","Good law"
 const SHEET_HEADS=["#","Type","Case name","Citation",...CHECK_HEADS,"Verified"];
 function citeRows(){
   const rows=lastParse.items.map(it=>({kind:it.kind,name:it.name||"",cite:it.cite,checks:VCHECKS.map((v,j)=>!!verifyState[it.cite+"|"+j]),checklist:it.kind==="Case"}));
-  if(lastParse.ids)rows.push({kind:"Short form",name:"",cite:"Id. × "+lastParse.ids+" (each must refer to the immediately preceding authority)",checks:[false,false,false,false],checklist:false});
   return rows;
 }
 function haveCites(){if(!lastParse||!lastParse.items.length){toast("Check a draft first.");return false}return true}
@@ -2359,20 +2406,31 @@ function exportCsv(){
   if(!haveCites())return;
   const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
   const out=[SHEET_HEADS];
-  citeRows().forEach((r,i)=>out.push([i+1,r.kind,r.name,r.cite,...r.checks.map(c=>r.checklist?(c?"Yes":"No"):"N/A"),r.checklist?(r.checks.every(Boolean)?"Verified":"Open"):"N/A"]));
+  citeRows().forEach((r,i)=>out.push([i+1,r.kind,r.name,r.cite,...r.checks.map(c=>r.checklist?(c?"TRUE":"FALSE"):""),r.checklist?(r.checks.every(Boolean)?"Verified":"Open"):""]));
   saveFile("citation-checklist-"+stamp()+".csv",out.map(r=>r.map(q).join(",")).join("\r\n"));
 }
-function exportGsheet(e){
-  if(!haveCites()){e.preventDefault();return}
+function gsheetTSV(){
   const clean=s=>String(s).replace(/[\t\r\n]+/g," ");
   const lines=[SHEET_HEADS.join("\t")];
   citeRows().forEach((r,i)=>{const n=i+2;lines.push([i+1,r.kind,r.name,r.cite,...r.checks.map(c=>r.checklist?(c?"TRUE":"FALSE"):""),r.checklist?`=IF(AND(E${n},F${n},G${n},H${n}),"Verified","Open")`:""].map(clean).join("\t"))});
-  const tsv=lines.join("\n"),hint=$("#gsheet-hint"),box=$("#gsheet-tsv");
-  const how="In the new Google Sheet, click cell A1 and paste. Then select columns E to H and choose Insert › Checkbox to turn TRUE/FALSE into checkboxes. Column I shows Verified once all four are checked.";
-  const ok=()=>{hint.innerHTML="<b>Rows copied.</b> "+esc(how);hint.hidden=false;box.hidden=true};
-  const fail=()=>{hint.innerHTML="<b>Copy the rows below</b> (they’re selected). "+esc(how);hint.hidden=false;box.value=tsv;box.hidden=false;box.focus();box.select()};
-  try{navigator.clipboard?navigator.clipboard.writeText(tsv).then(ok,fail):fail()}catch(err){fail()}
-}
+  return lines.join("\n")}
+function copyText(t){ /* clipboard first; the old copy command as a fallback (works inside more frames) */
+  const old=()=>{const ta=document.createElement("textarea");ta.value=t;ta.setAttribute("readonly","");ta.style.cssText="position:fixed;top:0;left:0;opacity:0";document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}ta.remove();return ok};
+  if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t).then(()=>true,()=>old());
+  return Promise.resolve(old())}
+let gsReturn=null;
+function exportGsheet(e){
+  e.preventDefault();if(!haveCites())return;
+  const tsv=gsheetTSV();gsReturn=e.currentTarget;
+  copyText(tsv).then(ok=>{
+    $("#gs-title").textContent=ok?"Rows copied":"Copy these rows";
+    $("#gs-copied").hidden=!ok;$("#gs-manual").hidden=ok;const box=$("#gs-tsv");box.value=tsv;
+    $("#gs-scrim").hidden=false;$("#gs-dlg").hidden=false;document.body.classList.add("modal-open");
+    if(ok)$("#gs-open").focus();else{box.focus();box.select()}})}
+function closeGs(){$("#gs-scrim").hidden=true;$("#gs-dlg").hidden=true;document.body.classList.remove("modal-open");if(gsReturn)gsReturn.focus()}
+function initGs(){$("#gs-close").addEventListener("click",closeGs);$("#gs-scrim").addEventListener("click",closeGs);$("#gs-open").addEventListener("click",()=>setTimeout(closeGs,50));
+  const d=$("#gs-dlg");d.addEventListener("keydown",e=>{if(e.key==="Escape"){e.preventDefault();closeGs()}
+    if(e.key==="Tab"){const f=$$("a,button,textarea:not([hidden])",d).filter(x=>!x.closest("[hidden]"));const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}})}
 function exportPdf(){
   if(!haveCites())return;
   if(!window.jspdf){toast("The PDF library didn’t load. Check your connection and reload.");return}
@@ -2408,7 +2466,7 @@ function exportPdf(){
       if(r.checklist){doc.setDrawColor(...ink);doc.setLineWidth(0.9);doc.rect(bx,by,12,12);
         if(r.checks[j]){doc.setDrawColor(85,107,47);doc.setLineWidth(1.6);doc.line(bx+2.5,by+6.5,bx+5,by+9.5);doc.line(bx+5,by+9.5,bx+10,by+2.5)}
         doc.setLineWidth(0.5)}
-      else{doc.setFont("helvetica","normal");doc.setTextColor(...mute);doc.text("n/a",cx,by+9,{align:"center"})}
+      
       x+=w}
     y+=h;
   });
@@ -2436,26 +2494,27 @@ async function exportXlsx(){
       row.alignment={vertical:"top",wrapText:true};
       row.getCell("cite").font={name:"Consolas"};
       ["c0","c1","c2","c3"].forEach((k,j)=>{const c=row.getCell(k);c.alignment={horizontal:"center",vertical:"top"};
-        if(r.checklist){c.value=r.checks[j]?"Yes":"No";c.dataValidation={type:"list",allowBlank:false,formulae:['"Yes,No"'],showErrorMessage:true,errorTitle:"Yes or No",error:"Choose Yes or No."}}else c.value="N/A"});
+        if(r.checklist)c.value=!!r.checks[j];else c.value=null});
       const v=row.getCell("v");v.alignment={horizontal:"center",vertical:"top"};
-      v.value=r.checklist?{formula:`IF(COUNTIF(E${n}:H${n},"Yes")=4,"Verified","Open")`,result:r.checks.every(Boolean)?"Verified":"Open"}:"N/A";
+      v.value=r.checklist?{formula:`IF(AND(E${n},F${n},G${n},H${n}),"Verified","Open")`,result:r.checks.every(Boolean)?"Verified":"Open"}:null;
     });
     const last=rows.length+1;
     ws.autoFilter={from:"A1",to:"J1"};
-    ws.addConditionalFormatting({ref:`E2:H${last}`,rules:[{type:"cellIs",operator:"equal",formulae:['"Yes"'],style:{fill:{type:"pattern",pattern:"solid",bgColor:{argb:"FFE9EDD9"}},font:{color:{argb:"FF556B2F"},bold:true}}}]});
+    ws.addConditionalFormatting({ref:`E2:H${last}`,rules:[{type:"cellIs",operator:"equal",formulae:['TRUE'],style:{fill:{type:"pattern",pattern:"solid",bgColor:{argb:"FFE9EDD9"}},font:{color:{argb:"FF556B2F"},bold:true}}}]});
     ws.addConditionalFormatting({ref:`I2:I${last}`,rules:[{type:"cellIs",operator:"equal",formulae:['"Verified"'],style:{fill:{type:"pattern",pattern:"solid",bgColor:{argb:"FFE9EDD9"}},font:{color:{argb:"FF556B2F"},bold:true}}}]});
     const sm=wb.addWorksheet("Summary");sm.columns=[{width:34},{width:80}];
     const cnt=(col,crit)=>`COUNTIF('Citation check'!${col}2:${col}${last},"${crit}")`;
     [["Motion Advisor citation checklist",""],["Generated",new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})],["",""],
-     ["Authorities found",{formula:`COUNTIF('Citation check'!B2:B${last},"<>Short form")`,result:lastParse.items.length}],
-     ["Verified (all four checks Yes)",{formula:cnt("I","Verified"),result:rows.filter(r=>r.checklist&&r.checks.every(Boolean)).length}],
-     ["",""],["How to use","On the Citation check sheet, set each check to Yes once it is done. A row shows Verified when all four checks are Yes."],
+     ["Authorities found",{formula:`COUNTA('Citation check'!D2:D${last})`,result:lastParse.items.length}],
+     ["Verified (all four checks done)",{formula:cnt("I","Verified"),result:rows.filter(r=>r.checklist&&r.checks.every(Boolean)).length}],
+     ["",""],["Turn on checkboxes","Excel for Microsoft 365: on the Citation check sheet, select columns E to H, then choose Insert › Checkbox. Each TRUE/FALSE becomes a checkbox you can click. (Older Excel: type TRUE or FALSE.)"],["How to use","Tick a box once that check is done. A row shows Verified when all four boxes are ticked."],
      ["Not legal advice","This checklist lists the citations in your draft. It cannot confirm that a case exists or is good law. The signing attorney must read and verify every authority."]].forEach(d=>sm.addRow(d));
     sm.getRow(1).font={bold:true,size:14,color:{argb:"FF2F5E63"}};
-    [4,5,7,8].forEach(r=>{sm.getCell("A"+r).font={bold:true}});
+    [4,5,7,8,9].forEach(r=>{sm.getCell("A"+r).font={bold:true}});
     sm.getColumn(2).alignment={wrapText:true,vertical:"top"};
     const buf=await wb.xlsx.writeBuffer();
     await saveFile("citation-checklist-"+stamp()+".xlsx",new Blob([buf]));
+    toast("Downloaded. In Excel, select columns E to H and choose Insert › Checkbox to turn them into checkboxes.");
   }catch(e){toast("The Excel file couldn’t be built. Check your connection and try again.")}
   finally{btn.disabled=false;btn.textContent=label}
 }
@@ -2505,7 +2564,7 @@ function initCites(){
   $("#cite-xlsx").addEventListener("click",exportXlsx);
   $("#cite-csv").addEventListener("click",exportCsv);
   $("#cite-pdf").addEventListener("click",exportPdf);
-  $("#cite-gsheet").addEventListener("click",exportGsheet);
+  $("#cite-gsheet").addEventListener("click",exportGsheet);initGs();
 
 
   runCites();
