@@ -264,6 +264,11 @@
     {when:{all:[{field:"clientTold",equals:"yes"},{field:"informedConsent",equals:"yes"}]},level:"consent"}],
    // results saved before the question branched
    legacy:{consent:{clientTold:"yes",informedConsent:"yes"},will:{clientTold:"notyet"},no:{clientTold:"no",clientConfShared:"unknown",disclosureRequired:"unknown"}},
+   // warning when the client hasn't been told and either "No" follow-up is answered Yes (a pop-up, then a note that stays)
+   warning:{branch:"no",ifYes:["clientConfShared","disclosureRequired"],title:"Before you continue",
+    points:["Make sure no client information is entered into the AI tool.","Tell the client that you plan to use AI on their matter."],
+    note:"Disclosure is the best way to avoid future litigation or other problems.",button:"I understand",
+    workflow:"Keep all client information out of the AI tool until the client has been told and has given informed consent."},
    // a note with a link inside the panel for an answer; also linked in the Client communication explanation
    notes:{
     notyet:{lead:"Before you start, add an AI-use clause to your engagement letter:",linkText:"How to draft an AI clause for your engagement letter",url:"https://www.caseread.ai/blog/ai-clause-engagement-letter",ariaLabel:"How to draft an AI clause for your engagement letter (opens in new tab)",rule:"Guide to drafting the AI-use clause in an engagement letter."},

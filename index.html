@@ -954,6 +954,16 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
 .or-w output{font-family:var(--f-mono);font-weight:600;text-align:right}
 @media (max-width:760px){.or-grid-wrap{display:none}.or-mobile{display:block}.or-w{grid-template-columns:1fr 48px}.or-w label{grid-column:1/-1}.or-best strong{font-size:1.35rem}}
 /* ==== Start-a-new-assessment dialog + results note ==== */
+.warn-ic{display:inline-grid;place-items:center;flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--bad);color:#fff;font-family:var(--f-ui);font-size:.85rem;font-weight:800;margin-right:8px;vertical-align:2px}
+.warn-modal{border-top:5px solid var(--bad)}
+.warn-modal h2{display:flex;align-items:center}
+.warn-points{margin:4px 0 10px;padding-left:1.3em;display:grid;gap:6px;color:var(--ink);font-weight:500}
+.warn-note{font-size:.92rem;color:var(--ink-2)}
+.warn-inline{margin:14px 0 2px 16px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--bad) 45%,var(--line));border-left:5px solid var(--bad);border-radius:10px;background:var(--bad-bg)}
+.warn-inline[hidden]{display:none}
+.warn-inline .warn-h{display:flex;align-items:center;margin:0 0 6px;font-weight:700}
+.warn-inline .warn-points{margin-bottom:6px}
+@media (max-width:560px){.warn-inline{margin-left:10px;padding:12px}}
 .ma-modal-scrim{position:fixed;inset:0;background:rgba(10,12,30,.45);z-index:90}
 .ma-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:91;width:min(480px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 60px rgba(10,20,40,.3);padding:24px 24px 20px}
 .ma-modal[hidden],.ma-modal-scrim[hidden]{display:none!important}
@@ -1359,6 +1369,12 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
   <div class="ma-modal-actions"><button type="button" class="btn" id="newa-pdf">Download PDF</button><button type="button" class="btn" id="newa-cancel">Cancel</button><button type="button" class="btn primary" id="newa-go">Start new</button></div>
 </div>
 
+<div class="ma-modal-scrim" id="warn-scrim" hidden></div>
+<div class="ma-modal warn-modal" id="warn-dlg" role="alertdialog" aria-modal="true" aria-labelledby="warn-title" aria-describedby="warn-body" hidden>
+  <h2 id="warn-title"><span class="warn-ic" aria-hidden="true">!</span><span></span></h2>
+  <div id="warn-body"></div>
+  <div class="ma-modal-actions"><button type="button" class="btn primary" id="warn-ok">I understand</button></div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="config.js"></script>
 <script src="engine.js"></script>
@@ -1494,7 +1510,7 @@ function branchHTML(q){const A=adv.answers,m=A[q.main.id];
   const panel=(k,inner,open)=>`<div class="branch ${open?"open":""}" id="br-${q.id}-${k}" ${open?"":"inert"}><div class="branch-in">${inner}</div></div>`;
   return radioGroup(q.main.id,q.main.options,m,"qt-"+q.id)+
     `<p class="sr-only" aria-live="polite" id="br-live-${q.id}"></p>`+
-    q.main.options.map(o=>{const k=o.v,inner=(q.follow[k]||[]).map(followHTML).join("")+branchNoteHTML(q,k)+(k==="no"&&q.ideas?panel("ideas",ideasPanelHTML(q),ideasOpen(q)):"");return inner?panel(k,inner,m===k):""}).join("")}
+    q.main.options.map(o=>{const k=o.v,inner=(q.follow[k]||[]).map(followHTML).join("")+(q.warning&&q.warning.branch===k?warnInlineHTML(q):"")+branchNoteHTML(q,k)+(k==="no"&&q.ideas?panel("ideas",ideasPanelHTML(q),ideasOpen(q)):"");return inner?panel(k,inner,m===k):""}).join("")}
 /* every question or follow-up that has a learning link */
 const LEARN_QS=QUESTIONS.flatMap(q=>[q].concat(q.type==="branch"?Object.values(q.follow).flat():[])).filter(q=>q.learn);
 function setBranchOpen(el,open){if(!el)return;el.classList.toggle("open",open);if(open)el.removeAttribute("inert");else el.setAttribute("inert","")}
@@ -1514,6 +1530,22 @@ function branchUpdate(q,changed){
   if(changed===field){const live=$("#br-live-"+q.id);if(live)live.textContent=open?`${q.ideas.title}: ${q.ideas.items.length} ideas shown below.`:"";
     const l=$("#ideas-list-"+q.id),b=$("#ideas-hide-"+q.id);if(l&&open){l.hidden=false;b.textContent="Hide ideas";b.setAttribute("aria-expanded","true")}}
 }
+/* ---- Warning for a branch (config: warning) ---- */
+function warnActive(q){const W=q.warning,A=adv.answers;return !!(W&&A[q.main.id]===W.branch&&W.ifYes.some(f=>A[f]==="yes"))}
+function warnBodyHTML(W){return `<ol class="warn-points">${W.points.map(p=>`<li>${esc(p)}</li>`).join("")}</ol><p class="warn-note"><b>Side note:</b> ${esc(W.note)}</p>`}
+function warnInlineHTML(q){const W=q.warning;return `<div class="warn-inline" id="warn-inline-${q.id}" role="note" aria-label="${esc(W.title)}"${warnActive(q)?"":" hidden"}><p class="warn-h"><span class="warn-ic" aria-hidden="true">!</span>${esc(W.title)}</p>${warnBodyHTML(W)}</div>`}
+let warnReturn=null;
+function openWarn(q,trigger){const W=q.warning,d=$("#warn-dlg");
+  $("#warn-title span:last-child").textContent=W.title;$("#warn-body").innerHTML=warnBodyHTML(W);$("#warn-ok").textContent=W.button||"I understand";
+  warnReturn=trigger||document.activeElement;$("#warn-scrim").hidden=false;d.hidden=false;document.body.classList.add("modal-open");$("#warn-ok").focus()}
+function closeWarn(){const d=$("#warn-dlg");if(d.hidden)return;$("#warn-scrim").hidden=true;d.hidden=true;document.body.classList.remove("modal-open");
+  const t=warnReturn;warnReturn=null;if(t&&document.body.contains(t))t.focus()}
+function warnUpdate(q,changed,el){if(!q.warning)return;const before=$("#warn-inline-"+q.id)&&!$("#warn-inline-"+q.id).hidden,now=warnActive(q);
+  const box=$("#warn-inline-"+q.id);if(box)box.hidden=!now;
+  if(now&&!before&&q.warning.ifYes.includes(changed))openWarn(q,el)}
+function initWarn(){$("#warn-ok").addEventListener("click",closeWarn);$("#warn-scrim").addEventListener("click",closeWarn);
+  const d=$("#warn-dlg");d.addEventListener("keydown",e=>{if(e.key==="Escape"){e.preventDefault();closeWarn()}if(e.key==="Tab"){e.preventDefault();$("#warn-ok").focus()}});
+  document.addEventListener("focusin",e=>{if(!d.hidden&&!d.contains(e.target))$("#warn-ok").focus()})}
 function bindBranches(){
   QUESTIONS.filter(q=>q.type==="branch").forEach(q=>{const b=$("#ideas-hide-"+q.id);if(!b)return;
     b.addEventListener("click",()=>{const l=$("#ideas-list-"+q.id),hide=!l.hidden;l.hidden=hide;b.textContent=hide?"Show ideas":"Hide ideas";b.setAttribute("aria-expanded",String(!hide))})})}
@@ -1689,7 +1721,7 @@ function bindSteps(){
     else{adv.answers[el.dataset.q]=el.value||undefined; if(!el.value)delete adv.answers[el.dataset.q]}
     if(el.type==="radio"){$$(`input[name="${el.name}"]`).forEach(r=>r.closest(".opt").classList.toggle("sel",r.checked))}
     if(el.dataset.q===CFG.scanner.question)scanToggle(el.value===CFG.scanner.showFor);
-    QUESTIONS.filter(q=>q.type==="branch"&&ENG.allBranchFields(q).includes(el.dataset.q)).forEach(q=>branchUpdate(q,el.dataset.q));
+    QUESTIONS.filter(q=>q.type==="branch"&&ENG.allBranchFields(q).includes(el.dataset.q)).forEach(q=>{branchUpdate(q,el.dataset.q);warnUpdate(q,el.dataset.q,el)});
     {const fq=QUESTIONS.find(q=>q.followUp&&q.id===el.dataset.q);if(fq)followUpUpdate(fq)}
     {const qq=LEARN_QS.find(x=>x.id===el.dataset.q);if(qq)learnToggle(qq,adv.answers[qq.id])}
     if(adv.showErr&&sectionComplete(adv.step)){const e=$(".err");if(e)e.remove()}
@@ -1723,7 +1755,8 @@ function workflow(A){
   {const P=ENG.prepare(A),IQ=QUESTIONS.find(q=>q.id==="informed");
     if(P.informed==="will")steps.push("Before drafting, tell the client you’ll use AI, add an AI-use clause to your engagement letter, and get their informed consent in writing.");
     if(P.informed==="toldnoconsent")steps.push("Get the client’s informed consent to AI use in writing before any prompt includes their information.");
-    if(P.informed==="no"){steps.push("Tell the client how you’ll use AI on their matter, and get informed consent before entering any confidential information.");
+    if(P.informed==="no"){if(IQ&&IQ.warning&&IQ.warning.ifYes.some(f=>A[f]==="yes"))steps.push(IQ.warning.workflow);
+      steps.push("Tell the client how you’ll use AI on their matter, and get informed consent before entering any confidential information.");
       if(A.disclosureRequired==="yes")steps.push("Add the AI-use disclosure the law, court rule or standing order requires to the filing.");
       else if(A.disclosureRequired==="unsure")steps.push("Check whether a law, court rule or standing order requires disclosing AI use in the filing.")}}
   const CQ=QUESTIONS.find(q=>q.id==="citeCheck"),CL=ENG.prepare(A).citeCheck;
@@ -2747,7 +2780,7 @@ renderParts();
 $("#m-grid").addEventListener("click",e=>{const b=e.target.closest("[data-assess]");if(b)assessMotion(MOTIONS[+b.dataset.assess].n,b)});
 $("#ap-real").addEventListener("click",e=>{e.preventDefault();openMotion(MOTIONS.findIndex(m=>m.n==="Motion to Strike"))});
 const RESUMED=resumeFromViewer();
-renderAdvisor(); renderLastReport(); initStartAssessment(); initOR(); renderMethod(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route(); initRuleLinks(); if(RESUMED!==null)setTimeout(()=>focusResumed(RESUMED),60);
+renderAdvisor(); renderLastReport(); initStartAssessment(); initWarn(); initOR(); renderMethod(); initCites(); renderGame(); renderMotions(); renderQuiz(); initSearch(); route(); initRuleLinks(); if(RESUMED!==null)setTimeout(()=>focusResumed(RESUMED),60);
 })();
 </script>
 </body></html>
