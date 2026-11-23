@@ -1048,6 +1048,16 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
 .warn-inline .warn-h{display:flex;align-items:center;margin:0 0 6px;font-weight:700}
 .warn-inline .warn-points{margin-bottom:6px}
 @media (max-width:560px){.warn-inline{margin-left:10px;padding:12px}}
+#or-prev{position:sticky;top:84px;z-index:2}
+.or-prev{margin:12px 0 18px;padding:14px 16px;border-radius:10px;background:var(--sunk);border-left:5px solid var(--ok);display:grid;gap:6px;max-width:640px}
+.or-prev.warn{border-left-color:var(--warn)}.or-prev.bad{border-left-color:var(--bad)}
+.or-prev p{margin:0}
+.or-prev-h{font-family:var(--f-ui);font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.or-prev-row{display:flex;gap:10px;align-items:center}
+.or-prev .v-ic{width:28px;height:28px;font-size:.9rem}
+.v-ic.ok{background:var(--ok)}.v-ic.warn{background:var(--warn)}.v-ic.bad{background:var(--bad)}
+.or-prev-v{display:grid}.or-prev-v b{font-size:1.1rem}
+.or-prev-n{font-size:.9rem;color:var(--ink-2)}
 .ma-modal-scrim{position:fixed;inset:0;background:rgba(10,12,30,.45);z-index:90}
 .ma-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:91;width:min(480px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 60px rgba(10,20,40,.3);padding:24px 24px 20px}
 .ma-modal[hidden],.ma-modal-scrim[hidden]{display:none!important}
@@ -2133,7 +2143,7 @@ function renderOR(){
   const root=$("#cmp-root");if(!root)return;
   const a=orAnswers();
   if(!a){root.innerHTML=`<div class="card cmp-empty"><h2>Take the assessment first</h2><p>The Options Report is built from your assessment answers. Finish the AI Drafting Advisor, then choose “Compare your options” on your result.</p><div class="ctas"><a class="btn primary" href="#advisor" data-start-assessment>Start the assessment</a></div></div>`;return}
-  const R=ENG.optionsReport(a,orWeights()),secs=CFG.assessment.sections;
+  const R=ENG.optionsReport(a),secs=CFG.assessment.sections;
   const head=`<th scope="col">Risk area</th>`+R.options.map(o=>`<th scope="col" class="or-oh${o.blocked?" blocked":""}"><span class="or-num">Option ${orNum(o)}</span><span class="or-on">${esc(o.name)}</span><span class="or-od">${esc(o.desc)}</span>${o.blocked?`<span class="or-bb"><span class="lock-ic" aria-hidden="true"></span>Blocked because: ${esc(o.blockedBy.join(" "))}</span>`:""}</th>`).join("");
   const rows=secs.map(s=>`<tr><th scope="row">${esc(s.title)}</th>${R.options.map(o=>{const c=o.cells.find(x=>x.id===s.id);
       return o.blocked?`<td class="blocked"><span class="lock-ic" aria-hidden="true"></span><span class="sr-only">Blocked</span></td>`:`<td><button type="button" class="or-cell" data-oc="${o.id}" data-os="${s.id}" aria-label="${esc(o.name)}, ${esc(s.title)}: ${c.level} risk. Show details.">${chip(c.level)}</button></td>`}).join("")}</tr>`).join("");
@@ -2149,16 +2159,23 @@ function renderOR(){
     <div class="or-grid-wrap"><table class="or-grid"><caption class="sr-only">Options Report: risk level for each way of using AI in each risk area</caption><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>
     <div class="or-mobile"><div class="or-tabs" role="tablist" aria-label="Options">${tabs}</div>${panels}</div>
     <details class="or-adv" id="or-adv" ${OR_STATE.advOpen?"open":""}><summary>Adjust what matters to you</summary>
-      <p class="card-sub">Move a slider to make a risk area count more or less. The recommended option at the top will update; the table stays the same.</p>
+      <p class="card-sub">Move a slider to see how your result would look if a risk area counted more or less. This is only a preview: your result and the table above don’t change.</p>
+      <div id="or-prev" aria-live="polite">${orPreviewHTML()}</div>
       ${secs.map(s=>`<div class="or-w"><label for="orw-${s.id}">${esc(s.title)}</label><input type="range" id="orw-${s.id}" data-orw="${s.id}" min="${W.min}" max="${W.max}" step="${W.step}" value="${w[s.id]}"><output id="orwo-${s.id}" for="orw-${s.id}">${w[s.id]}×</output></div>`).join("")}
       <button type="button" class="btn sm" id="or-reset" ${orChanged()?"":"hidden"}>Reset to default</button></details>
     <p class="rp-disc">This report is general information to support your professional judgment, not legal advice. You remain responsible for the accuracy of every filing.</p>`;
   bindOR();
 }
+/* the slider preview: what the result and the safest option would be with these weights (nothing else changes) */
+function orPreviewHTML(){
+  const a=orAnswers();if(!a)return "";const w=orWeights(),mine=ENG.assess(a),now=ENG.weighted(a,w),R=ENG.optionsReport(a,w),b=R.bottom,changed=orChanged();
+  const ic={ok:"✓",warn:"!",bad:"✕"};
+  return `<div class="or-prev ${now.cls}"><p class="or-prev-h">${changed?"With these weights":"With the standard weights (your result)"}</p>
+    <div class="or-prev-row"><span class="v-ic ${now.cls}" aria-hidden="true">${ic[now.cls]}</span><span class="or-prev-v"><b>${esc(now.verdict)}</b><span class="muted">Risk index ${now.index} / 100${changed?` · your result: ${mine.index}, ${esc(mine.verdict)}`:""}</span></span></div>
+    <p class="or-prev-o">Safest useful option: <b>Option ${orNum(b)}: ${esc(b.name)}</b> <span class="muted">(${b.band} overall)</span></p>
+    ${now.stopped?`<p class="or-prev-n">An automatic stop still applies, so the verdict stays “${esc(now.verdict)}” whatever the weights.</p>`:""}</div>`}
 function paintOR(){ /* live update after a weight change, without redrawing the sliders */
-  const a=orAnswers();if(!a)return;const R=ENG.optionsReport(a,orWeights());
-  $("#or-bottom").innerHTML=orBottomHTML(R);
-  R.options.forEach(o=>{if(o.blocked)return;const t=$(`[data-orbar="${o.id}"]`),m=$(`[data-orbar-m="${o.id}"]`);if(t)t.innerHTML=barHTML(o);if(m)m.innerHTML=barHTML(o)});
+  const p=$("#or-prev");if(p)p.innerHTML=orPreviewHTML();
   const r=$("#or-reset");if(r)r.hidden=!orChanged()}
 function bindOR(){
   const root=$("#cmp-root");
@@ -2166,7 +2183,7 @@ function bindOR(){
   $("#or-edit").addEventListener("click",()=>{orToResult(STEP_REVIEW)});
   $("#or-pdf").addEventListener("click",()=>orPDF());
   $$("[data-orw]",root).forEach(r=>r.addEventListener("input",()=>{const w=Object.assign({},orWeights());w[r.dataset.orw]=+r.value;OR_STATE.weights=w;$("#orwo-"+r.dataset.orw).textContent=r.value+"×";paintOR()}));
-  $("#or-reset").addEventListener("click",()=>{OR_STATE.weights=null;renderOR();const d=$("#or-adv");if(d)d.open=true;toast("Weights reset to the assessment’s defaults.")});
+  $("#or-reset").addEventListener("click",()=>{OR_STATE.weights=null;renderOR();const d=$("#or-adv");if(d)d.open=true;toast("Weights reset to the standard weights.")});
   $("#or-adv").addEventListener("toggle",e=>{OR_STATE.advOpen=e.target.open});
   const tabs=$$("[data-ortab]",root);
   const sel=i=>{OR_STATE.tab=i;tabs.forEach((t,j)=>{t.setAttribute("aria-selected",String(j===i));t.tabIndex=j===i?0:-1;$("#orp-"+j).hidden=j!==i})};
@@ -2180,7 +2197,7 @@ function orToResult(step){
   if(!allComplete()){const r=loadLast();if(r){adv.answers={...r.answers};adv.at=r.at;adv.ack=true}}
   adv.step=step;location.hash="#advisor";renderAdvisor();setTimeout(scrollTop,30)}
 function orCell(oid,sid){
-  const a=orAnswers();const R=ENG.optionsReport(a,orWeights());const o=R.options.find(x=>x.id===oid),c=o.cells.find(x=>x.id===sid);
+  const a=orAnswers();const R=ENG.optionsReport(a);const o=R.options.find(x=>x.id===oid),c=o.cells.find(x=>x.id===sid);
   const optCfg=ORC.options.find(x=>x.id===oid);
   let body;
   if(o.noAI)body=`<p>${chip("Low")}</p><p>No AI tool is involved in this option, so this risk doesn’t arise.</p>`;
@@ -2199,14 +2216,14 @@ function orCell(oid,sid){
 
 function orPDF(){
   if(!window.jspdf){toast("The PDF library didn’t load. Check your connection and reload.");return}
-  const a=orAnswers();if(!a)return;const R=ENG.optionsReport(a,orWeights()),secs=CFG.assessment.sections;
+  const a=orAnswers();if(!a)return;const R=ENG.optionsReport(a),secs=CFG.assessment.sections;
   const {jsPDF}=window.jspdf,doc=new jsPDF({unit:"pt",format:"letter",orientation:"landscape"});
   const W=792,H=612,M=44,ink=[35,56,59],mute=[107,94,78],col={Low:[85,107,47],Moderate:[160,74,12],High:[192,56,44]};let y=M;
   const clean=s=>String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,"-").replace(/[→←✓▲✕]/g,"");
   const need=h=>{if(y+h>H-M){doc.addPage();y=M}};
   const text=(s,o={})=>{doc.setFont("helvetica",o.bold?"bold":"normal");doc.setFontSize(o.size||10);doc.setTextColor(...(o.color||ink));doc.splitTextToSize(clean(s),o.w||(W-2*M-(o.x||0))).forEach(l=>{need((o.size||10)*1.4);doc.text(l,M+(o.x||0),y+(o.size||10));y+=(o.size||10)*1.4});y+=o.gap==null?3:o.gap};
-  text("MOTION ADVISOR",{size:9,bold:true,color:mute,gap:1});text("Options Report",{size:20,bold:true,gap:2});
-  text("Generated "+new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})+(orChanged()?" · Weights adjusted by you":""),{size:9,color:mute,gap:10});
+  text("MOTION ADVISOR",{size:9,bold:true,color:mute,gap:1});text("Options Report",{size:20,bold:true,gap:2});if(orChanged()){const w=orWeights(),now=ENG.weighted(a,w),b=ENG.optionsReport(a,w).bottom;text("Weight preview (not your result): with "+secs.map(x=>x.title+" "+w[x.id]+"x").join(", ")+", the risk index would be "+now.index+" ("+now.verdict+") and the safest useful option "+b.name+".",{size:9.5,color:mute,gap:4})}
+  text("Generated "+new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"}),{size:9,color:mute,gap:10});
   text(ORC.bottomLine,{size:11,gap:2});text("Option "+orNum(R.bottom)+": "+R.bottom.name+" ("+R.bottom.band+" overall risk)",{size:14,bold:true,color:col[R.bottom.band],gap:2});text(R.bottom.desc,{size:10,gap:6});
   if(R.runnerUp)text("Runner-up: "+R.runnerUp.name+" ("+R.runnerUp.band+" overall risk)",{size:10});
   R.blocked.forEach(o=>text("Blocked: "+o.name+". Blocked because: "+o.blockedBy.join(" "),{size:10,color:col.High}));

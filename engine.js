@@ -146,6 +146,15 @@
     }
     function stops(a) { a = prepare(a); return AS.stops.filter(function (s) { return test(s.when, a); }); }
 
+    /* A preview of the result with different section weights (Options Report sliders). Stops still apply. */
+    function weighted(a, weights) {
+      a = prepare(a);
+      var secs = sectionScores(a), index = indexOf(secs, weights), st = stops(a), v;
+      if (st.length) v = AS.stopVerdict;
+      else for (var i = 0; i < AS.verdicts.length; i++) if (index <= AS.verdicts[i].max) { v = AS.verdicts[i]; break; }
+      return { index: index, verdict: v.verdict, cls: v.cls, stopped: st.length > 0 };
+    }
+
     /* The main result, identical to the original assessment's compute(). */
     function assess(a) {
       a = prepare(a);
@@ -348,7 +357,7 @@
 
     return {
       scanDraft: scanDraft, normalizeText: normalizeText,
-      config: cfg, questions: QUESTIONS, optOf: optOf, complete: complete, answered: answered, normalize: normalize, prepare: prepare, assess: assess,
+      config: cfg, questions: QUESTIONS, optOf: optOf, complete: complete, answered: answered, normalize: normalize, prepare: prepare, assess: assess, weighted: weighted,
       followUpOpt: followUpOpt, followUpExtras: followUpExtras, branchSummary: branchSummary, branchComplete: branchComplete, branchLevel: branchLevel, branchFields: branchFields, allBranchFields: allBranchFields,
       stops: stops, optionsReport: optionsReport, defaultWeights: defaultWeights, levelOf: levelOf, bandOf: bandOf
     };

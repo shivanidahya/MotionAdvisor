@@ -297,3 +297,10 @@ test("18. Each section explains why: every answer with its own risk level, drive
     assert.ok(Math.max(...f.why.map((w) => rank[w.level])) >= rank[f.level], f.id);
   }));
 });
+
+test("19. Weight preview: standard weights give the real result; stops still force Not recommended", () => {
+  [SOLO, TWO, NEW].forEach((a) => { const r = E.assess(a), w = E.weighted(a, E.defaultWeights()); assert.equal(w.index, r.index); assert.equal(w.verdict, r.verdict); });
+  const heavy = E.weighted(TWO, Object.assign(E.defaultWeights(), { juris: 3, comp: 3 }));
+  assert.notEqual(heavy.index, E.assess(TWO).index);
+  assert.equal(E.weighted(NEW, Object.assign(E.defaultWeights(), { conf: 0, task: 0 })).verdict, "Not recommended");
+});
