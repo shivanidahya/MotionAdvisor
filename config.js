@@ -156,7 +156,7 @@
       {v:"every",label:"Every citation",short:"Every citation"},
       {v:"some",label:"Some citations (spot-check)",short:"Some citations (spot-check)"}]}],
     no:[
-     {id:"citeIdeas",type:"choice",text:"Would you like some ideas for checking citations?",options:[
+     {id:"citeIdeas",type:"choice",summary:false,text:"Would you like some ideas for checking citations?",options:[
       {v:"yes",label:"Yes, show me ideas"},
       {v:"no",label:"No, continue"}]}]},
    // Wanting ideas never changes the score or removes the stop.
@@ -226,10 +226,46 @@
     {v:"restricts",label:"Yes, it restricts or prohibits AI-drafted filings",score:6,note:"The court restricts AI-drafted filings."}]}
  ]},
  {id:"client",title:"Client communication",weight:1,qs:[
-  {id:"informed",type:"choice",text:"Has the client been told that AI will be used, and what information it will see?",why:"Rule 1.4 requires explaining matters the client needs to make informed decisions. ABA 512 calls for informed consent before confidential data is entered.",options:[
-    {v:"consent",label:"Yes, and the client gave informed consent",score:0,note:"Informed consent is documented."},
-    {v:"will",label:"Not yet; I will before drafting",score:1,note:"Get and document consent before any prompt includes client information."},
-    {v:"no",label:"No",score:3,note:"The client has not been told about AI use."}]},
+  /* Client communication: a branching question (same pattern as citation checking).
+     The user answers "Has the client been told?" (clientTold) and the follow-ups for that answer.
+     The score comes from the internal levels below, chosen by levelRules; the "privileged-no-client"
+     stop still fires on level "no" when substantial client information would be entered. */
+  {id:"informed",type:"branch",text:"Has the client been told that you will use AI when preparing their filings?",why:"Rule 1.4 requires explaining matters the client needs to make informed decisions. ABA 512 calls for informed consent before confidential data is entered.",
+   options:[ // internal levels (not shown as choices); scores match the earlier single question
+    {v:"consent",label:"Told, and gave informed consent",score:0,note:"Informed consent is documented."},
+    {v:"toldnoconsent",label:"Told, but no informed consent yet",score:1,note:"The client knows you’ll use AI but hasn’t given informed consent. Get and document it before any prompt includes client information."}, // REVIEW: scored like "Not yet"
+    {v:"will",label:"Not yet told",score:1,note:"Get and document consent before any prompt includes client information."},
+    {v:"no",label:"Not told",score:3,note:"The client has not been told about AI use."}],
+   main:{id:"clientTold",options:[{v:"yes",label:"Yes"},{v:"notyet",label:"Not yet"},{v:"no",label:"No"}]},
+   follow:{
+    yes:[
+     {id:"informedConsent",type:"choice",text:"Have they provided their informed consent?",
+      // shown as a definition when the user hovers over or focuses the term
+      term:{match:"informed consent",def:"Informed consent denotes the agreement by a person to a proposed course of conduct after the lawyer has communicated adequate information and explanation about the material risks of and reasonably available alternatives to the proposed course of conduct.",source:"ABA Model Rule 1.0(e)"},
+      options:[{v:"yes",label:"Yes",short:"Informed consent given"},{v:"no",label:"No",short:"No informed consent yet"}]}],
+    notyet:[],
+    no:[
+     {id:"clientConfShared",type:"choice",text:"Will confidential client information be shared with the AI tools?",options:[
+      {v:"yes",label:"Yes",short:"Confidential information will be shared",note:"Confidential client information would go into the AI tool without the client knowing. ABA Formal Op. 512 calls for informed consent first."},
+      {v:"no",label:"No",short:"No confidential information shared"},
+      {v:"unsure",label:"Not sure",short:"Not sure about confidential information",note:"Find out whether confidential client information would reach the AI tool before you use it."},
+      {v:"unknown",label:"Not answered",hidden:true}]},
+     {id:"disclosureRequired",type:"choice",text:"Are there laws, court rules or standing orders that require disclosing AI use in filings?",options:[
+      {v:"yes",label:"Yes",short:"Disclosure required in filings",note:"A law, court rule or standing order requires disclosing AI use in the filing. Include the disclosure."},
+      {v:"no",label:"No",short:"No disclosure required"},
+      {v:"unsure",label:"Not sure",short:"Not sure whether disclosure is required",note:"Check whether a law, court rule or standing order requires disclosing AI use in the filing."},
+      {v:"unknown",label:"Not answered",hidden:true}]}]},
+   levelRules:[
+    {when:{field:"clientTold",equals:"no"},level:"no"},
+    {when:{field:"clientTold",equals:"notyet"},level:"will"},
+    {when:{all:[{field:"clientTold",equals:"yes"},{field:"informedConsent",equals:"no"}]},level:"toldnoconsent"},
+    {when:{all:[{field:"clientTold",equals:"yes"},{field:"informedConsent",equals:"yes"}]},level:"consent"}],
+   // results saved before the question branched
+   legacy:{consent:{clientTold:"yes",informedConsent:"yes"},will:{clientTold:"notyet"},no:{clientTold:"no",clientConfShared:"unknown",disclosureRequired:"unknown"}},
+   // a note with a link inside the panel for an answer; also linked in the Client communication explanation
+   notes:{
+    notyet:{lead:"Before you start, add an AI-use clause to your engagement letter:",linkText:"How to draft an AI clause for your engagement letter",url:"https://www.caseread.ai/blog/ai-clause-engagement-letter",ariaLabel:"How to draft an AI clause for your engagement letter (opens in new tab)",rule:"Guide to drafting the AI-use clause in an engagement letter."},
+    no:{lead:"Not sure what to tell the client or the court?",linkText:"ABA: When should lawyers disclose AI use?",url:"https://www.americanbar.org/groups/law_practice/resources/law-technology-today/2026/when-should-lawyers-disclose-ai-use/",ariaLabel:"ABA Law Technology Today: When should lawyers disclose AI use? (opens in new tab)",rule:"When lawyers should disclose AI use to clients and courts."}}},
   {id:"billing",type:"choice",text:"How will AI-assisted work be billed?",why:"ABA 512 and Rule 1.5: bill actual time spent; do not bill hourly clients for time AI saved, or for learning a general-purpose tool.",options:[
     {v:"actual",label:"Actual time spent, hourly",score:0,note:"Billing actual time complies with Rule 1.5."},
     {v:"flat",label:"Flat or contingent fee, unchanged",score:0,note:"Flat or contingent fees avoid hourly AI billing issues; make sure the fee stays reasonable."},
@@ -240,9 +276,9 @@
 
       /* Test scenarios from the project plan's testing section. */
       personas: [
- {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeProcess:"yes",citeMethods:["keycite","pincites"],citeScope:"every",finalReview:"signer",jurisdiction:"ma",maCourt:"district",standing:"none",informed:"will",billing:"actual"}},
- {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeProcess:"yes",citeMethods:["shepards","spreadsheet","second"],citeScope:"every",finalReview:"signer",jurisdiction:"fed",standing:"unknown",informed:"consent",billing:"actual"}},
- {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:["research"],tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeProcess:"yes",citeMethods:["pincites"],citeScope:"some",finalReview:"other",jurisdiction:"ma",maCourt:"superior",standing:"unknown",informed:"no",billing:"saved"}}
+ {name:"Solo practitioner, routine extension",desc:"Paid tool, anonymized, full cite check",a:{motionType:"routine",aiTask:["format"],tool:"paid",clientInfo:"no",safeguards:"informal",familiarity:"high",guidance:"yes",citeProcess:"yes",citeMethods:["keycite","pincites"],citeScope:"every",finalReview:"signer",jurisdiction:"ma",maCourt:"district",standing:"none",clientTold:"notyet",billing:"actual"}},
+ {name:"Two-lawyer firm, motion to compel",desc:"Legal-specific tool, limited client facts",a:{motionType:"discovery",aiTask:["summarize"],tool:"legal",clientInfo:"limited",safeguards:"policy",familiarity:"some",guidance:"partly",citeProcess:"yes",citeMethods:["shepards","spreadsheet","second"],citeScope:"every",finalReview:"signer",jurisdiction:"fed",standing:"unknown",clientTold:"yes",informedConsent:"yes",billing:"actual"}},
+ {name:"New associate, summary judgment",desc:"Free chatbot, client strategy, spot-checks",a:{motionType:"dispositive",aiTask:["research"],tool:"consumer",clientInfo:"substantial",safeguards:"none",familiarity:"low",guidance:"no",citeProcess:"yes",citeMethods:["pincites"],citeScope:"some",finalReview:"other",jurisdiction:"ma",maCourt:"superior",standing:"unknown",clientTold:"no",clientConfShared:"yes",disclosureRequired:"unsure",billing:"saved"}}
 ]
     },
 

@@ -965,6 +965,16 @@ body.modal-open{overflow:hidden}
 .info-note{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;font-size:.86rem;color:var(--muted)}
 .info-note .ic{flex-shrink:0;display:inline-grid;place-items:center;width:18px;height:18px;margin-top:1px;border-radius:50%;border:1.5px solid currentColor;font-family:var(--f-ui);font-size:.7rem;font-weight:700;font-style:italic}
 .learn-tip{margin:0}
+.branch-note .learn-in{margin-left:16px}
+.term{position:relative;display:inline}
+.term-btn{all:unset;cursor:help;color:var(--accent);border-bottom:1.5px dotted currentColor}
+.term-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.term-tip{display:none;position:absolute;left:0;top:calc(100% + 8px);z-index:30;width:min(360px,80vw);padding:12px 14px;border-radius:10px;background:var(--ink);color:var(--paper);font-family:var(--f-body);font-size:.86rem;font-weight:400;line-height:1.5;box-shadow:0 10px 30px -10px rgba(0,0,0,.45)}
+.term-tip b{font-weight:600}
+.term-src{opacity:.8;font-style:italic}
+.term:hover .term-tip,.term-btn:focus+.term-tip,.term.open .term-tip{display:block}
+.term.dismissed .term-tip{display:none}
+@media (max-width:560px){.term-tip{position:fixed;left:16px;right:16px;top:auto;bottom:16px;width:auto}}
 .learn-in.art-note{max-height:none;overflow:visible}
 .art-note p{margin:0 0 4px}.art-note ul{margin:0;padding-left:1.1em;display:grid;gap:3px}.art-note a{color:var(--accent);font-weight:600;text-decoration:none}.art-note a:hover,.art-note a:focus-visible{text-decoration:underline}
 .learn-sub{display:block;margin-top:2px;font-size:.82rem}
@@ -1456,19 +1466,30 @@ function firstIncomplete(){for(let i=0;i<SECTIONS.length;i++)if(!sectionComplete
 function hintText(o){if(!o.examples||!o.examples.length)return o.hint;const e=o.examples;
   const list=o.join==="or"&&e.length>1?e.slice(0,-1).join(", ")+" or "+e[e.length-1]:e.join(", ");return o.hint.replace("{examples}",list)}
 /* ---- Branching question (config type "branch"): main yes/no + follow-ups, ideas panel ---- */
-function radioGroup(id,opts,val,label){return `<div class="opts" role="radiogroup" aria-labelledby="${label}">${opts.map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${id}" id="q-${id}-${o.v}" value="${o.v}" data-q="${id}" ${val===o.v?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`}
+function radioGroup(id,opts,val,label){return `<div class="opts" role="radiogroup" aria-labelledby="${label}">${opts.filter(o=>!o.hidden).map(o=>`<label class="opt ${val===o.v?"sel":""}"><input type="radio" name="q-${id}" id="q-${id}-${o.v}" value="${o.v}" data-q="${id}" ${val===o.v?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`}
 function checkGroup(id,opts,vals,label,hint){return `<div class="opts" role="group" aria-labelledby="${label}" aria-describedby="${hint}">${opts.filter(o=>!o.hidden).map(o=>`<label class="opt ${vals.includes(o.v)?"sel":""}"><input type="checkbox" name="q-${id}" id="q-${id}-${o.v}" value="${o.v}" data-q="${id}" ${vals.includes(o.v)?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`}
+/* a term with a definition shown on hover, focus or tap (config: term) */
+function termHTML(f){const T=f.term;if(!T||!f.text.includes(T.match))return esc(f.text);const i=f.text.indexOf(T.match),id="term-"+f.id;
+  return esc(f.text.slice(0,i))+`<span class="term"><button type="button" class="term-btn" aria-describedby="${id}" aria-expanded="false">${esc(T.match)}</button><span class="term-tip" role="tooltip" id="${id}"><b>${esc(T.match.charAt(0).toUpperCase()+T.match.slice(1))}:</b> ${esc(T.def)} <span class="term-src">— ${esc(T.source)}</span></span></span>`+esc(f.text.slice(i+T.match.length))}
+function bindTerms(){$$(".term-btn").forEach(b=>{const t=b.closest(".term");
+  const set=o=>{t.classList.toggle("open",o);b.setAttribute("aria-expanded",String(o))};
+  /* focus shows it (CSS); a click or tap keeps it open until Escape or the focus moves */
+  b.addEventListener("click",e=>{e.preventDefault();set(!t.classList.contains("open"))});
+  b.addEventListener("keydown",e=>{if(e.key==="Escape"){set(false);t.classList.add("dismissed")}});
+  b.addEventListener("focus",()=>t.classList.remove("dismissed"));
+  b.addEventListener("blur",()=>set(false))})}
 function followHTML(f){const A=adv.answers,lab="qt-"+f.id;
-  return `<div class="q sub"><div class="q-text" id="${lab}">${esc(f.text)}<span class="req" aria-label="required">*</span></div>${f.type==="multi"?`<p class="q-hint" id="qh-${f.id}">${esc(f.hint||"Select all that apply")}</p>`+checkGroup(f.id,f.options,Array.isArray(A[f.id])?A[f.id]:[],lab,"qh-"+f.id):radioGroup(f.id,f.options,A[f.id],lab)}${f.learn?`<div class="learn-tip" id="learn-${f.id}" aria-live="polite">${learnShows(f,A[f.id])?learnHTML(f,learnEntry(f,A[f.id])):""}</div>`:""}</div>`}
+  return `<div class="q sub"><div class="q-text" id="${lab}">${termHTML(f)}<span class="req" aria-label="required">*</span></div>${f.type==="multi"?`<p class="q-hint" id="qh-${f.id}">${esc(f.hint||"Select all that apply")}</p>`+checkGroup(f.id,f.options,Array.isArray(A[f.id])?A[f.id]:[],lab,"qh-"+f.id):radioGroup(f.id,f.options,A[f.id],lab)}${f.learn?`<div class="learn-tip" id="learn-${f.id}" aria-live="polite">${learnShows(f,A[f.id])?learnHTML(f,learnEntry(f,A[f.id])):""}</div>`:""}</div>`}
 function ideaHTML(it){if(!it.link||!it.text.includes(it.link.match))return esc(it.text);const L=it.link,i=it.text.indexOf(L.match);
   return esc(it.text.slice(0,i))+`<a href="${esc(L.href)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L.ariaLabel)}">${esc(L.match)}<span aria-hidden="true"> ↗</span></a>`+esc(it.text.slice(i+L.match.length))}
 function ideasPanelHTML(q){return `<div class="ideas" id="ideas-${q.id}"><div class="ideas-h"><h4 id="ideas-t-${q.id}">${esc(q.ideas.title)}</h4><button type="button" class="btn sm ghost" id="ideas-hide-${q.id}" aria-controls="ideas-list-${q.id}" aria-expanded="true">Hide ideas</button></div><ol id="ideas-list-${q.id}" aria-labelledby="ideas-t-${q.id}">${q.ideas.items.map(it=>`<li>${ideaHTML(it)}</li>`).join("")}</ol></div>`}
+function branchNoteHTML(q,k){const N=q.notes&&q.notes[k];return N?`<div class="learn-tip branch-note">${learnHTML(q,N)}</div>`:""}
+function ideasOpen(q){const A=adv.answers;return !!(q.ideas&&A[q.main.id]==="no"&&A[q.ideas.field||"citeIdeas"]==="yes")}
 function branchHTML(q){const A=adv.answers,m=A[q.main.id];
   const panel=(k,inner,open)=>`<div class="branch ${open?"open":""}" id="br-${q.id}-${k}" ${open?"":"inert"}><div class="branch-in">${inner}</div></div>`;
-  const no=(q.follow.no||[]).map(followHTML).join("")+(q.ideas?panel("ideas",ideasPanelHTML(q),m==="no"&&A.citeIdeas==="yes"):"");
   return radioGroup(q.main.id,q.main.options,m,"qt-"+q.id)+
     `<p class="sr-only" aria-live="polite" id="br-live-${q.id}"></p>`+
-    panel("yes",(q.follow.yes||[]).map(followHTML).join(""),m==="yes")+panel("no",no,m==="no")}
+    q.main.options.map(o=>{const k=o.v,inner=(q.follow[k]||[]).map(followHTML).join("")+branchNoteHTML(q,k)+(k==="no"&&q.ideas?panel("ideas",ideasPanelHTML(q),ideasOpen(q)):"");return inner?panel(k,inner,m===k):""}).join("")}
 /* every question or follow-up that has a learning link */
 const LEARN_QS=QUESTIONS.flatMap(q=>[q].concat(q.type==="branch"?Object.values(q.follow).flat():[])).filter(q=>q.learn);
 function setBranchOpen(el,open){if(!el)return;el.classList.toggle("open",open);if(open)el.removeAttribute("inert");else el.setAttribute("inert","")}
@@ -1477,15 +1498,16 @@ function branchUpdate(q,changed){
   if(changed===q.main.id){
     /* switching Yes/No clears the other branch's answers */
     Object.keys(q.follow).filter(k=>k!==m).forEach(k=>ENG.branchFields(q,k).forEach(fid=>{delete A[fid];$$(`input[name="q-${fid}"]`).forEach(i=>{i.checked=false;i.closest(".opt").classList.remove("sel")})}));
-    Object.keys(q.follow).forEach(k=>setBranchOpen($(`#br-${q.id}-${k}`),k===m));
+    q.main.options.forEach(o=>setBranchOpen($(`#br-${q.id}-${o.v}`),o.v===m));
     Object.values(q.follow).flat().filter(f=>f.learn).forEach(f=>learnToggle(f,A[f.id]));
-    const n=(q.follow[m]||[]).length,live=$("#br-live-"+q.id);
-    if(live)live.textContent=n?`${n} follow-up question${n>1?"s":""} below.`:"";
+    const n=(q.follow[m]||[]).length,note=q.notes&&q.notes[m],live=$("#br-live-"+q.id);
+    if(live)live.textContent=[n?`${n} follow-up question${n>1?"s":""} below.`:"",note?`A link appeared below: ${note.linkText}.`:""].filter(Boolean).join(" ");
   }
-  const ideasOpen=m==="no"&&A.citeIdeas==="yes";
-  setBranchOpen($(`#br-${q.id}-ideas`),ideasOpen);
-  if(changed==="citeIdeas"){const live=$("#br-live-"+q.id);if(live)live.textContent=ideasOpen?`${q.ideas.title}: ${q.ideas.items.length} ideas shown below.`:"";
-    const l=$("#ideas-list-"+q.id),b=$("#ideas-hide-"+q.id);if(l&&ideasOpen){l.hidden=false;b.textContent="Hide ideas";b.setAttribute("aria-expanded","true")}}
+  if(!q.ideas)return;
+  const open=ideasOpen(q),field=q.ideas.field||"citeIdeas";
+  setBranchOpen($(`#br-${q.id}-ideas`),open);
+  if(changed===field){const live=$("#br-live-"+q.id);if(live)live.textContent=open?`${q.ideas.title}: ${q.ideas.items.length} ideas shown below.`:"";
+    const l=$("#ideas-list-"+q.id),b=$("#ideas-hide-"+q.id);if(l&&open){l.hidden=false;b.textContent="Hide ideas";b.setAttribute("aria-expanded","true")}}
 }
 function bindBranches(){
   QUESTIONS.filter(q=>q.type==="branch").forEach(q=>{const b=$("#ideas-hide-"+q.id);if(!b)return;
@@ -1654,7 +1676,7 @@ function bindScanner(){
 /* leaving the assessment page clears the draft too */
 window.addEventListener("hashchange",()=>{if(location.hash!=="#advisor")scanClear()});
 function bindSteps(){
-  bindScanner();bindBranches();
+  bindScanner();bindBranches();bindTerms();
   $$("[data-q]").forEach(el=>el.addEventListener("change",()=>{
     if(el.type==="checkbox"){const vals=$$(`input[name="${el.name}"]`).filter(c=>c.checked).map(c=>c.value);
       if(vals.length)adv.answers[el.dataset.q]=vals;else delete adv.answers[el.dataset.q];
@@ -1686,7 +1708,6 @@ function workflow(A){
   const steps=["Write down, in one sentence, what the AI will do on this motion and what it will not do (no legal research, no final language without review)."];
   if(A.clientInfo!=="no")steps.push("Strip names, dates, account numbers and other identifiers before any prompt. Use placeholders such as [Client] and [Date].");
   if(A.tool!=="legal")steps.push("Confirm the tool’s data-retention and training terms in writing before use, or switch to a tool under a firm contract.");
-  if(A.informed!=="consent"&&A.clientInfo!=="no")steps.push("Explain the planned AI use to the client and record informed consent before entering client information.");
   const t={format:"Use AI only on a blank firm template and on your finished text for proofreading. Do not let it add or change citations.",
     outline:"Prepare your own list of authorities first. Ask AI to organize your points, not to supply law.",
     summarize:"Have AI summarize only documents you provide, then spot-check each summary against the record before relying on it.",
@@ -1694,6 +1715,12 @@ function workflow(A){
     research:"Do not use general AI to find authority. Research in Westlaw, Lexis, Fastcase or a court database; use AI only to explain concepts."};
   const tasks=Array.isArray(A.aiTask)?A.aiTask:[A.aiTask];
   SECTIONS[0].qs.find(q=>q.id==="aiTask").options.forEach(o=>{if(tasks.includes(o.v))steps.push(t[o.v])});
+  {const P=ENG.prepare(A),IQ=QUESTIONS.find(q=>q.id==="informed");
+    if(P.informed==="will")steps.push("Before drafting, tell the client you’ll use AI, add an AI-use clause to your engagement letter, and get their informed consent in writing.");
+    if(P.informed==="toldnoconsent")steps.push("Get the client’s informed consent to AI use in writing before any prompt includes their information.");
+    if(P.informed==="no"){steps.push("Tell the client how you’ll use AI on their matter, and get informed consent before entering any confidential information.");
+      if(A.disclosureRequired==="yes")steps.push("Add the AI-use disclosure the law, court rule or standing order requires to the filing.");
+      else if(A.disclosureRequired==="unsure")steps.push("Check whether a law, court rule or standing order requires disclosing AI use in the filing.")}}
   const CQ=QUESTIONS.find(q=>q.id==="citeCheck"),CL=ENG.prepare(A).citeCheck;
   if(CL==="none"&&CQ&&CQ.ideas){steps.push("Set up a citation check before you file. Ideas:");CQ.ideas.items.forEach((it,i)=>steps.push("Citation idea "+(i+1)+": "+it.text))}
   else{if(CL==="nocitator")steps.push("Add a citator check (KeyCite or Shepard’s) for every case: a case can exist and still be bad law.");
@@ -2605,6 +2632,8 @@ const RULES=[
  {risk:["ok","State courts’ approaches to AI differ; check your court’s rules and orders."],g:"resources",id:"ncsc-state-courts",short:"NCSC: AI and the state courts",title:"AI and the state courts",cite:"National Center for State Courts",says:"Resources on how state courts are approaching AI, including court rules and orders.",used:"AI Drafting Advisor: the Jurisdiction section (Another state court).",link:"https://www.ncsc.org/resources-courts/ai-state-courts",linkLabel:"See the NCSC resources",aliases:["ncsc","state courts ai","national center for state courts"]},
  {risk:["warn","Federal judges’ AI orders vary; check your judge before filing."],g:"resources",id:"law360-tracker",short:"Law360 AI Tracker",title:"Law360 AI Tracker",cite:"Law360 Pulse",says:"Tracks federal judges’ orders and court rules on AI use. May require a Law360 subscription.",used:"AI Drafting Advisor: the Jurisdiction section (Federal court).",link:"https://www.law360.com/pulse/ai-tracker",linkLabel:"Open the Law360 tracker",aliases:["law360","ai tracker","federal ai orders"]},
  {risk:["warn","Federal judges’ AI orders vary; check your judge before filing."],g:"resources",id:"lag-court-orders",short:"Court Orders Tracker",title:"Legal AI Governance: Court Orders Tracker",cite:"Legal AI Governance",says:"Tracks court orders and standing orders on AI use.",used:"AI Drafting Advisor: the Jurisdiction section (Federal court).",link:"https://legalaigovernance.com/tracker/court-orders/",linkLabel:"Open the court orders tracker",aliases:["legal ai governance","court orders tracker","standing orders tracker"]},
+ {risk:["warn","Tell clients how you’ll use AI; an engagement-letter clause is one way to do it and to record consent."],g:"resources",id:"caseread-ai-clause",short:"AI clause in engagement letters",title:"How to draft an AI clause for your engagement letter",cite:"CaseRead blog",says:"A guide to drafting the AI-use clause in an engagement letter.",used:"AI Drafting Advisor: the Client communication section (the note for “Not yet”).",link:"https://www.caseread.ai/blog/ai-clause-engagement-letter",linkLabel:"Read the guide",aliases:["engagement letter","ai clause","caseread"]},
+ {risk:["warn","Disclosure duties to clients and courts depend on the matter, the tool and the court."],g:"resources",id:"aba-disclose-ai",short:"ABA: when to disclose AI use",title:"When should lawyers disclose AI use?",cite:"ABA Law Practice Division, Law Technology Today (2026)",says:"When lawyers should disclose AI use to clients and courts.",used:"AI Drafting Advisor: the Client communication section (the note for “No”).",link:"https://www.americanbar.org/groups/law_practice/resources/law-technology-today/2026/when-should-lawyers-disclose-ai-use/",linkLabel:"Read the article",aliases:["disclose ai use","when should lawyers disclose","law technology today"]},
  {risk:["bad","Signing certifies your legal contentions are warranted. Unverified AI citations have led to sanctions under this rule."],g:"court",id:"frcp-11",short:"Fed. R. Civ. P. 11",title:"Signatures and certification (federal)",cite:"Fed. R. Civ. P. 11",says:"By signing a filing, the attorney certifies that its legal contentions are warranted by existing law after a reasonable inquiry. Courts have sanctioned unverified AI citations under this rule.",used:"AI Drafting Advisor: the citation-verification, final-review and court-restriction gates; the Accuracy and Compliance factors.",link:ruleUrl("fed","11"),linkLabel:"Fed. R. Civ. P. 11",aliases:["rule 11","fed. r. civ. p. 11","frcp 11","federal rule 11"]},
  {risk:["bad","Signing certifies there is good ground to support the filing. Unverified AI citations put the signer at risk."],g:"court",id:"mrcp-11",short:"Mass. R. Civ. P. 11",title:"Signatures (Massachusetts)",cite:"Mass. R. Civ. P. 11",says:"The Massachusetts counterpart: an attorney’s signature certifies there is good ground to support the filing. An amended version takes effect January 1, 2027, so check which version applies to your filing date.",used:"AI Drafting Advisor: the final-review gate.",link:ruleUrl("mass","11"),linkLabel:"Mass. R. Civ. P. 11",aliases:["rule 11","mass. r. civ. p. 11","mass rule 11"]},
  {risk:["warn","AI drafts can carry unredacted personal identifiers into a public filing."],g:"court",id:"frcp-5-2",short:"Fed. R. Civ. P. 5.2",title:"Privacy protection for filings",cite:"Fed. R. Civ. P. 5.2",says:"In federal filings, show only the last four digits of Social Security, taxpayer ID and financial account numbers, only the year of birth, and only a minor’s initials.",used:"Redaction Game round 1; the “Suggestions for using AI” in the AI Drafting Advisor.",link:ruleUrl("fed","5.2"),linkLabel:"Fed. R. Civ. P. 5.2",aliases:["rule 5.2","5.2","fed. r. civ. p. 5.2","redaction"]},
@@ -2622,7 +2651,7 @@ function renderRules(){
   $$("[data-rjump]").forEach(b=>b.addEventListener("click",()=>$("#rg-"+b.dataset.rjump).scrollIntoView({behavior:"smooth",block:"start"})));
 }
 const TOOLS={advisor:["AI Drafting Advisor","#advisor"],citations:["Citation Toolkit","#citations"],redaction:["Redaction Game","#redaction"],motions:["Motions 101","#motions"]};
-const RULE_TOOLS={"rpc-1-1":["advisor"],"rpc-1-4":["advisor"],"rpc-1-5":["advisor"],"rpc-1-6":["advisor","redaction"],"rpc-3-3":["advisor","citations"],"rpc-5-1":["advisor"],"aba-512":["advisor"],"ma-obc":["advisor","citations"],"ma-obc-wildwest":["advisor"],"sjc-genai":["advisor"],"aba-512-news":["advisor"],"bls-bench-notes":["advisor"],"ncsc-hallucinations":["advisor"],"mass-ai-law":["advisor"],"ncsc-state-courts":["advisor"],"law360-tracker":["advisor"],"lag-court-orders":["advisor"],"frcp-11":["advisor","citations"],"mrcp-11":["advisor"],"frcp-5-2":["redaction"],"sjc-1-24":["redaction"],"sup-9a":["motions"],"dmass-7-1":["motions","advisor"],"mata":["citations","advisor"],"park":["citations"],"smith":["citations","advisor"],"standing-orders":["advisor"]};
+const RULE_TOOLS={"rpc-1-1":["advisor"],"rpc-1-4":["advisor"],"rpc-1-5":["advisor"],"rpc-1-6":["advisor","redaction"],"rpc-3-3":["advisor","citations"],"rpc-5-1":["advisor"],"aba-512":["advisor"],"ma-obc":["advisor","citations"],"ma-obc-wildwest":["advisor"],"sjc-genai":["advisor"],"aba-512-news":["advisor"],"bls-bench-notes":["advisor"],"ncsc-hallucinations":["advisor"],"mass-ai-law":["advisor"],"ncsc-state-courts":["advisor"],"law360-tracker":["advisor"],"lag-court-orders":["advisor"],"caseread-ai-clause":["advisor"],"aba-disclose-ai":["advisor"],"frcp-11":["advisor","citations"],"mrcp-11":["advisor"],"frcp-5-2":["redaction"],"sjc-1-24":["redaction"],"sup-9a":["motions"],"dmass-7-1":["motions","advisor"],"mata":["citations","advisor"],"park":["citations"],"smith":["citations","advisor"],"standing-orders":["advisor"]};
 function openRule(id){location.hash="#rules";setTimeout(()=>{const el=$("#rule-"+id);if(!el)return;el.scrollIntoView({behavior:"smooth",block:"start"});el.focus({preventScroll:true});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),2400)},60)}
 
 /* ---------------- SEARCH ---------------- */

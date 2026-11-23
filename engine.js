@@ -63,8 +63,8 @@
       var m = a[q.main.id]; if (m == null) return "";
       var main = q.main.options.filter(function (o) { return o.v === m; })[0], parts = [main ? main.label : m];
       (q.follow[m] || []).forEach(function (f) {
-        if (f.id === "citeIdeas") return; // wanting ideas isn't part of the answer
-        var labs = asList(a[f.id]).map(function (v) { var o = followOpt(q, f.id, v); return o ? (o.short || o.label) : ""; }).filter(Boolean);
+        if (f.summary === false) return; // e.g. wanting ideas isn't part of the answer
+        var labs = asList(a[f.id]).map(function (v) { var o = followOpt(q, f.id, v); return o && !o.hidden ? (o.short || o.label) : ""; }).filter(Boolean);
         if (labs.length) { var t = labs.join(", "); parts.push(t.charAt(0).toUpperCase() + t.slice(1)); }
       });
       return parts.join(". ") + ".";
@@ -73,6 +73,10 @@
       var f = (q.follow[a[q.main.id]] || []).filter(function (x) { return x.type === "multi"; })[0]; if (!f) return "";
       var labs = asList(a[f.id]).map(function (v) { var o = followOpt(q, f.id, v); return o ? o.label : ""; }).filter(Boolean);
       return labs.length ? " Methods you use: " + labs.join("; ") + "." : "";
+    }
+    /* notes attached to the chosen follow-up answers */
+    function branchFollowNotes(q, a) {
+      return (q.follow[a[q.main.id]] || []).filter(function (f) { return f.type !== "multi"; }).map(function (f) { var o = followOpt(q, f.id, a[f.id]); return o && o.note ? " " + o.note : ""; }).join("");
     }
     /* ---- Follow-up on one answer (config: followUp), e.g. which Massachusetts court ---- */
     function followUpOpt(q, a) { var f = q.followUp; if (!f || a[q.id] !== f.showFor) return null; for (var i = 0; i < f.options.length; i++) if (f.options[i].v === a[f.id]) return f.options[i]; return null; }
@@ -125,7 +129,7 @@
           var sc1 = (o ? o.score : 0) * mult;
           if (q.type === "branch") {
             sp += sc1; sm += maxScore(q);
-            lines.push({ q: q.id, question: q.text, branch: true, answer: branchSummary(q, a), note: o ? o.note + branchMethodsNote(q, a) : "", score: sc1, mult: mult, replaced: false, asAnswer: v });
+            lines.push({ q: q.id, question: q.text, branch: true, answer: branchSummary(q, a), note: o ? o.note + branchMethodsNote(q, a) + branchFollowNotes(q, a) : "", score: sc1, mult: mult, replaced: false, asAnswer: v });
             return;
           }
           sp += sc1; sm += maxScore(q);
@@ -156,7 +160,8 @@
             notes: s.lines.filter(function (l, i) { return !(s.id === "juris" && i === 0); }).map(function (l) { return l.note; }) };
           /* follow-up extras (e.g. the Massachusetts court) come first; links only when there are any */
           var ex = { notes: [], links: [] };
-          AS.sections.filter(function (x) { return x.id === s.id; })[0].qs.forEach(function (q) { var e = followUpExtras(q, a); ex.notes = ex.notes.concat(e.notes); ex.links = ex.links.concat(e.links); });
+          AS.sections.filter(function (x) { return x.id === s.id; })[0].qs.forEach(function (q) { var e = followUpExtras(q, a); ex.notes = ex.notes.concat(e.notes); ex.links = ex.links.concat(e.links);
+            var bn = q.type === "branch" && q.notes && q.notes[a[q.main.id]]; if (bn) ex.links.push({ text: bn.linkText, url: bn.url, ariaLabel: bn.ariaLabel, sub: bn.rule }); });
           if (ex.notes.length) f.notes = ex.notes.concat(f.notes);
           if (ex.links.length) f.links = ex.links;
           return f;

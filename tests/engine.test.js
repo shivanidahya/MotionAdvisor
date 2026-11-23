@@ -15,12 +15,13 @@ test("1. One selected task scores exactly as the original single-choice version 
   const sets = CONFIG.assessment.personas.map((p) => p.a);
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   // the citation question now branches; old saved answers ("full", "spot", "none") convert to the branch answers
-  const LEGACY = { citeCheck: ["full", "spot", "none"] };
+  const LEGACY = { citeCheck: ["full", "spot", "none"], informed: ["consent", "will", "no"] };
   for (let i = 0; i < 3000; i++) { const a = {}; CONFIG.assessment.sections.forEach((s) => s.qs.forEach((q) => { const vs = LEGACY[q.id] || q.options.map((o) => o.v); a[q.id] = vs[Math.floor(rnd() * vs.length)]; })); sets.push(a); }
   sets.forEach((a0) => {
     // the original took one task; the new version takes a list. One selection must score the same.
     const single = Object.assign({}, a0, { aiTask: Array.isArray(a0.aiTask) ? a0.aiTask[0] : a0.aiTask });
-    delete single.maCourt; // the court follow-up adds explanation lines only; checked in test 15
+    delete single.maCourt;
+    if (single.clientTold) { single.informed = E.prepare(single).informed; ["clientTold", "informedConsent", "clientConfShared", "disclosureRequired"].forEach((k) => delete single[k]); } // the court follow-up adds explanation lines only; checked in test 15
     if (single.citeProcess) { single.citeCheck = E.prepare(single).citeCheck; delete single.citeProcess; delete single.citeMethods; delete single.citeScope; delete single.citeIdeas; }
     const listed = Object.assign({}, single, { aiTask: [single.aiTask] });
     ORIGINAL.adv.answers = single; const o = ORIGINAL.compute(); delete o.date;
@@ -38,7 +39,7 @@ test("2. Persona results", () => {
 
 test("3. Every automatic stop forces Not recommended and blocks the configured options", () => {
   const cases = { "no-cite-check": { citeProcess: "no", citeIdeas: "no" }, "no-final-review": { finalReview: "none" }, "client-info-unsafe-tool": { clientInfo: "limited", tool: "consumer" },
-    "client-info-no-safeguards": { clientInfo: "limited", safeguards: "none", tool: "legal" }, "privileged-no-client": { clientInfo: "substantial", informed: "no", tool: "legal" }, "court-restricts": { standing: "restricts" } };
+    "client-info-no-safeguards": { clientInfo: "limited", safeguards: "none", tool: "legal" }, "privileged-no-client": { clientInfo: "substantial", clientTold: "no", clientConfShared: "yes", disclosureRequired: "no", tool: "legal" }, "court-restricts": { standing: "restricts" } };
   Object.entries(cases).forEach(([id, ch]) => {
     const a = Object.assign({}, SOLO, ch);
     const r = E.assess(a); assert.equal(r.verdict, "Not recommended", id); assert.ok(r.stopIds.includes(id), id);
@@ -191,7 +192,7 @@ test("14. Citation checking branches: Yes/No paths, the citator adjustment, the 
   assert.equal(q.type, "branch"); assert.equal(CONFIG.assessment.sections.find((s) => s.id === "verify").weight, 1.5);
   const base = Object.assign({}, TWO); ["citeProcess", "citeMethods", "citeScope", "citeIdeas"].forEach((k) => delete base[k]);
   const run = (ch) => { const a = Object.assign({}, base, ch); return { a, r: E.assess(a), lvl: E.prepare(a).citeCheck }; };
-  const old = (v) => { ORIGINAL.adv.answers = Object.assign({}, base, { aiTask: base.aiTask[0], citeCheck: v }); return ORIGINAL.compute(); };
+  const old = (v) => { ORIGINAL.adv.answers = Object.assign({}, base, { aiTask: base.aiTask[0], informed: E.prepare(base).informed, citeCheck: v }); return ORIGINAL.compute(); };
   const every = run({ citeProcess: "yes", citeMethods: ["keycite", "spreadsheet", "second"], citeScope: "every" });
   const some = run({ citeProcess: "yes", citeMethods: ["keycite"], citeScope: "some" });
   const noCitator = run({ citeProcess: "yes", citeMethods: ["pincites", "spreadsheet"], citeScope: "every" });
@@ -256,4 +257,32 @@ test("16. Every link and PDF the assessment shows is also on the Rules & Sources
   walk(CONFIG.assessment);
   assert.ok(urls.size >= 10);
   urls.forEach((u) => assert.ok(rules.includes('"' + u + '"'), "missing from Rules & Sources: " + u));
+});
+
+test("17. Client communication branches: told / not yet / no, follow-ups, the stop, old answers", () => {
+  const q = CONFIG.assessment.sections.find((s) => s.id === "client").qs.find((x) => x.id === "informed");
+  assert.equal(q.type, "branch");
+  const base = Object.assign({}, TWO); ["clientTold", "informedConsent", "clientConfShared", "disclosureRequired"].forEach((k) => delete base[k]);
+  const run = (ch) => { const a = Object.assign({}, base, ch); return { a, r: E.assess(a), lvl: E.prepare(a).informed }; };
+  const old = (v) => { ORIGINAL.adv.answers = Object.assign({}, base, { aiTask: base.aiTask[0], citeCheck: E.prepare(base).citeCheck, informed: v }); return ORIGINAL.compute().index; };
+  assert.equal(run({ clientTold: "yes", informedConsent: "yes" }).lvl, "consent"); assert.equal(run({ clientTold: "yes", informedConsent: "yes" }).r.index, old("consent"));
+  assert.equal(run({ clientTold: "yes", informedConsent: "no" }).lvl, "toldnoconsent"); assert.equal(run({ clientTold: "yes", informedConsent: "no" }).r.index, old("will"));
+  assert.equal(run({ clientTold: "notyet" }).lvl, "will"); assert.equal(run({ clientTold: "notyet" }).r.index, old("will"));
+  const no = run({ clientTold: "no", clientConfShared: "yes", disclosureRequired: "yes" });
+  assert.equal(no.lvl, "no"); assert.equal(no.r.index, old("no"));
+  // follow-up answers add explanation lines, never score
+  assert.equal(run({ clientTold: "no", clientConfShared: "no", disclosureRequired: "no" }).r.index, no.r.index);
+  assert.match(no.r.factors[5].notes[0], /ABA Formal Op\. 512 calls for informed consent/);
+  assert.match(no.r.factors[5].notes[0], /requires disclosing AI use in the filing/);
+  // completeness
+  [{ clientTold: "yes" }, { clientTold: "no" }, { clientTold: "no", clientConfShared: "yes" }, {}].forEach((ch) => assert.equal(E.answered(q, Object.assign({}, base, ch)), false, JSON.stringify(ch)));
+  // stop still fires for substantial client information and "No"
+  assert.ok(run({ clientInfo: "substantial", tool: "legal", clientTold: "no", clientConfShared: "yes", disclosureRequired: "no" }).r.stopIds.includes("privileged-no-client"));
+  // links by answer, and old saved answers convert
+  assert.ok(run({ clientTold: "notyet" }).r.factors[5].links.some((l) => /caseread\.ai/.test(l.url)));
+  assert.ok(no.r.factors[5].links.some((l) => /when-should-lawyers-disclose-ai-use/.test(l.url)));
+  assert.deepEqual(E.normalize({ informed: "consent" }), { clientTold: "yes", informedConsent: "yes" });
+  assert.equal(E.prepare({ informed: "no" }).informed, "no");
+  assert.equal(E.branchSummary(q, no.a), "No. Confidential information will be shared. Disclosure required in filings.");
+  assert.ok(q.follow.yes[0].term.def.startsWith("Informed consent denotes"));
 });
