@@ -467,6 +467,7 @@ header.top::after,footer.site::before{content:"";display:block;height:8px;backgr
 .highlighted mark.k-rule{background:color-mix(in srgb,var(--k-rule) 24%,var(--surface));color:var(--ink);box-shadow:inset 0 -2px var(--k-rule);border-radius:3px}
 .highlighted mark.k-stat{background:color-mix(in srgb,var(--k-stat) 28%,var(--surface));color:var(--ink);box-shadow:inset 0 -2px var(--k-stat);border-radius:3px}
 .pill.k-case{background:var(--k-case);color:var(--on-k)}.pill.k-rule{background:var(--k-rule);color:var(--on-k)}.pill.k-stat{background:var(--k-stat);color:var(--on-k)}
+.pill.k-other{background:var(--sunk);color:var(--ink);border:1px dashed var(--ink-2)}.cite-item.k-other{border-left:4px dashed var(--ink-2)}.highlighted mark.k-other{background:var(--sunk);color:var(--ink);box-shadow:inset 0 -2px var(--ink-2);border-radius:3px}.cite-item .unsure{margin:6px 0 0;font-size:13px;color:var(--ink-2)}
 .cite-item.k-case{border-left:4px solid var(--k-case)}.cite-item.k-rule{border-left:4px solid var(--k-rule)}.cite-item.k-stat{border-left:4px solid var(--k-stat)}
 /* verification tracker */
 .vt-wrap{overflow-x:auto;margin:0 0 16px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
@@ -1337,7 +1338,7 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
           </div>
           <p class="muted" id="brief-file-status" style="font-size:.84rem;margin-top:8px">Upload a Word (.docx), PDF or text file. It’s read in your browser and never uploaded anywhere.</p>
           <div style="margin-top:18px">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:8px"><span class="eyebrow">Highlighted draft</span><span class="hl-legend" aria-label="Highlight colors"><span class="pill k-case">Case</span><span class="pill k-stat">Statute</span><span class="pill k-rule">Rule</span></span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:8px"><span class="eyebrow">Highlighted draft</span><span class="hl-legend" aria-label="Highlight colors"><span class="pill k-case">Case</span><span class="pill k-stat">Statute</span><span class="pill k-rule">Rule</span><span class="pill k-other">Other</span></span></div>
             <div class="highlighted" id="cite-hl"></div>
           </div>
           <div class="rulebox" style="margin-top:14px"><b>Four checks no software replaces.</b> Read the opinion. Confirm the pincite supports your sentence. Compare every quotation word for word. Run KeyCite or Shepard’s for negative history.</div>
@@ -2357,6 +2358,12 @@ function statuteSource(kind,s){
   if(kind==="Mass. statute")return {label:"MA Legislature",url:`https://malegislature.gov/Laws/GeneralLaws/Chapter${encodeURIComponent(s[1].toUpperCase())}/Section${encodeURIComponent(sec.toUpperCase())}`,aria:`Massachusetts General Laws chapter ${s[1]}, section ${sec}, on the Massachusetts Legislature website (opens in new tab)`};
   if(kind==="Federal statute")return {label:"U.S. Code (Cornell LII)",url:`https://www.law.cornell.edu/uscode/text/${encodeURIComponent(s[1])}/${encodeURIComponent(sec)}`,aria:`${s[1]} U.S.C. § ${sec} on Cornell's Legal Information Institute (opens in new tab)`};
   return null}
+/* Bluebook (T1) abbreviations for every state's code, plus C.F.R. A code name of up to six words
+   ("Code Ann.", "Civ. Prac. & Rem. Code", "Gen. Bus. Law", "tit. 10,") sits between the state and the "§". */
+const STATE_ABBR=["Ala.","Alaska","Ariz.","Ark.","Cal.","Colo.","Conn.","Del.","D.C.","Fla.","Ga.","Haw.","Idaho","Ill.","Ind.","Iowa","Kan.","Ky.","La.","Me.","Md.","Mass.","Mich.","Minn.","Miss.","Mo.","Mont.","Neb.","Nev.","N.H.","N.J.","N.M.","N.Y.","N.C.","N.D.","Ohio","Okla.","Or.","Pa.","R.I.","S.C.","S.D.","Tenn.","Tex.","Utah","Vt.","W. Va.","Va.","Wash.","Wis.","Wyo.","C.F.R."];
+const STATE_STAT_RE=new RegExp("(?:\\b\\d{1,3}\\s+)?(?<![A-Za-z.])("+STATE_ABBR.map(s=>s.replace(/[.]/g,"\\.").replace(/ /g,"\\s?")).join("|")+")((?:\\s+(?:[A-Z][A-Za-z.&']*|&|tit\\.\\s*\\d+[A-Z]?|ch\\.\\s*\\d+[A-Z]?|art\\.\\s*\\d+[A-Z]?|\\d+[A-Z]?),?){0,6}?)\\s*§{1,2}\\s*(\\d(?:[\\w.\\-:]*\\w)?)(?:\\([a-zA-Z0-9]{1,4}\\))*","g");
+function cfrSource(full,sec){const t=full.match(/^\s*(\d{1,3})\s+C\.F\.R/);if(!t)return null;
+  return {label:"CFR (Cornell LII)",url:`https://www.law.cornell.edu/cfr/text/${encodeURIComponent(t[1])}/${encodeURIComponent(sec)}`,aria:`${t[1]} C.F.R. § ${sec} on Cornell's Legal Information Institute (opens in new tab)`}}
 function parseCitations(text){
   const out=[];let m,prevEnd=-1;CASE_RE.lastIndex=0;
   while((m=CASE_RE.exec(text))){
@@ -2373,9 +2380,28 @@ function parseCitations(text){
     prevEnd=end;
   }
   // statutes
-  const statRes=[[/\b(\d{1,2})\s+U\.?\s?S\.?\s?C\.?\s?(A\.?)?\s*(§{1,2})\s*([\w.\-()]+?)(?=[\s,;.)]|$)/g,"Federal statute"],
+  const statRes=[[/\b(\d{1,2})\s+U\.?\s?S\.?\s?C\.?\s?(A\.?)?\s*(§{1,2})\s*(\d(?:[\w.\-]*\w)?)(?:\([a-zA-Z0-9]{1,4}\))*/g,"Federal statute"],
    [/\b(?:G\.\s?L\.|M\.\s?G\.\s?L\.?\s?A?\.?)\s*c\.\s*(\d+[A-Z]?)\s*,?\s*(§{1,2})\s*([\w.\-]+?)(?=[\s,;.)]|$)/g,"Mass. statute"]];
   statRes.forEach(([re,kind])=>{let s;re.lastIndex=0;while((s=re.exec(text))){out.push({kind,name:"",cite:s[0].trim(),raw:s[0],start:s.index,end:s.index+s[0].length,query:`"${s[0].trim()}"`,src:statuteSource(kind,s)})}});
+  const taken=(a,b)=>out.some(o=>a<o.end&&b>o.start);
+  /* trailing "(West 2020)" or "(LEXIS through 2019 2d Spec. Sess. of Gen. Assemb)" belongs to the citation */
+  const tail=i=>{const t=text.slice(i).match(/^\s*\((?:[^()]{0,90}?\b(?:19|20)\d{2}\b[^()]{0,60}|West|LexisNexis|LEXIS|Supp\.[^()]{0,20})\)/);return t?t[0].length:0};
+  // state codes in Bluebook form: "Ga. Code Ann. § 51-7-60", "Cal. Civ. Proc. Code § 425.16", "Del. Code Ann. tit. 10, § 8136"
+  STATE_STAT_RE.lastIndex=0;let st;
+  while((st=STATE_STAT_RE.exec(text))){const s0=st.index,core=st[0].replace(/\s+/g," ").trim(),e=s0+st[0].length;if(taken(s0,e))continue;
+    const ch=st[1]==="Mass."&&core.match(/\bch\.\s*(\d+[A-Z]?)\b/i);
+    const kind=ch?"Mass. statute":st[1]==="C.F.R."?"Federal regulation":"State statute";
+    const src=ch?statuteSource(kind,[core,ch[1],"",st[3]]):kind==="Federal regulation"?cfrSource(st[0],st[3]):null;
+    out.push({kind,name:"",cite:core,raw:st[0],start:s0,end:e+tail(e),query:`"${core}"`,src})}
+  // safety net: any other "§" that no pattern above recognized is still listed, so nothing is silently dropped
+  const anyRe=/((?:\b[A-Z][A-Za-z.&']*,?\s+)(?:(?:[A-Z][A-Za-z.&']*|\([A-Z][a-z]+\)|of|and|on|the|&|tit\.\s*\d+[A-Z]?|ch\.\s*\d+[A-Z]?|\d+[A-Z]?),?\s+){0,6})(§{1,2})\s*(\d(?:[\w.\-:]*\w)?)(?:\([a-zA-Z0-9]{1,4}\))*/g;let a;
+  while((a=anyRe.exec(text))){let s0=a.index,lead=a[1];
+    /* drop sentence words before the code name ("Under Ga. Code ...", "See ...") and short forms after "Id." */
+    const cut=lead.match(/^(?:(?:See|Under|Also|Cf\.|But|And|The|In|Section|Pursuant|To|Of|Accord|Contra|E\.g\.,?)\s+)+/);if(cut){s0+=cut[0].length;lead=lead.slice(cut[0].length)}
+    if(!lead.trim()||/^Id\.\s*$/.test(lead.trim()))continue;
+    const e=a.index+a[0].length;if(taken(s0,e))continue;
+    const core=text.slice(s0,e).replace(/\s+/g," ").trim();
+    out.push({kind:"Other citation",name:"",cite:core,raw:text.slice(s0,e),start:s0,end:e+tail(e),query:`"${core}"`,unsure:true})}
   const ruleRe=/\b(Fed\.\s?R\.\s?(?:Civ|Crim|Evid|App)\.\s?(?:P\.\s?)?\d+(?:\([a-zA-Z0-9]+\))*|Mass\.\s?R\.\s?(?:Civ|Crim|App)\.\s?P\.\s?\d+(?:\([a-zA-Z0-9]+\))*|Superior Court Rule \d+[A-Z]?|SJC Rule \d:\d+|Local Rule \d+(?:\.\d+)*)/g;
   let r;ruleRe.lastIndex=0;while((r=ruleRe.exec(text))){out.push({kind:"Rule",name:"",cite:r[0],raw:r[0],start:r.index,end:r.index+r[0].length,query:`"${r[0]}"`})}
   out.sort((a,b)=>a.start-b.start);
@@ -2390,7 +2416,7 @@ function runCites(){
   /* the same citation repeated in the draft is tracked once */
   const cases=groupCases(res.items),others=res.items.filter(i=>i.kind!=="Case").length;
   const verified=cases.filter(c=>VCHECKS.every((v,j)=>verifyState[c.gk+"|"+j])).length;
-  $("#cite-summary").innerHTML=`<div><b>${res.items.length}</b><span>Citations found</span></div><div><b>${cases.length}</b><span>Cases</span></div><div><b>${others}</b><span>Statutes and rules</span></div><div><b style="color:var(--ok)" id="cite-verified">${verified}/${cases.length}</b><span>Cases verified</span></div>`;
+  $("#cite-summary").innerHTML=`<div><b>${res.items.length}</b><span>Citations found</span></div><div><b>${cases.length}</b><span>Cases</span></div><div><b>${others}</b><span>Statutes, rules and other</span></div><div><b style="color:var(--ok)" id="cite-verified">${verified}/${cases.length}</b><span>Cases verified</span></div>`;
   // highlight
   let html="",pos=0;
   const marks=res.items.map(it=>({start:it.start,end:it.end,cls:kindCls(it.kind),title:it.kind})).sort((a,b)=>a.start-b.start);
@@ -2404,7 +2430,7 @@ function runCites(){
   list.innerHTML=res.items.map((it,i)=>{const q=encodeURIComponent(it.query),k=kindCls(it.kind);
     return `<div class="cite-item ${k}"><div class="ch"><div style="min-width:0"><div class="ct">${esc(it.cite)}</div>${it.name?`<div class="cn">${esc(it.name)}</div>`:""}</div><span class="pill ${k}">${esc(it.kind)}</span></div>
     <div class="vlinks">${it.src?`<a class="src-link" href="${esc(it.src.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(it.src.aria)}">${esc(it.src.label)} ↗</a>`:""}<a href="https://1.next.westlaw.com/Link/Document/FullText?findType=Y&cite=${encodeURIComponent(it.query.replace(/"/g,""))}" target="_blank" rel="noopener">Westlaw ↗</a><a href="https://plus.lexis.com/" target="_blank" rel="noopener" data-copy="${esc(it.query.replace(/"/g,""))}">Lexis+ AI ↗</a>${it.kind==="Case"?`<a href="https://www.courtlistener.com/?q=${q}" target="_blank" rel="noopener">CourtListener ↗</a>`:""}</div>
-    ${it.kind==="Case"?`<div class="vchecks">${VCHECKS.map((v,j)=>`<label><input type="checkbox" id="vc-${i}-${j}" data-vk="${esc(it.gk+"|"+j)}" ${verifyState[it.gk+"|"+j]?"checked":""}>${v}</label>`).join("")}</div>`:""}</div>`}).join("");
+    ${it.unsure?`<p class="unsure">The toolkit doesn’t recognize this format, so it may be cut off or not a citation. Check it in the draft.</p>`:""}${it.kind==="Case"?`<div class="vchecks">${VCHECKS.map((v,j)=>`<label><input type="checkbox" id="vc-${i}-${j}" data-vk="${esc(it.gk+"|"+j)}" ${verifyState[it.gk+"|"+j]?"checked":""}>${v}</label>`).join("")}</div>`:""}</div>`}).join("");
   $$("[data-copy]").forEach(a=>a.addEventListener("click",()=>{const c=a.dataset.copy;const fail=()=>toast("Paste this citation into Lexis+ AI: "+c);try{navigator.clipboard?navigator.clipboard.writeText(c).then(()=>toast("Copied “"+c+"”. Paste it into Lexis+ AI."),fail):fail()}catch(e){fail()}}));
   bindVerify(cases);
 }
@@ -2428,7 +2454,7 @@ function groupCases(items){
     if(!g.name&&it.name)g.name=it.name;
     g.count++;it.gk=g.gk;last=g});
   return groups.map(g=>({gk:g.gk,name:g.name,cite:g.cites.join(" · "),count:g.count}))}
-function kindCls(k){return k==="Case"?"k-case":k==="Rule"?"k-rule":"k-stat"}
+function kindCls(k){return k==="Case"?"k-case":k==="Rule"?"k-rule":k==="Other citation"?"k-other":"k-stat"}
 /* the tracker: one row per case, one column per check; its boxes and the cards' boxes stay in sync */
 function trackerHTML(cases){
   if(!cases.length)return "";
