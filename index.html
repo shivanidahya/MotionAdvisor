@@ -626,6 +626,48 @@ body.nav-locked{overflow:hidden}
 @media (max-width:520px){
   #v-motions .m-sec{padding-block:52px}
 }
+/* ---- About: the full reference ---- */
+.ab .page-head p{max-width:72ch}
+.ab-facts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:0 0 34px}
+.ab-facts div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column-reverse;gap:2px}
+.ab-facts dd{margin:0;font-family:var(--f-display);font-size:1.9rem;font-weight:600;line-height:1}
+.ab-facts dt{font-size:.82rem;color:var(--ink-2)}
+.ab-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px;align-items:start}
+.ab-toc{position:sticky;top:84px;max-height:calc(100vh - 100px);overflow:auto;font-family:var(--f-ui);font-size:.88rem}
+.ab-toc-h{font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.ab-toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px;border-left:2px solid var(--line)}
+.ab-toc a{display:block;padding:4px 10px;margin-left:-2px;border-left:2px solid transparent;color:var(--ink-2);text-decoration:none}
+.ab-toc a:hover{color:var(--ink)}
+.ab-toc a.cur{border-left-color:var(--accent);color:var(--ink);font-weight:600}
+.ab-toc a:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.ab-main{min-width:0}
+.ab-sec{padding:30px 0;border-top:1px solid var(--line);scroll-margin-top:110px}
+.ab-sec:first-child{border-top:0;padding-top:0}
+.ab-sec h2{font-size:1.7rem;margin-bottom:12px}
+.ab-sec h2:focus{outline:none}
+.ab-sec h3{font-size:1.2rem;margin:18px 0 8px}
+.ab-sec p{max-width:72ch;margin-bottom:10px}
+.ab-list,.ab-steps{margin:0 0 10px;padding-left:1.2em;display:grid;gap:8px;max-width:76ch}
+.ab .formula{white-space:normal;overflow-wrap:anywhere}
+.ab-list>li,.ab-steps>li{min-width:0}
+.ab-steps>li::marker{font-weight:700;color:var(--ink-2)}
+.ab-table td,.ab-table th{vertical-align:top;font-size:.9rem}
+.ab-table th[scope=row]{font-weight:600}
+.ab-table .ab-tot th,.ab-table .ab-tot td{border-top:2px solid var(--ink-2);font-weight:700}
+.ab-qsec{margin-bottom:22px}
+.ab-qsec h3{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.ab-w{font-family:var(--f-mono);font-size:.78rem;font-weight:400;color:var(--muted)}
+.ab-qs{margin:10px 0 0;padding-left:1.3em;display:grid;gap:14px}
+.ab-q{font-weight:600;margin-bottom:4px!important}
+.ab-sub{font-size:.88rem;color:var(--ink-2);margin-bottom:4px!important}
+.ab-opts{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:2px;max-width:620px}
+.ab-opts li{display:flex;justify-content:space-between;gap:16px;font-size:.88rem;padding:3px 10px;background:var(--sunk);border-radius:5px}
+.ab-opts b{font-family:var(--f-mono);font-weight:500;white-space:nowrap}
+.ab-tags{list-style:none;margin:6px 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.ab-tags li{font-size:.84rem;padding:.2em .7em;border:1px solid var(--line);border-radius:99px;background:var(--surface)}
+@media (max-width:1020px){.ab-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:860px){.ab-layout{grid-template-columns:1fr;gap:16px}.ab-toc{position:static;max-height:none;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}.ab-toc ol{columns:2;column-gap:16px;display:block}.ab-toc li{break-inside:avoid}}
+@media (max-width:520px){.ab-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.ab-toc ol{columns:1}.ab-sec h2{font-size:1.45rem}}
 /* ---- Motions 101: Motions in brief ---- */
 .mb-lede{font-size:1.15rem;max-width:62ch}
 .mb-alert{display:flex;gap:12px;align-items:flex-start;max-width:62ch;margin:16px 0 26px;padding:12px 16px;background:var(--warn-bg);border-left:4px solid var(--warn);border-radius:8px}
@@ -1631,30 +1673,212 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
 
 <!-- ============ ABOUT ============ -->
 <section class="view" id="v-about" hidden>
-  <div class="wrap">
-    <div class="page-head"><div><div class="eyebrow">About</div><h1>What is Motion Advisor?</h1><p>Motion Advisor helps you decide whether it’s worth using AI to draft your motion. Complete a short assessment, and Motion Advisor will calculate the risks and give you a report with those risks and suggestions for using AI safely.</p></div></div>
-    <div class="about-grid">
-      <div>
-        <div class="about-sec"><h2>What the platform does</h2><ul>
-          <li><b>AI Drafting Advisor.</b> A short assessment that calculates the risks of using AI on your motion and gives you a report, downloadable as a PDF, with the risks identified and suggestions for using AI safely.</li>
-          <li><b>Compare Your Options.</b> An optional, advanced page that weighs <span data-cfg="oword">four</span> ways of using AI side by side, filled in from your answers.</li>
-          <li><b>Citation Toolkit.</b> Pulls out every case, statute and rule citation in a pasted or uploaded draft so you can verify each one, and tracks your verification. Export to Excel, Google Sheets, CSV or PDF.</li>
-          <li><b>Redaction Game.</b> Three practice rounds on what must come out of a court filing or an AI prompt.</li>
-          <li><b>Motions 101.</b> What a motion is, its life from draft to order, a library of 20 common motions and a finder for the right one.</li>
-        </ul></div>
-        <div class="about-sec"><h2>How the advisor works out your risk</h2><p><span data-cfg="qword-cap">Thirteen</span> multiple-choice questions in <span data-cfg="sword">six</span> sections cover your task, confidentiality, competence, verification, jurisdiction and client communication. Each answer adds risk points that become a score from 0 to 100, and some answers force “Not recommended” whatever the score. No AI runs in the tool. <a href="#method">See how it works →</a></p></div>
-        <div class="about-sec"><h2>Where the legal sources come from</h2><p>Every explanation traces to a primary source: the ABA Model Rules of Professional Conduct and ABA Formal Opinion 512; the Massachusetts Rules of Professional Conduct and court rules published by the Supreme Judicial Court and Trial Court on mass.gov; the Federal Rules of Civil Procedure; the Local Rules of the U.S. District Court for the District of Massachusetts; and published decisions on AI-fabricated citations.</p><p>Each source is listed with what it requires, where the site relies on it, and a link to the official text. Federal and Massachusetts civil-rule citations open on courtrules.net; the official Massachusetts text is published in the <a href="https://www.mass.gov/law-library/massachusetts-rules-of-civil-procedure" target="_blank" rel="noopener noreferrer">Massachusetts Rules of Civil Procedure on Mass.gov ↗</a>.</p><p><a class="btn primary" href="#rules">Open Rules &amp; Sources →</a></p></div>
+  <div class="wrap ab">
+    <div class="page-head"><div><div class="eyebrow">About</div><h1>What is Motion Advisor?</h1><p>Motion Advisor helps lawyers decide whether it’s worth using AI to draft a motion. A short assessment calculates the risk and gives a report with suggestions for using AI safely. This page explains the whole application: what each tool does, the questions and scores, the formulas, the legal sources and how the site is built.</p></div></div>
+    <dl class="ab-facts" id="ab-facts"></dl>
+    <div class="ab-layout">
+      <nav class="ab-toc" aria-label="On this page">
+        <p class="ab-toc-h">On this page</p>
+        <ol>
+          <li><a href="#about" data-ab="ab-overview">Overview</a></li>
+          <li><a href="#about" data-ab="ab-tools">The tools</a></li>
+          <li><a href="#about" data-ab="ab-journey">How a user moves through it</a></li>
+          <li><a href="#about" data-ab="ab-questions">The assessment questions</a></li>
+          <li><a href="#about" data-ab="ab-formulas">Scoring formulas</a></li>
+          <li><a href="#about" data-ab="ab-example">Worked example</a></li>
+          <li><a href="#about" data-ab="ab-stops">Automatic stops</a></li>
+          <li><a href="#about" data-ab="ab-report">The result report</a></li>
+          <li><a href="#about" data-ab="ab-options">Compare Your Options</a></li>
+          <li><a href="#about" data-ab="ab-scanner">Draft scanner</a></li>
+          <li><a href="#about" data-ab="ab-cites">Citation Toolkit</a></li>
+          <li><a href="#about" data-ab="ab-game">Redaction Game</a></li>
+          <li><a href="#about" data-ab="ab-motions">Motions 101</a></li>
+          <li><a href="#about" data-ab="ab-sources">Legal sources</a></li>
+          <li><a href="#about" data-ab="ab-privacy">Privacy and data</a></li>
+          <li><a href="#about" data-ab="ab-tech">How it’s built</a></li>
+          <li><a href="#about" data-ab="ab-tests">Testing and validation</a></li>
+          <li><a href="#about" data-ab="ab-limits">Limits and judgment calls</a></li>
+          <li><a href="#about" data-ab="ab-credits">Who built it</a></li>
+        </ol>
+      </nav>
+      <div class="ab-main">
+
+        <section class="ab-sec" id="ab-overview" aria-labelledby="ab-overview-h"><h2 id="ab-overview-h">Overview</h2>
+          <p>Courts are sanctioning lawyers who file AI-generated briefs with fake or misstated citations, and bar authorities now treat AI use as a question of competence, confidentiality, candor, supervision, communication and fees. Motion Advisor is a decision-support tool built around that problem. It asks a lawyer about one specific motion and how they would use AI on it, then scores the risk and explains what to fix.</p>
+          <p>It is a decision aid, not a decision maker. Every score comes from fixed, documented rules in one configuration file. No AI model runs in the tool, so the same answers always produce the same result, and every explanation links to the rule, opinion or case behind it.</p>
+          <p>The audience is practicing lawyers, especially solo and small-firm practitioners in Massachusetts state and federal courts, and law students learning how AI fits into motion practice.</p>
+        </section>
+
+        <section class="ab-sec" id="ab-tools" aria-labelledby="ab-tools-h"><h2 id="ab-tools-h">The tools</h2>
+          <div class="rec-scroll"><table class="rec-table ab-table"><thead><tr><th scope="col">Tool</th><th scope="col">What it does</th></tr></thead><tbody>
+            <tr><th scope="row"><a href="#advisor">AI Drafting Advisor</a></th><td>The core assessment: <span data-cfg="qnum">13</span> multiple-choice questions in <span data-cfg="sword">six</span> sections, a review screen, and a result with a verdict, a risk score from 0 to 100, a level for each section, a plan and the rules to check. Downloadable as a PDF.</td></tr>
+            <tr><th scope="row"><a href="#compare">Compare Your Options</a></th><td>Optional. Rates <span data-cfg="oword">four</span> ways of using AI on the same six sections from the same answers, recommends the safest useful one, and lets the user preview different section weights.</td></tr>
+            <tr><th scope="row"><a href="#citations">Citation Toolkit</a></th><td>Pulls every case, statute, regulation and rule citation out of a pasted or uploaded draft, links each to sources for checking, and tracks four verification checks per case. Exports to Excel, Google Sheets, CSV and PDF.</td></tr>
+            <tr><th scope="row"><a href="#redaction">Redaction Game</a></th><td>Three practice rounds on what must be removed from a court filing or an AI prompt, scored on hits, misses and over-redaction.</td></tr>
+            <tr><th scope="row"><a href="#motions">Motions 101</a></th><td>What a motion is, a library of 20 common motions, a two-question finder for the right motion, and the life of a motion from draft to ruling.</td></tr>
+            <tr><th scope="row"><a href="#rules">Rules &amp; Sources</a></th><td>Every rule, opinion, case and resource the site relies on, with what it requires, where the site uses it and a link to the text. Searchable and filterable by tool.</td></tr>
+            <tr><th scope="row"><a href="#method">How this works</a></th><td>A one-minute visual summary of the scoring for users. This About page is the full reference.</td></tr>
+          </tbody></table></div>
+        </section>
+
+        <section class="ab-sec" id="ab-journey" aria-labelledby="ab-journey-h"><h2 id="ab-journey-h">How a user moves through it</h2>
+          <ol class="ab-steps">
+            <li><b>Start.</b> From the home page or any “Start assessment” button. If a result is already saved, the user confirms before it is deleted. Starting from a motion in Motions 101 pre-fills the motion type.</li>
+            <li><b>Intro.</b> A disclaimer and an acknowledgment that the tool is not legal advice.</li>
+            <li><b>Six sections, one per screen.</b> Each question has a “Why we ask this” note; some open follow-up questions, learning links or warnings depending on the answer.</li>
+            <li><b>Review.</b> Every answer is shown, with an Edit link for each section.</li>
+            <li><b>Result.</b> The verdict, the risk score and three tabs: Summary, Your plan and Sources. Download as a PDF.</li>
+            <li><b>Optional next steps.</b> Compare Your Options, the Citation Toolkit for the draft itself, and the Rules &amp; Sources page.</li>
+          </ol>
+        </section>
+
+        <section class="ab-sec" id="ab-questions" aria-labelledby="ab-questions-h"><h2 id="ab-questions-h">The assessment questions</h2>
+          <p>Every answer carries risk points, from 0 for the safest answer upward. The table below is read directly from config.js, so it always matches the tool.</p>
+          <div id="ab-qtable"></div>
+          <h3>Special question types</h3>
+          <ul class="ab-list">
+            <li><b>Select all that apply</b> (“Which part of the motion would AI help with?”): the riskiest selected task sets the score. Adding a low-risk task never lowers it.</li>
+            <li><b>Branching questions</b> (citation checking; telling the client): a main question opens follow-ups, and the combination is converted to one scored answer by rules checked in order. The rules are listed in the table above.</li>
+            <li><b>Follow-up without points</b>: choosing Massachusetts state court asks which court. The answer adds court-specific notes and sources to the report but never changes the score.</li>
+            <li><b>Draft scanner</b>: shown when the user answers “Not sure” about client information. It is advice only and never changes the score (see <a href="#about" data-ab="ab-scanner">Draft scanner</a>).</li>
+          </ul>
+        </section>
+
+        <section class="ab-sec" id="ab-formulas" aria-labelledby="ab-formulas-h"><h2 id="ab-formulas-h">Scoring formulas</h2>
+          <ol class="ab-steps">
+            <li><b>Section points.</b> Add the points of the section’s answers. The section maximum is the sum of each question’s highest possible score.</li>
+            <li><b>Section level.</b> Divide points by maximum. <span id="ab-levelcuts"></span></li>
+            <li><b>Risk index.</b> Weight each section, then scale to 0–100:
+              <p class="formula">Risk index = round( Σ (section points × weight) ÷ Σ (section maximum × weight) × 100 )</p>
+              <span id="ab-weights"></span></li>
+            <li><b>Verdict.</b> <span id="ab-verdicts"></span></li>
+            <li><b>Automatic stops.</b> If any stop applies, the verdict is “Not recommended” whatever the index.</li>
+          </ol>
+        </section>
+
+        <section class="ab-sec" id="ab-example" aria-labelledby="ab-example-h"><h2 id="ab-example-h">Worked example</h2>
+          <p>The calculation for one of the built-in test personas, computed live by the same engine the assessment uses.</p>
+          <div id="ab-worked"></div>
+        </section>
+
+        <section class="ab-sec" id="ab-stops" aria-labelledby="ab-stops-h"><h2 id="ab-stops-h">Automatic stops</h2>
+          <p>These answers force “Not recommended” regardless of the score. On Compare Your Options, each stop also rules out the ways of using AI listed beside it.</p>
+          <div id="ab-stoptable"></div>
+        </section>
+
+        <section class="ab-sec" id="ab-report" aria-labelledby="ab-report-h"><h2 id="ab-report-h">The result report</h2>
+          <ul class="ab-list">
+            <li><b>Top card:</b> the verdict, a large 0–100 risk scale with the user’s position marked, a one-line summary, a next step and, when a stop applies, “Fix this first.”</li>
+            <li><b>Summary tab:</b> any automatic stops, then each section’s Low, Moderate or High level. Each section can be opened to show every answer, its own risk level and why it matters.</li>
+            <li><b>Your plan tab:</b> a “Before you file” list combining the recommended workflow and the verification checklist, with duplicates removed and the most important items first.</li>
+            <li><b>Sources tab:</b> the rules, opinions and court resources that apply to the user’s answers and court, including any Massachusetts court-specific material.</li>
+            <li><b>PDF:</b> the same content as a downloadable report, generated in the browser.</li>
+            <li><b>Storage:</b> the latest result is saved only in the user’s browser and can be cleared at any time.</li>
+          </ul>
+        </section>
+
+        <section class="ab-sec" id="ab-options" aria-labelledby="ab-options-h"><h2 id="ab-options-h">Compare Your Options</h2>
+          <p>An optional page that rates <span data-cfg="oword">four</span> ways of using AI on the same six sections, using the same answers. Each AI option is re-scored by changing how certain questions count:</p>
+          <div id="ab-optable"></div>
+          <ul class="ab-list">
+            <li><b>Task re-scoring:</b> the task question is re-scored as the option’s own task plus every task the user selected that the option still allows, using the same riskiest-task rule.</li>
+            <li><b>Overall bands:</b> <span id="ab-bands"></span></li>
+            <li><b>Recommendation:</b> the open (not ruled out) AI option with the lowest overall risk, with ties going to the more helpful option. If even that option is High, or every AI option is ruled out, the recommendation is “Draft without AI.”</li>
+            <li><b>Weight preview:</b> sliders (<span id="ab-wrange"></span>) let the user see how the result would change if they valued the sections differently. The preview never changes the actual result or the table.</li>
+            <li><b>Explanations:</b> any rating can be opened to show which answers caused it and the rule behind it.</li>
+          </ul>
+        </section>
+
+        <section class="ab-sec" id="ab-scanner" aria-labelledby="ab-scanner-h"><h2 id="ab-scanner-h">Draft scanner</h2>
+          <p>Appears when the user isn’t sure whether client information would go into the AI tool. The user can paste or upload a draft (.docx, .pdf or .txt), and the scanner flags:</p>
+          <div id="ab-scancats"></div>
+          <ul class="ab-list">
+            <li><b>How it finds things:</b> pattern rules (for example Social Security, account and card numbers, with a checksum for cards), keyword lists per category, and name detection that combines legal-document patterns with the open-source compromise library. The user can also type names to look for; those are never stored.</li>
+            <li><b>What it suggests:</b> which answer to the client-information question fits what was found, or anonymizing the draft first.</li>
+            <li><b>Privacy:</b> the scan runs entirely in the browser. The draft is never sent to any server or AI model and never saved.</li>
+            <li><b>Effect on the score:</b> none. The user still chooses the answer.</li>
+          </ul>
+        </section>
+
+        <section class="ab-sec" id="ab-cites" aria-labelledby="ab-cites-h"><h2 id="ab-cites-h">Citation Toolkit</h2>
+          <p>Finds citations by pattern matching, not AI. It recognizes:</p>
+          <ul class="ab-list">
+            <li><b>Cases</b> in <span id="ab-reporters">27</span> federal, Massachusetts and regional reporters, with pinpoints, parallel citations and case names.</li>
+            <li><b>Statutes</b>: U.S. Code, Massachusetts General Laws (G.L. and Mass. Gen. Laws ch. forms), and every state’s code in Bluebook form. U.S. Code sections link to Cornell’s Legal Information Institute and Massachusetts sections link to the Legislature’s website.</li>
+            <li><b>Regulations</b>: C.F.R. sections, linked to Cornell.</li>
+            <li><b>Court rules</b>: federal and Massachusetts civil, criminal, evidence and appellate rules, Superior Court and SJC rules, and local rules.</li>
+            <li><b>Anything else with a “§”</b> is listed as “Other citation” with a note to check it, so nothing is silently dropped.</li>
+          </ul>
+          <p>The same case cited more than once (different pinpoints, parallel citations or the same case name) is tracked once. For each case the user ticks four checks: pulled and read, pincite supports, quote matches, and still good law. Westlaw and Lexis+ AI links need the user’s firm sign-in; CourtListener is free. Exports: Excel (with clickable checkboxes in Microsoft 365), Google Sheets (paste-in), CSV and PDF. The toolkit cannot confirm that a case exists or is good law.</p>
+        </section>
+
+        <section class="ab-sec" id="ab-game" aria-labelledby="ab-game-h"><h2 id="ab-game-h">Redaction Game</h2>
+          <p>Three rounds, each a short fictional document. The user clicks what must be redacted, then sees what they hit, missed and over-redacted, with the reason for each.</p>
+          <div class="rec-scroll"><table class="rec-table ab-table"><thead><tr><th scope="col">Round</th><th scope="col">Document</th><th scope="col">Rule tested</th></tr></thead><tbody>
+            <tr><td>1</td><td>Federal complaint excerpt (D. Mass.)</td><td>Fed. R. Civ. P. 5.2(a)</td></tr>
+            <tr><td>2</td><td>Superior Court affidavit (Suffolk County)</td><td>SJC Rule 1:24</td></tr>
+            <tr><td>3</td><td>Internal intake memo, before pasting into an AI tool</td><td>Mass. R. Prof. C. 1.6 · ABA Formal Op. 512</td></tr>
+          </tbody></table></div>
+          <p class="formula">Round score = 10 × items correctly redacted − 5 × items missed − 3 × items over-redacted</p>
+        </section>
+
+        <section class="ab-sec" id="ab-motions" aria-labelledby="ab-motions-h"><h2 id="ab-motions-h">Motions 101</h2>
+          <ul class="ab-list">
+            <li><b>The basics:</b> what a motion is, what’s in one, how it’s decided, dispositive versus non-dispositive, and filing under Superior Court Rule 9A and D. Mass. Local Rule 7.1.</li>
+            <li><b>Motion library:</b> 20 motions across pleadings, discovery, dispositive, emergency, trial, post-trial, procedural and criminal stages. Each shows the rule, when it’s filed, the standard and how much care AI use needs.</li>
+            <li><b>Which motion fits?</b> Two questions (where the case is, and what the user needs) lead to one or two suggested motions.</li>
+            <li><b>Life of a motion:</b> research and draft, confer, serve or file, opposition, reply, hearing and ruling.</li>
+            <li><b>Link to the assessment:</b> “Start an assessment for this motion” pre-fills the motion-type question.</li>
+          </ul>
+        </section>
+
+        <section class="ab-sec" id="ab-sources" aria-labelledby="ab-sources-h"><h2 id="ab-sources-h">Legal sources</h2>
+          <p>Every explanation traces to a source listed on the <a href="#rules">Rules &amp; Sources</a> page, which says what each source requires, where the site uses it, and links to the text.</p>
+          <div id="ab-srcgroups"></div>
+          <p>Federal and Massachusetts civil-rule citations across the site open on courtrules.net, an unofficial compilation; the official Massachusetts text is on <a href="https://www.mass.gov/law-library/massachusetts-rules-of-civil-procedure" target="_blank" rel="noopener noreferrer">Mass.gov ↗</a>. Each link is labeled Official (a court, government body or the issuing organization), Unofficial (a compilation or secondary source), PDF, or Subscription.</p>
+        </section>
+
+        <section class="ab-sec" id="ab-privacy" aria-labelledby="ab-privacy-h"><h2 id="ab-privacy-h">Privacy and data</h2>
+          <ul class="ab-list">
+            <li><b>No accounts, no server-side data.</b> Nothing a user enters is sent anywhere. There are no free-text fields that ask for client details.</li>
+            <li><b>Saved in the browser only:</b> the latest result (local storage; the user can clear it from the home page or by starting over). When the user opens a PDF from inside the assessment, their answers are kept briefly so they return to the same question; that copy is removed when they come back, or after six hours. Small display preferences, such as the open results tab, use session storage.</li>
+            <li><b>Never saved:</b> drafts pasted into the scanner or Citation Toolkit, and names typed into the scanner.</li>
+            <li><b>Outside code:</b> the browser downloads open-source libraries for PDFs, spreadsheets and documents (jsPDF, ExcelJS, JSZip, Mammoth, PDF.js) and fonts from Google Fonts. No user data is sent with those requests.</li>
+          </ul>
+        </section>
+
+        <section class="ab-sec" id="ab-tech" aria-labelledby="ab-tech-h"><h2 id="ab-tech-h">How it’s built</h2>
+          <p>A static web application with no back end. It is hosted on Vercel from the GitHub repository <a href="https://github.com/shivanidahya/MotionAdvisor" target="_blank" rel="noopener noreferrer">shivanidahya/MotionAdvisor ↗</a>.</p>
+          <div class="rec-scroll"><table class="rec-table ab-table"><thead><tr><th scope="col">File</th><th scope="col">Role</th></tr></thead><tbody>
+            <tr><th scope="row"><a href="https://github.com/shivanidahya/MotionAdvisor/blob/main/config.js" target="_blank" rel="noopener noreferrer">config.js ↗</a></th><td>All scoring content: questions, answer scores, notes, weights, thresholds, automatic stops, Options Report rules, scanner keywords and test personas. Values marked REVIEW are judgment calls.</td></tr>
+            <tr><th scope="row"><a href="https://github.com/shivanidahya/MotionAdvisor/blob/main/engine.js" target="_blank" rel="noopener noreferrer">engine.js ↗</a></th><td>The scoring engine: pure functions that apply config.js. No network, no randomness.</td></tr>
+            <tr><th scope="row">index.html</th><td>The interface, the Citation Toolkit, the Redaction Game, Motions 101, the Rules &amp; Sources data and the PDF report.</td></tr>
+            <tr><th scope="row">docs/</th><td>The ABA and Bar Counsel PDFs and an in-browser PDF viewer.</td></tr>
+            <tr><th scope="row">tests/</th><td>The automated test suite and sample drafts for the scanner.</td></tr>
+            <tr><th scope="row">vendor/</th><td>The compromise name-detection library (MIT license).</td></tr>
+          </tbody></table></div>
+        </section>
+
+        <section class="ab-sec" id="ab-tests" aria-labelledby="ab-tests-h"><h2 id="ab-tests-h">Testing and validation</h2>
+          <p>Three personas from the project plan act as fixed test cases. Their results, computed live:</p>
+          <div id="ab-personas"></div>
+          <p>An automated test suite (<code>npm test</code>) checks, among other things, that scoring matches the original version across 3,000 random answer sets, that every stop forces “Not recommended” and rules out the configured options, that results are deterministic, that the scanner and the Massachusetts court follow-up never change the score, and that every link the assessment shows is also listed on Rules &amp; Sources.</p>
+        </section>
+
+        <section class="ab-sec" id="ab-limits" aria-labelledby="ab-limits-h"><h2 id="ab-limits-h">Limits and judgment calls</h2>
+          <ul class="ab-list">
+            <li><b>Not legal advice.</b> The result depends on self-reported answers and never replaces attorney judgment, supervisor review or final review by the signing attorney.</li>
+            <li><b>The numbers are judgment calls.</b> Answer scores, weights, thresholds and option rules were set by the developer from the sources, not measured from data, and are marked REVIEW for a practicing attorney to confirm.</li>
+            <li><b>Pattern matching has limits.</b> The scanner and the Citation Toolkit can miss things and flag false matches.</li>
+            <li><b>The law changes.</b> Court AI orders and bar guidance change often; an amended Mass. R. Civ. P. 11 takes effect January 1, 2027. Content reviewed November 2026.</li>
+            <li><b>Best on a desktop.</b> Every tool works on phones and tablets, but long drafts and checklists are easier on a larger screen. Names and documents in the Redaction Game are fictional.</li>
+          </ul>
+        </section>
+
+        <section class="ab-sec" id="ab-credits" aria-labelledby="ab-credits-h"><h2 id="ab-credits-h">Who built it</h2>
+          <p>Developed by Shivani Dahya at Suffolk Law School for Decision Making and Choice Management, as a decision-support tool for lawyers adopting AI responsibly. Configuration version <span id="ab-version"></span>.</p>
+        </section>
       </div>
-      <aside class="about-side">
-        <div class="card"><h3>Good to know</h3><ul class="about-list">
-          <li><b>Not legal advice.</b> The ranking depends on your answers, weights and ratings, and never replaces attorney judgment or final review.</li>
-          <li><b>Private by design.</b> Nothing you enter leaves your browser. Your latest result is saved only in this browser, and you can clear it at any time.</li>
-          <li><b>Limits.</b> The Citation Toolkit lists the citations in a draft; it cannot confirm that a case exists or is still good law. Names and documents in the Redaction Game are fictional.</li>
-          <li><b>Best on a desktop.</b> Every tool works on phones and tablets, but long drafts and checklists are easier on a larger screen.</li>
-          <li><b>Reviewed November 2026.</b> Bar guidance and court rules change; check current text before filing.</li>
-        </ul></div>
-        <div class="card" style="margin-top:16px"><h3>Who built it</h3><p>Developed by Shivani Dahya at Suffolk Law School for Decision Making and Choice Management, as a decision-support tool for lawyers adopting AI responsibly.</p></div>
-      </aside>
     </div>
   </div>
 </section>
@@ -3131,6 +3355,48 @@ function initFinder(){const root=$("#m-quiz");if(!root)return;renderFinder();
     const op=e.target.closest("[data-fd-open]");if(op){openMotion(+op.dataset.fdOpen,true,"Suggested for you");return}
     const as=e.target.closest("[data-fd-assess]");if(as)assessMotion(MOTIONS[+as.dataset.fdAssess].n,as)})}
 
+/* ---------------- ABOUT (the full reference; tables read from config.js and the engine) ---------------- */
+function renderAbout(){
+  const AS=CFG.assessment,f=cfgFacts(),pts=n=>`${n} pt${n===1?"":"s"}`,maxQ=q=>Math.max(...q.options.map(o=>o.score));
+  const facts=[[f.qnum,"questions"],[String(AS.sections.length),"weighted sections"],[String(AS.stops.length),"automatic stops"],[f.onum,"ways of using AI compared"],[String(RULES.length),"legal sources"],["0","AI models in the tool"]];
+  $("#ab-facts").innerHTML=facts.map(([n,l])=>`<div><dt>${esc(l)}</dt><dd>${esc(n)}</dd></div>`).join("");
+  const optList=os=>`<ul class="ab-opts">${os.map(o=>`<li><span>${esc(o.label)}</span><b>${pts(o.score)}</b></li>`).join("")}</ul>`;
+  $("#ab-qtable").innerHTML=AS.sections.map(sec=>{const mx=sec.qs.reduce((m,q)=>m+maxQ(q),0);
+    return `<div class="ab-qsec"><h3>${esc(sec.title)} <span class="ab-w">weight ${sec.weight}× · maximum ${mx} points</span></h3><ol class="ab-qs">${sec.qs.map(q=>{
+      let body;
+      if(q.type==="branch"){const fol=Object.entries(q.follow);
+        body=`<p class="ab-sub">Main answers: ${q.main.options.map(o=>esc(o.label)).join(" · ")}</p>${fol.map(([k,fs])=>fs.map(x=>`<p class="ab-sub">If “${esc((q.main.options.find(o=>o.v===k)||{}).label||k)}”: ${esc(x.text)} <span class="muted">(${x.options.filter(o=>!o.hidden).map(o=>esc(o.short||o.label)).join(" · ")})</span></p>`).join("")).join("")}<p class="ab-sub"><b>Scored as:</b></p>${optList(q.options)}`}
+      else body=`${q.multi?`<p class="ab-sub">Select all that apply; the riskiest selection sets the score.</p>`:""}${optList(q.options)}${q.followUp?`<p class="ab-sub">Follow-up when “${esc((q.options.find(o=>o.v===q.followUp.showFor)||{}).label||"")}”: ${esc(q.followUp.label||q.followUp.text||"")} (no points).</p>`:""}`;
+      return `<li><p class="ab-q">${esc(q.text)}</p>${body}</li>`}).join("")}</ol></div>`}).join("");
+  $("#ab-levelcuts").textContent=`Below ${AS.levelCuts.moderate} is Low, below ${AS.levelCuts.high} is Moderate, and ${AS.levelCuts.high} or above is High.`;
+  $("#ab-weights").textContent="Weights: "+AS.sections.map(x=>`${x.title} ${x.weight}×`).join(", ")+".";
+  let lo=0;$("#ab-verdicts").textContent=AS.verdicts.map(v=>{const t=`${lo}–${v.max}: “${v.verdict}”`;lo=v.max+1;return t}).join("; ")+".";
+  /* worked example: the two-lawyer persona */
+  const per=AS.personas[1],a=ENG.prepare(per.a),secs=ENG.assess(per.a);
+  const rows=AS.sections.map(sec=>{let p=0,m=0;sec.qs.forEach(q=>{const o=q.multi?q.options.filter(x=>(Array.isArray(a[q.id])?a[q.id]:[a[q.id]]).includes(x.v)).sort((x,y)=>y.score-x.score)[0]:q.options.find(x=>x.v===a[q.id]);p+=o?o.score:0;m+=maxQ(q)});return {t:sec.title,w:sec.weight,p,m}});
+  const num=rows.reduce((t,r)=>t+r.p*r.w,0),den=rows.reduce((t,r)=>t+r.m*r.w,0);
+  $("#ab-worked").innerHTML=`<p><b>${esc(per.name)}</b> <span class="muted">(${esc(per.desc)})</span></p><div class="rec-scroll"><table class="rec-table ab-table"><thead><tr><th scope="col">Section</th><th class="n" scope="col">Points</th><th class="n" scope="col">Maximum</th><th class="n" scope="col">Level</th><th class="n" scope="col">Weight</th><th class="n" scope="col">Points × weight</th><th class="n" scope="col">Maximum × weight</th></tr></thead><tbody>${rows.map(r=>`<tr><th scope="row">${esc(r.t)}</th><td class="n">${r.p}</td><td class="n">${r.m}</td><td class="n">${ENG.levelOf(r.p/r.m)}</td><td class="n">${r.w}×</td><td class="n">${+(r.p*r.w).toFixed(2)}</td><td class="n">${+(r.m*r.w).toFixed(2)}</td></tr>`).join("")}<tr class="ab-tot"><th scope="row">Total</th><td colspan="4"></td><td class="n">${+num.toFixed(2)}</td><td class="n">${+den.toFixed(2)}</td></tr></tbody></table></div>
+    <p class="formula">${+num.toFixed(2)} ÷ ${+den.toFixed(2)} × 100 = ${(num/den*100).toFixed(1)} → risk index <b>${Math.round(num/den*100)}</b></p>
+    <p>No automatic stop applies, so the verdict follows the index: <b>${esc(secs.verdict)}</b>${secs.index===Math.round(num/den*100)?"":" (engine: "+secs.index+")"}.</p>`;
+  $("#ab-stoptable").innerHTML=`<div class="rec-scroll"><table class="rec-table ab-table"><thead><tr><th scope="col">Stop</th><th scope="col">What fixes it</th><th scope="col">Rules out on Compare Your Options</th></tr></thead><tbody>${AS.stops.map(x=>{const fx=(AS.stopFix||{})[x.id];return `<tr><td>${esc(x.text)}</td><td>${fx?esc(fx.fix):""}</td><td>${(ORC.blocks[x.id]||[]).map(id=>esc((ORC.options.find(o=>o.id===id)||{}).name||id)).join("; ")}</td></tr>`}).join("")}</tbody></table></div>`;
+  const qText=id=>{const q=AS.sections.flatMap(x=>x.qs).find(q=>q.id===id);return q?q.text:id};
+  $("#ab-optable").innerHTML=`<div class="rec-scroll"><table class="rec-table ab-table"><thead><tr><th scope="col">Option</th><th scope="col">How it is scored</th></tr></thead><tbody>${ORC.options.map(o=>`<tr><th scope="row">${esc(o.name)}<br><span class="muted">${esc(o.desc)}</span></th><td>${o.noAI?"Low on every section: no AI tool is involved. Never ruled out.":[`Task counted as: ${esc(((AS.sections.flatMap(x=>x.qs).find(q=>q.id==="aiTask").options.find(t=>t.v===o.taskAs))||{}).label||o.taskAs)}`,o.notCounted?`Not counted: ${o.notCounted.map(qText).map(esc).join("; ")}`:"",o.halfCounted?`Counted at half: ${o.halfCounted.map(qText).map(esc).join("; ")}`:"",`Helpfulness rank: ${o.usefulness}`].filter(Boolean).join("<br>")}</td></tr>`).join("")}</tbody></table></div>`;
+  let blo=0;$("#ab-bands").textContent=ORC.bands.map(b=>{const t=`${blo}–${b.max} ${b.label}`;blo=b.max+1;return t}).join(", ")+".";
+  $("#ab-wrange").textContent=`each section ${ORC.weightRange.min}× to ${ORC.weightRange.max}× in steps of ${ORC.weightRange.step}`;
+  const SC=CFG.scanner;$("#ab-scancats").innerHTML=`<ul class="ab-tags">${Object.values(SC.categories).map(c=>`<li>${esc(c.label)}</li>`).join("")}</ul>`;
+  $("#ab-reporters").textContent=String(REPORTERS.length);
+  $("#ab-srcgroups").innerHTML=`<ul class="ab-list">${RULE_GROUPS.map(([g,t,d])=>{const list=RULES.filter(r=>r.g===g);return `<li><b>${esc(t)} (${list.length}):</b> ${list.map(r=>esc(r.short)).join("; ")}.</li>`}).join("")}</ul>`;
+  $("#ab-personas").innerHTML=`<div class="rec-scroll"><table class="rec-table ab-table"><thead><tr><th scope="col">Persona</th><th class="n" scope="col">Risk index</th><th scope="col">Verdict</th></tr></thead><tbody>${AS.personas.map(p=>{const r=ENG.assess(p.a);return `<tr><th scope="row">${esc(p.name)}<br><span class="muted">${esc(p.desc)}</span></th><td class="n">${r.index}</td><td>${esc(r.verdict)}</td></tr>`}).join("")}</tbody></table></div>`;
+  $("#ab-version").textContent=CFG.version||"";
+  /* table of contents: scroll without changing the route */
+  $$("#v-about [data-ab]").forEach(l=>l.addEventListener("click",e=>{e.preventDefault();const t=$("#"+l.dataset.ab);if(!t)return;const rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;t.scrollIntoView({behavior:rm?"auto":"smooth",block:"start"});const h=t.querySelector("h2");if(h){h.tabIndex=-1;h.focus({preventScroll:true})}}));
+  /* highlight the section being read: the last one whose top has passed under the header */
+  const abSecs=$$(".ab-sec"),links=$$(".ab-toc a");let tick=false;
+  const mark=()=>{tick=false;if($("#v-about").hidden)return;let cur=abSecs[0];abSecs.forEach(x=>{if(x.getBoundingClientRect().top<=140)cur=x});
+    links.forEach(a=>{const on=a.dataset.ab===cur.id;a.classList.toggle("cur",on);if(on)a.setAttribute("aria-current","true");else a.removeAttribute("aria-current")})};
+  window.addEventListener("scroll",()=>{if(!tick){tick=true;requestAnimationFrame(mark)}},{passive:true});mark();
+}
+
 /* ---------------- RULES & SOURCES ---------------- */
 const MA_RPC="https://mass.gov/supreme-judicial-court-rules/supreme-judicial-court-rule-307-rules-of-professional-conduct";
 const RULE_GROUPS=[
@@ -3347,7 +3613,7 @@ $("#m-basics").addEventListener("click",e=>{const a=e.target.closest("[data-rule
 renderRules();
 $("#m-grid").addEventListener("click",e=>{const b=e.target.closest("[data-assess]");if(b)assessMotion(MOTIONS[+b.dataset.assess].n,b)});
 const RESUMED=resumeFromViewer();
-renderAdvisor(); renderLastReport(); initStartAssessment(); initWarn(); initOR(); renderMethod(); initCites(); renderGame(); renderMotions(); initFinder(); initSearch(); route(); initRuleLinks(); if(RESUMED!==null)setTimeout(()=>focusResumed(RESUMED),60);
+renderAdvisor(); renderLastReport(); initStartAssessment(); initWarn(); initOR(); renderMethod(); initCites(); renderGame(); renderMotions(); initFinder(); renderAbout(); initSearch(); route(); initRuleLinks(); if(RESUMED!==null)setTimeout(()=>focusResumed(RESUMED),60);
 })();
 </script>
 </body></html>
