@@ -211,7 +211,21 @@ ol.flow{margin:0;padding-left:1.3em;display:grid;gap:9px;font-size:.93rem}
 .res-top h2{display:flex;align-items:center;gap:12px;font-size:2rem;margin:2px 0 0}
 .v-ic{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;color:#fff;font-family:var(--f-ui);font-size:1.15rem;font-weight:800;flex-shrink:0}
 .res-top.ok .v-ic{background:var(--ok)}.res-top.warn .v-ic{background:var(--warn)}.res-top.bad .v-ic{background:var(--bad)}
-.res-index{margin:0;color:var(--muted);font-size:.88rem}
+.res-top{grid-template-columns:minmax(0,1fr) minmax(220px,300px);column-gap:36px}
+.res-top>*:not(.risk-scale){grid-column:1}
+.risk-scale{grid-column:2;grid-row:1 / span 6;align-self:center;display:grid;gap:6px}
+.rs-num{display:flex;align-items:baseline;gap:6px;font-family:var(--f-display)}
+.rs-val{font-size:3.6rem;font-weight:600;line-height:1}
+.res-top.ok .rs-val{color:var(--ok)}.res-top.warn .rs-val{color:var(--warn)}.res-top.bad .rs-val{color:var(--bad)}
+.rs-of{font-size:1.1rem;color:var(--muted)}
+.rs-label{font-family:var(--f-ui);font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rs-bar{position:relative;display:flex;gap:3px;height:12px;margin-top:8px}
+.rs-bar i{border-radius:3px;opacity:.28}.rs-bar i.on{opacity:1}
+.rs-bar i.ok{background:var(--ok)}.rs-bar i.warn{background:var(--warn)}.rs-bar i.bad{background:var(--bad)}
+.rs-pin{position:absolute;top:-6px;width:4px;height:24px;margin-left:-2px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 2px var(--surface)}
+.rs-ticks{display:flex;gap:3px;font-family:var(--f-ui);font-size:.72rem;line-height:1.25;color:var(--muted)}
+.rs-ticks span{padding-right:4px}.rs-ticks span.on{color:var(--ink);font-weight:600}
+@media (max-width:760px){.res-top{display:flex;flex-direction:column}.res-top>*{order:4}.res-top>.eyebrow{order:1}.res-top>h2{order:2}.risk-scale{order:3;margin:6px 0 8px}.rs-val{font-size:3rem}}
 .res-sum{margin:6px 0 0;max-width:62ch}
 .res-next{margin:4px 0 0;max-width:62ch}
 .res-fix{margin:6px 0 0;display:flex;gap:10px;align-items:flex-start;max-width:62ch;color:var(--bad);font-weight:500}
@@ -1894,6 +1908,16 @@ function factorDetailHTML(f){
   const more=rest.length||links;
   return `<h4 class="chip-h"><span class="lv-ic ${LV(f.level)}" aria-hidden="true">${LV_IC[LV(f.level)]}</span>${esc(f.title)}: ${esc(f.level)} risk</h4>
     <p>${esc(lead)}</p>${more?`<div class="more-body" id="more-${f.id}" hidden>${rest.map(n=>`<p>${esc(n)}</p>`).join("")}${links}</div><button type="button" class="link-btn more-btn" aria-expanded="false" aria-controls="more-${f.id}">More</button>`:""}`}
+/* the 0–100 risk index on a scale split at the verdict thresholds */
+function riskScaleHTML(r){
+  const V=CFG.assessment.verdicts;let lo=0;
+  const zones=V.map(v=>{const z={from:lo,to:v.max,cls:v.cls,label:v.verdict};lo=v.max;return z});
+  return `<div class="risk-scale" role="img" aria-label="Risk index ${r.index} out of 100. ${zones.map(z=>`${z.from}–${z.to}: ${z.label}`).join("; ")}.">
+    <div class="rs-num"><span class="rs-val">${r.index}</span><span class="rs-of">/ 100</span></div>
+    <div class="rs-label">Risk index</div>
+    <div class="rs-bar" aria-hidden="true">${zones.map(z=>`<i class="${z.cls}${z.cls===r.cls?" on":""}" style="flex:${z.to-z.from}"></i>`).join("")}<b class="rs-pin" style="left:${Math.min(100,Math.max(0,r.index))}%"></b></div>
+    <div class="rs-ticks" aria-hidden="true">${zones.map(z=>`<span class="${z.cls===r.cls?"on":""}" style="flex:${z.to-z.from}">${esc(z.label)}</span>`).join("")}</div>
+  </div>`}
 function resultHTML(r){
   const A=adv.answers,tab=resTab(),stops=r.overrides,FIX=CFG.assessment.stopFix||{};
   const plan=planFor(A,r),src=sourcesFor(A,r);
@@ -1903,9 +1927,9 @@ function resultHTML(r){
   const top=r.factors.reduce((b,f)=>(rank[f.level]>rank[b.level]||(rank[f.level]===rank[b.level]&&f.ratio>b.ratio))?f:b,r.factors[0]);
   const tabBtn=(id,label)=>`<button type="button" role="tab" id="rt-${id}" aria-controls="rp-${id}" aria-selected="${tab===id}" tabindex="${tab===id?0:-1}">${label}</button>`;
   return `<section class="res-top ${r.cls}" aria-labelledby="res-verdict">
+    ${riskScaleHTML(r)}
     <div class="eyebrow">Your result · ${r.date.toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})}</div>
     <h2 id="res-verdict"><span class="v-ic" aria-hidden="true">${LV_IC[r.cls]}</span>${esc(r.verdict)}</h2>
-    <p class="res-index">Risk index: ${r.index} / 100</p>
     <p class="res-sum">${esc(firstSentence(r.summary))}</p>
     <p class="res-next"><b>Next step:</b> ${esc(next)}</p>
     ${first?`<p class="res-fix"><span class="fix-ic" aria-hidden="true">!</span><span><b>Fix this first:</b> ${esc(fix?fix.short:stops[0])}${stops.length>1?` <button type="button" class="link-btn" id="res-more-stops">+${stops.length-1} more</button>`:""}</span></p>`:""}
