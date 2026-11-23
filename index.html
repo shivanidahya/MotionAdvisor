@@ -626,6 +626,33 @@ body.nav-locked{overflow:hidden}
 @media (max-width:520px){
   #v-motions .m-sec{padding-block:52px}
 }
+/* ---- Motions 101: Motions in brief ---- */
+.mb-lede{font-size:1.15rem;max-width:62ch}
+.mb-alert{display:flex;gap:12px;align-items:flex-start;max-width:62ch;margin:16px 0 26px;padding:12px 16px;background:var(--warn-bg);border-left:4px solid var(--warn);border-radius:8px}
+.mb-alert p{font-size:.95rem}
+.mb-alert-ic{flex:none;width:22px;height:22px;border-radius:50%;background:var(--warn);color:var(--on-warn);display:grid;place-items:center;font-family:var(--f-ui);font-weight:800;font-size:.85rem;margin-top:1px}
+.mb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.mb-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:12px;align-content:start}
+.mb-card h3{font-size:1.25rem}
+.mb-list{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:mb}
+.mb-list li{display:grid;grid-template-columns:28px 1fr;column-gap:10px;counter-increment:mb}
+.mb-list li::before{content:counter(mb);grid-row:1/3;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ink-2);display:grid;place-items:center;font-family:var(--f-ui);font-weight:700;font-size:.82rem;color:var(--ink-2)}
+.mb-list b,.mb-flow b,.mb-two b{font-family:var(--f-ui);font-size:.95rem}
+.mb-list span,.mb-flow span{font-size:.88rem;color:var(--ink-2)}
+.mb-flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;position:relative}
+.mb-flow li{display:grid;gap:4px;align-content:start;position:relative;padding-top:18px}
+.mb-flow li::before{content:"";position:absolute;top:4px;left:0;width:10px;height:10px;border-radius:50%;background:var(--copper)}
+.mb-flow li:not(:last-child)::after{content:"";position:absolute;top:8px;left:16px;right:-6px;height:2px;background:var(--line)}
+.mb-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mb-two>div{background:var(--sunk);border-radius:8px;padding:12px 14px;display:grid;gap:4px;align-content:start}
+.mb-two p{font-size:.9rem}
+.mb-eg{font-size:.82rem;color:var(--muted)}
+.mb-eg::before{content:"e.g. "}
+.mb-rule{font-family:var(--f-mono);font-size:.78rem}
+.mb-rule a{color:var(--ink-2);text-underline-offset:3px}
+.mb-steps{margin:4px 0 0;padding-left:1.2em;display:grid;gap:3px;font-size:.88rem}
+@media (max-width:900px){.mb-grid{grid-template-columns:1fr}}
+@media (max-width:520px){.mb-flow{grid-template-columns:1fr 1fr;row-gap:14px}.mb-flow li:nth-child(2)::after{display:none}.mb-two{grid-template-columns:1fr}.mb-card{padding:16px}}
 /* ---- Search-result highlight in the motion library ---- */
 .motion{scroll-margin-top:96px;transition:opacity .2s ease}
 .motion-grid.has-hit .motion:not(.search-hit){opacity:.7}
@@ -1511,13 +1538,42 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
 
     <section class="band m-sec" id="m-basics" aria-labelledby="m-basics-h">
       <div class="m-sec-head"><div class="eyebrow">The basics</div><h2 id="m-basics-h">Motions in brief</h2></div>
-      <div class="m-prose">
-        <p class="m-lede">A <b>motion</b> is a formal request asking a judge to make a specific ruling or order. It is how parties ask the court to act between the complaint and the final judgment, and sometimes after. Because a motion is signed under <b>Rule 11</b>, every factual claim and legal citation in it is the signing attorney’s responsibility, and that is where AI risk lands.</p>
-        <div class="m-more" id="m-more" hidden>
-          <p>A motion names the relief wanted, gives the legal grounds for it and is supported by facts in the record, usually through affidavits, declarations or exhibits. The other side gets a chance to oppose it in writing, the moving party may reply, and the judge decides with or without a hearing.</p>
-          <p>Motions can be <b>dispositive</b>, ending all or part of the case (dismissal, summary judgment), or <b>non-dispositive</b>, shaping how the case proceeds (discovery, scheduling, evidence). In Massachusetts Superior Court, most civil motions follow <b>Superior Court Rule 9A</b>: you serve the motion on the other side first, they serve an opposition, and the moving party files the whole package. In federal court in Massachusetts, <b>Local Rule 7.1</b> requires you to confer with opposing counsel and certify that you did.</p>
-        </div>
-        <button type="button" class="ap-link m-more-btn" id="m-more-btn" aria-expanded="false" aria-controls="m-more">Read more</button>
+      <p class="mb-lede">A <b>motion</b> is a formal request asking a judge to make a specific ruling or order, usually between the complaint and the final judgment, and sometimes after.</p>
+      <div class="mb-alert" role="note"><span class="mb-alert-ic" aria-hidden="true">!</span><p><b>Where AI risk lands.</b> A motion is signed under <b>Rule 11</b>, so every factual claim and legal citation in it is the signing attorney’s responsibility.</p></div>
+      <div class="mb-grid">
+        <article class="mb-card">
+          <h3>What’s in a motion</h3>
+          <ol class="mb-list">
+            <li><b>The relief</b><span>what you want the court to order</span></li>
+            <li><b>The legal grounds</b><span>the rule or law that supports it</span></li>
+            <li><b>The facts</b><span>from the record, usually affidavits, declarations or exhibits</span></li>
+          </ol>
+        </article>
+        <article class="mb-card">
+          <h3>How it’s decided</h3>
+          <ol class="mb-flow" aria-label="Steps, in order">
+            <li><b>Motion</b><span>filed by the moving party</span></li>
+            <li><b>Opposition</b><span>the other side responds in writing</span></li>
+            <li><b>Reply</b><span>optional, by the moving party</span></li>
+            <li><b>Ruling</b><span>with or without a hearing</span></li>
+          </ol>
+        </article>
+        <article class="mb-card">
+          <h3>Two kinds</h3>
+          <div class="mb-two">
+            <div><b>Dispositive</b><p>Ends all or part of the case.</p><span class="mb-eg">Dismissal, summary judgment</span></div>
+            <div><b>Non-dispositive</b><p>Shapes how the case proceeds.</p><span class="mb-eg">Discovery, scheduling, evidence</span></div>
+          </div>
+        </article>
+        <article class="mb-card">
+          <h3>Filing in Massachusetts</h3>
+          <div class="mb-two">
+            <div><b>Superior Court</b><span class="mb-rule"><a href="#rules" data-rule="sup-9a">Superior Court Rule 9A</a></span>
+              <ol class="mb-steps"><li>Serve the motion on the other side</li><li>They serve an opposition</li><li>You file the whole package</li></ol></div>
+            <div><b>Federal court (D. Mass.)</b><span class="mb-rule"><a href="#rules" data-rule="dmass-7-1">Local Rule 7.1</a></span>
+              <ol class="mb-steps"><li>Confer with opposing counsel</li><li>Certify that you did</li><li>File the motion</li></ol></div>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -3287,7 +3343,7 @@ document.addEventListener("keydown",e=>{
     else if(!e.shiftKey&&(i===items.length-1||i<0)){e.preventDefault();items[0].focus()}}
 });
 $$("[data-jump]").forEach(b=>b.addEventListener("click",()=>{const el=$("#"+b.dataset.jump);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}));
-$("#m-more-btn").addEventListener("click",e=>{const b=e.currentTarget,o=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",String(o));$("#m-more").hidden=!o;b.textContent=o?"Show less":"Read more"});
+$("#m-basics").addEventListener("click",e=>{const a=e.target.closest("[data-rule]");if(a){e.preventDefault();openRule(a.dataset.rule)}});
 renderRules();
 $("#m-grid").addEventListener("click",e=>{const b=e.target.closest("[data-assess]");if(b)assessMotion(MOTIONS[+b.dataset.assess].n,b)});
 const RESUMED=resumeFromViewer();
