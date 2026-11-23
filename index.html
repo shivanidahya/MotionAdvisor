@@ -1048,6 +1048,18 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
 .warn-inline .warn-h{display:flex;align-items:center;margin:0 0 6px;font-weight:700}
 .warn-inline .warn-points{margin-bottom:6px}
 @media (max-width:560px){.warn-inline{margin-left:10px;padding:12px}}
+.or-wi{margin-top:28px}
+.or-wi>summary{cursor:pointer;font-family:var(--f-ui);font-weight:700;font-size:1.05rem;padding:10px 0}
+.wi-sec{border:0;margin:18px 0 0;padding:0;display:grid;gap:14px}
+.wi-sec legend{font-weight:700;font-size:1.05rem;margin-bottom:6px;padding:0}
+.wi-q{display:grid;gap:6px;max-width:640px;padding-left:12px;border-left:3px solid transparent}
+.wi-q.changed{border-left-color:var(--accent)}
+.wi-l{font-size:.92rem;font-weight:600;margin:0}
+.wi-q select{max-width:100%}
+.wi-checks{display:grid;gap:4px}.wi-checks label{display:flex;gap:8px;align-items:flex-start;font-size:.92rem}
+.wi-tag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--sunk);font-family:var(--f-ui);font-size:.72rem;font-weight:700;color:var(--ink)}
+.or-wi{scroll-margin-top:96px}
+.wi-banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin:16px 0 20px;padding:12px 16px;border-radius:10px;background:var(--sunk)}
 .ma-modal-scrim{position:fixed;inset:0;background:rgba(10,12,30,.45);z-index:90}
 .ma-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:91;width:min(480px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 60px rgba(10,20,40,.3);padding:24px 24px 20px}
 .ma-modal[hidden],.ma-modal-scrim[hidden]{display:none!important}
@@ -2113,9 +2125,29 @@ function makePDF(r){
    sections from the same answers. Rules live in config.js (optionsReport).
    ====================================================== */
 const ORC=CFG.optionsReport;
-const OR_STATE={weights:null,tab:0,advOpen:false};
+const OR_STATE={weights:null,tab:0,advOpen:false,whatIf:null,whatIfFor:null,wiOpen:false};
 const LV_CHIP={Low:["ok","✓","Low risk"],Moderate:["warn","▲","Moderate risk"],High:["bad","✕","High risk"]};
-function orAnswers(){if(allComplete())return adv.answers;const r=loadLast();return r&&r.answers?r.answers:null}
+function orBase(){if(allComplete())return adv.answers;const r=loadLast();return r&&r.answers?r.answers:null}
+/* "Try different answers": a what-if copy of the answers, used only on this page; never saved */
+function orAnswers(){const b=orBase();if(!b)return null;
+  if(OR_STATE.whatIf&&OR_STATE.whatIfFor!==JSON.stringify(b))OR_STATE.whatIf=null; /* the real answers changed: drop the what-if */
+  return OR_STATE.whatIf||b}
+function wiValue(q,a){const P=ENG.prepare(a);return q.multi?(Array.isArray(P[q.id])?P[q.id]:[P[q.id]]):P[q.id]}
+function wiChanged(q){const b=orBase();if(!b||!OR_STATE.whatIf)return false;return JSON.stringify(wiValue(q,b))!==JSON.stringify(wiValue(q,OR_STATE.whatIf))}
+function wiSet(q,v){const b=orBase();const a=JSON.parse(JSON.stringify(OR_STATE.whatIf||ENG.normalize(b)));
+  if(q.type==="branch"){ENG.allBranchFields(q).forEach(f=>delete a[f]);delete a[q.id];Object.assign(a,JSON.parse(JSON.stringify(q.legacy[v])))}
+  else a[q.id]=v;
+  OR_STATE.whatIf=a;OR_STATE.whatIfFor=JSON.stringify(b);
+  if(!QUESTIONS.some(wiChanged))OR_STATE.whatIf=null}
+function whatIfHTML(){const a=orAnswers(),secs=CFG.assessment.sections;
+  const field=q=>{const v=wiValue(q,a),ch=wiChanged(q),lab=`wi-${q.id}`;
+    const opts=q.type==="branch"?q.options.filter(o=>q.legacy&&q.legacy[o.v]):q.options.filter(o=>!o.hidden);
+    const ctl=q.multi?`<div class="wi-checks" role="group" aria-labelledby="${lab}-l">${opts.map(o=>`<label><input type="checkbox" data-wi="${q.id}" value="${o.v}" ${v.includes(o.v)?"checked":""}><span>${esc(o.label)}</span></label>`).join("")}</div>`
+      :`<select class="field" id="${lab}" data-wi="${q.id}">${opts.map(o=>`<option value="${o.v}" ${v===o.v?"selected":""}>${esc(o.label)}</option>`).join("")}</select>`;
+    return `<div class="wi-q${ch?" changed":""}" data-wiq="${q.id}"><${q.multi?"p":"label"} class="wi-l" id="${lab}-l"${q.multi?"":` for="${lab}"`}>${esc(q.text)}${ch?` <span class="wi-tag">Changed</span>`:""}</${q.multi?"p":"label"}>${ctl}</div>`};
+  return secs.map(s=>`<fieldset class="wi-sec"><legend>${esc(s.title)}</legend>${s.qs.map(field).join("")}</fieldset>`).join("")}
+function wiBannerHTML(){const n=QUESTIONS.filter(wiChanged).length;
+  return n?`<div class="wi-banner" role="status"><span><b>What-if view:</b> ${n} answer${n>1?"s":""} changed. Your assessment and saved result are unchanged.</span><button type="button" class="btn sm" data-wi-reset>Back to my answers</button></div>`:""}
 function orWeights(){return OR_STATE.weights||ENG.defaultWeights()}
 function orChanged(){const d=ENG.defaultWeights(),w=orWeights();return Object.keys(d).some(k=>d[k]!==w[k])}
 function chip(level){const [c,ic,t]=LV_CHIP[level];return `<span class="rchip ${c}"><span class="ic" aria-hidden="true">${ic}</span>${t}</span>`}
@@ -2123,13 +2155,12 @@ function orNum(o){return ORC.options.findIndex(x=>x.id===o.id)+1}
 function barHTML(o){const c=LV_CHIP[o.band][0];return `<div class="or-bar" role="img" aria-label="Overall: ${o.band} risk"><span class="track"><i class="${c}" style="width:${Math.max(4,o.index)}%"></i></span><span class="bl">${o.band} overall</span></div>`}
 function orBottomHTML(R){
   const b=R.bottom,others=[];
-  const why=b.noAI?(R.options.filter(o=>!o.noAI).every(o=>o.blocked)?"Every way of using AI is blocked by an automatic stop from your answers.":"Every way of using AI that isn’t blocked carries high overall risk for this motion.")
-    :`It’s the lowest-risk way to get help from AI on this motion (${b.band.toLowerCase()} overall risk).`;
-  if(R.runnerUp)others.push(`<li><b>Runner-up:</b> ${esc(R.runnerUp.name)} <span class="muted">(${R.runnerUp.band} overall risk)</span></li>`);
+  /* only explain the pick when it is "Draft without AI"; blocked options always say why */
+  const why=b.noAI?(R.options.filter(o=>!o.noAI).every(o=>o.blocked)?"Every way of using AI is blocked by an automatic stop from your answers.":"Every way of using AI that isn’t blocked carries high overall risk for this motion."):"";
   R.blocked.forEach(o=>others.push(`<li class="or-blk"><span class="lock-ic" aria-hidden="true"></span><span><b>${esc(o.name)}</b> is blocked because: ${esc(o.blockedBy.join(" "))}</span></li>`));
-  return `<p class="or-lead">${esc(ORC.bottomLine)}</p>
+  return `<p class="or-lead">${OR_STATE.whatIf?"With your what-if answers, the safest useful option would be:":esc(ORC.bottomLine)}</p>
     <div class="or-best lv-${LV_CHIP[b.band][0]}"><span class="or-num">Option ${orNum(b)}</span><strong>${esc(b.name)}</strong><p>${esc(b.desc)}</p>${barHTML(b)}</div>
-    <p class="or-why">${esc(why)}</p>${others.length?`<ul class="or-also">${others.join("")}</ul>`:""}`}
+    ${why?`<p class="or-why">${esc(why)}</p>`:""}${others.length?`<ul class="or-also">${others.join("")}</ul>`:""}`}
 function renderOR(){
   const root=$("#cmp-root");if(!root)return;
   const a=orAnswers();
@@ -2145,11 +2176,15 @@ function renderOR(){
       ${o.blocked?`<p class="or-bb"><span class="lock-ic" aria-hidden="true"></span>Blocked because: ${esc(o.blockedBy.join(" "))}</p>`:
       `<ul class="or-mrows">${secs.map(s=>{const c=o.cells.find(x=>x.id===s.id);return `<li><span>${esc(s.title)}</span><button type="button" class="or-cell" data-oc="${o.id}" data-os="${s.id}" aria-label="${esc(s.title)}: ${c.level} risk. Show details.">${chip(c.level)}</button></li>`}).join("")}</ul><div data-orbar-m="${o.id}">${barHTML(o)}</div>`}</div>`).join("");
   const W=ORC.weightRange,w=orWeights();
-  root.innerHTML=`<div class="or-nav no-print"><button type="button" class="btn" id="or-back">← Back to my result</button><button type="button" class="btn primary" id="or-pdf">Download options report (PDF)</button><button type="button" class="btn" id="or-edit">Edit answers</button></div>
-    <section class="or-bottom" id="or-bottom" aria-live="polite">${orBottomHTML(R)}</section>
+  root.innerHTML=`<div class="or-nav no-print"><button type="button" class="btn" id="or-back">← Back to my result</button><button type="button" class="btn primary" id="or-pdf">Download options report (PDF)</button><button type="button" class="btn" id="or-edit">Edit answers</button><button type="button" class="btn" id="or-try">Try different answers ↓</button></div>
+    <div id="or-wi-banner">${wiBannerHTML()}</div>
+    <div id="or-report"><section class="or-bottom" id="or-bottom" aria-live="polite">${orBottomHTML(R)}</section>
     <div class="howto"><h2>How to read this</h2><ul><li>Rows are the risk areas from your assessment.</li><li>Columns are ways you could use AI.</li><li>Lower risk is better; click any cell for details.</li></ul></div>
     <div class="or-grid-wrap"><table class="or-grid"><caption class="sr-only">Options Report: risk level for each way of using AI in each risk area</caption><thead><tr>${head}</tr></thead><tbody>${rows}</tbody><tfoot>${foot}</tfoot></table></div>
-    <div class="or-mobile"><div class="or-tabs" role="tablist" aria-label="Options">${tabs}</div>${panels}</div>
+    <div class="or-mobile"><div class="or-tabs" role="tablist" aria-label="Options">${tabs}</div>${panels}</div></div>
+    <details class="or-wi" id="or-wi" ${OR_STATE.wiOpen?"open":""}><summary>Try different answers</summary>
+      <p class="card-sub">See how your options would change if you did something differently. Changes here only affect this page; your assessment and saved result stay as they are.</p>
+      <div id="or-wi-form">${whatIfHTML()}</div><button type="button" class="btn sm" data-wi-reset ${OR_STATE.whatIf?"":"hidden"}>Back to my answers</button></details>
     <details class="or-adv" id="or-adv" ${OR_STATE.advOpen?"open":""}><summary>Adjust what matters to you</summary>
       <p class="card-sub">Each risk area counts as much as it did in your assessment: 1.5× for Confidentiality and Verification, 1× for the rest. Change how much each area counts and the overall bars and bottom line update. The rating in each cell doesn’t change.</p>
       ${secs.map(s=>`<div class="or-w"><label for="orw-${s.id}">${esc(s.title)}</label><input type="range" id="orw-${s.id}" data-orw="${s.id}" min="${W.min}" max="${W.max}" step="${W.step}" value="${w[s.id]}"><output id="orwo-${s.id}" for="orw-${s.id}">${w[s.id]}×</output></div>`).join("")}
@@ -2157,6 +2192,9 @@ function renderOR(){
     <p class="rp-disc">This report is general information to support your professional judgment, not legal advice. You remain responsible for the accuracy of every filing.</p>`;
   bindOR();
 }
+function wiRefresh(){const keep=document.activeElement&&document.activeElement.dataset?document.activeElement:null;
+  const y=window.scrollY;renderOR();window.scrollTo(0,y);
+  if(keep&&keep.dataset.wi){const el=keep.type==="checkbox"?$(`[data-wi="${keep.dataset.wi}"][value="${keep.value}"]`):$(`[data-wi="${keep.dataset.wi}"]`);if(el)el.focus({preventScroll:true})}}
 function paintOR(){ /* live update after a weight change, without redrawing the sliders */
   const a=orAnswers();if(!a)return;const R=ENG.optionsReport(a,orWeights());
   $("#or-bottom").innerHTML=orBottomHTML(R);
@@ -2170,6 +2208,12 @@ function bindOR(){
   $$("[data-orw]",root).forEach(r=>r.addEventListener("input",()=>{const w=Object.assign({},orWeights());w[r.dataset.orw]=+r.value;OR_STATE.weights=w;$("#orwo-"+r.dataset.orw).textContent=r.value+"×";paintOR()}));
   $("#or-reset").addEventListener("click",()=>{OR_STATE.weights=null;renderOR();const d=$("#or-adv");if(d)d.open=true;toast("Weights reset to the assessment’s defaults.")});
   $("#or-adv").addEventListener("toggle",e=>{OR_STATE.advOpen=e.target.open});
+  $("#or-wi").addEventListener("toggle",e=>{OR_STATE.wiOpen=e.target.open});
+  $("#or-try").addEventListener("click",()=>{const d=$("#or-wi");d.open=true;d.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});const f=$("[data-wi]",d);if(f)f.focus({preventScroll:true})});
+  $$("[data-wi]",root).forEach(el=>el.addEventListener("change",()=>{const q=QUESTIONS.find(x=>x.id===el.dataset.wi);
+    if(q.multi){const v=$$(`[data-wi="${q.id}"]:checked`,root).map(i=>i.value);if(!v.length){el.checked=true;toast("Choose at least one.");return}wiSet(q,v)}else wiSet(q,el.value);
+    wiRefresh();const n=QUESTIONS.filter(wiChanged).length;const live=$("#or-bottom");if(live)live.setAttribute("aria-label",n?`What-if view, ${n} changed`:"Your answers")}));
+  $$("[data-wi-reset]",root).forEach(b=>b.addEventListener("click",()=>{OR_STATE.whatIf=null;wiRefresh();toast("Back to your answers.")}));
   const tabs=$$("[data-ortab]",root);
   const sel=i=>{OR_STATE.tab=i;tabs.forEach((t,j)=>{t.setAttribute("aria-selected",String(j===i));t.tabIndex=j===i?0:-1;$("#orp-"+j).hidden=j!==i})};
   tabs.forEach((t,i)=>{t.addEventListener("click",()=>sel(i));t.addEventListener("keydown",e=>{const n=tabs.length;let j=null;if(e.key==="ArrowRight")j=(i+1)%n;else if(e.key==="ArrowLeft")j=(i-1+n)%n;else if(e.key==="Home")j=0;else if(e.key==="End")j=n-1;if(j!=null){e.preventDefault();sel(j);tabs[j].focus()}})});
@@ -2207,7 +2251,7 @@ function orPDF(){
   const clean=s=>String(s).replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/[–—]/g,"-").replace(/[→←✓▲✕]/g,"");
   const need=h=>{if(y+h>H-M){doc.addPage();y=M}};
   const text=(s,o={})=>{doc.setFont("helvetica",o.bold?"bold":"normal");doc.setFontSize(o.size||10);doc.setTextColor(...(o.color||ink));doc.splitTextToSize(clean(s),o.w||(W-2*M-(o.x||0))).forEach(l=>{need((o.size||10)*1.4);doc.text(l,M+(o.x||0),y+(o.size||10));y+=(o.size||10)*1.4});y+=o.gap==null?3:o.gap};
-  text("MOTION ADVISOR",{size:9,bold:true,color:mute,gap:1});text("Options Report",{size:20,bold:true,gap:2});
+  text("MOTION ADVISOR",{size:9,bold:true,color:mute,gap:1});text("Options Report",{size:20,bold:true,gap:2});{const n=QUESTIONS.filter(wiChanged).length;if(n)text("What-if view: "+n+" answer"+(n>1?"s":"")+" changed from your assessment ("+QUESTIONS.filter(wiChanged).map(q=>q.text).join(" / ")+"). Your assessment result is unchanged.",{size:10,bold:true,gap:4})}
   text("Generated "+new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})+(orChanged()?" · Weights adjusted by you":""),{size:9,color:mute,gap:10});
   text(ORC.bottomLine,{size:11,gap:2});text("Option "+orNum(R.bottom)+": "+R.bottom.name+" ("+R.bottom.band+" overall risk)",{size:14,bold:true,color:col[R.bottom.band],gap:2});text(R.bottom.desc,{size:10,gap:6});
   if(R.runnerUp)text("Runner-up: "+R.runnerUp.name+" ("+R.runnerUp.band+" overall risk)",{size:10});
