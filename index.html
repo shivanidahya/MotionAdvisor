@@ -1093,6 +1093,7 @@ table.or-grid{width:100%;border-collapse:collapse;font-size:.92rem}
 .ct-panel .vt-wrap{margin:0}
 .ct-panel .vt thead th{position:sticky;top:0;z-index:1}
 @media (max-width:760px){.ct-panel{max-height:none;overflow:visible}}
+.vlinks a.src-link{font-weight:700}
 .gs-steps{margin:10px 0 0;padding-left:1.3em;display:grid;gap:6px;color:var(--ink-2)}
 .ma-modal-scrim{position:fixed;inset:0;background:rgba(10,12,30,.45);z-index:90}
 .ma-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:91;width:min(480px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 24px 60px rgba(10,20,40,.3);padding:24px 24px 20px}
@@ -2349,6 +2350,13 @@ function findCaseName(text,idx){
   n=n.replace(/,\s*\d{1,4}\s+\S.*$/,""); /* "X v. Y, 451 Mass. 623" (parallel cite) -> "X v. Y" */
   return n.replace(STRIP_LEAD,"").trim();
 }
+/* the statute's own page: Massachusetts General Laws on the Legislature's site; the U.S. Code on Cornell LII */
+function statuteSource(kind,s){
+  const sec=String(kind==="Mass. statute"?s[3]:s[4]||"").replace(/\(.*$/,"").replace(/[.\-]+$/,"");
+  if(!sec)return null;
+  if(kind==="Mass. statute")return {label:"MA Legislature",url:`https://malegislature.gov/Laws/GeneralLaws/Chapter${encodeURIComponent(s[1].toUpperCase())}/Section${encodeURIComponent(sec.toUpperCase())}`,aria:`Massachusetts General Laws chapter ${s[1]}, section ${sec}, on the Massachusetts Legislature website (opens in new tab)`};
+  if(kind==="Federal statute")return {label:"U.S. Code (Cornell LII)",url:`https://www.law.cornell.edu/uscode/text/${encodeURIComponent(s[1])}/${encodeURIComponent(sec)}`,aria:`${s[1]} U.S.C. § ${sec} on Cornell's Legal Information Institute (opens in new tab)`};
+  return null}
 function parseCitations(text){
   const out=[];let m,prevEnd=-1;CASE_RE.lastIndex=0;
   while((m=CASE_RE.exec(text))){
@@ -2367,7 +2375,7 @@ function parseCitations(text){
   // statutes
   const statRes=[[/\b(\d{1,2})\s+U\.?\s?S\.?\s?C\.?\s?(A\.?)?\s*(§{1,2})\s*([\w.\-()]+?)(?=[\s,;.)]|$)/g,"Federal statute"],
    [/\b(?:G\.\s?L\.|M\.\s?G\.\s?L\.?\s?A?\.?)\s*c\.\s*(\d+[A-Z]?)\s*,?\s*(§{1,2})\s*([\w.\-]+?)(?=[\s,;.)]|$)/g,"Mass. statute"]];
-  statRes.forEach(([re,kind])=>{let s;re.lastIndex=0;while((s=re.exec(text))){out.push({kind,name:"",cite:s[0].trim(),raw:s[0],start:s.index,end:s.index+s[0].length,query:`"${s[0].trim()}"`})}});
+  statRes.forEach(([re,kind])=>{let s;re.lastIndex=0;while((s=re.exec(text))){out.push({kind,name:"",cite:s[0].trim(),raw:s[0],start:s.index,end:s.index+s[0].length,query:`"${s[0].trim()}"`,src:statuteSource(kind,s)})}});
   const ruleRe=/\b(Fed\.\s?R\.\s?(?:Civ|Crim|Evid|App)\.\s?(?:P\.\s?)?\d+(?:\([a-zA-Z0-9]+\))*|Mass\.\s?R\.\s?(?:Civ|Crim|App)\.\s?P\.\s?\d+(?:\([a-zA-Z0-9]+\))*|Superior Court Rule \d+[A-Z]?|SJC Rule \d:\d+|Local Rule \d+(?:\.\d+)*)/g;
   let r;ruleRe.lastIndex=0;while((r=ruleRe.exec(text))){out.push({kind:"Rule",name:"",cite:r[0],raw:r[0],start:r.index,end:r.index+r[0].length,query:`"${r[0]}"`})}
   out.sort((a,b)=>a.start-b.start);
@@ -2395,7 +2403,7 @@ function runCites(){
   $("#cite-track").innerHTML=trackerHTML(cases)||'<p class="muted">No cases to track. Statutes and rules are listed under Citations.</p>';
   list.innerHTML=res.items.map((it,i)=>{const q=encodeURIComponent(it.query),k=kindCls(it.kind);
     return `<div class="cite-item ${k}"><div class="ch"><div style="min-width:0"><div class="ct">${esc(it.cite)}</div>${it.name?`<div class="cn">${esc(it.name)}</div>`:""}</div><span class="pill ${k}">${esc(it.kind)}</span></div>
-    <div class="vlinks"><a href="https://1.next.westlaw.com/Link/Document/FullText?findType=Y&cite=${encodeURIComponent(it.query.replace(/"/g,""))}" target="_blank" rel="noopener">Westlaw ↗</a><a href="https://plus.lexis.com/" target="_blank" rel="noopener" data-copy="${esc(it.query.replace(/"/g,""))}">Lexis+ AI ↗</a><a href="https://www.courtlistener.com/?q=${q}" target="_blank" rel="noopener">CourtListener ↗</a></div>
+    <div class="vlinks">${it.src?`<a class="src-link" href="${esc(it.src.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(it.src.aria)}">${esc(it.src.label)} ↗</a>`:""}<a href="https://1.next.westlaw.com/Link/Document/FullText?findType=Y&cite=${encodeURIComponent(it.query.replace(/"/g,""))}" target="_blank" rel="noopener">Westlaw ↗</a><a href="https://plus.lexis.com/" target="_blank" rel="noopener" data-copy="${esc(it.query.replace(/"/g,""))}">Lexis+ AI ↗</a>${it.kind==="Case"?`<a href="https://www.courtlistener.com/?q=${q}" target="_blank" rel="noopener">CourtListener ↗</a>`:""}</div>
     ${it.kind==="Case"?`<div class="vchecks">${VCHECKS.map((v,j)=>`<label><input type="checkbox" id="vc-${i}-${j}" data-vk="${esc(it.gk+"|"+j)}" ${verifyState[it.gk+"|"+j]?"checked":""}>${v}</label>`).join("")}</div>`:""}</div>`}).join("");
   $$("[data-copy]").forEach(a=>a.addEventListener("click",()=>{const c=a.dataset.copy;const fail=()=>toast("Paste this citation into Lexis+ AI: "+c);try{navigator.clipboard?navigator.clipboard.writeText(c).then(()=>toast("Copied “"+c+"”. Paste it into Lexis+ AI."),fail):fail()}catch(e){fail()}}));
   bindVerify(cases);
