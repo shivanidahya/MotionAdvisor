@@ -477,6 +477,7 @@ header.top::after,footer.site::before{content:"";display:block;height:8px;backgr
 .vt td.vt-c{min-width:170px}
 .vt td.vt-c b{display:block;font-weight:600;font-size:.88rem;color:var(--ink)}
 .vt td.vt-c span{display:block;margin-top:2px;font-family:var(--f-mono);color:var(--muted);font-size:.74rem}
+.vt td.vt-c span.vt-n{font-family:var(--f-ui);font-style:italic}
 .vt input{width:18px;height:18px;accent-color:var(--ok);cursor:pointer}
 .vt .vt-s{font-family:var(--f-ui);font-weight:600;font-size:.78rem;white-space:nowrap}
 .vt .vt-s.done{color:var(--ok)}.vt .vt-s.open{color:var(--muted)}
@@ -2332,7 +2333,7 @@ Courts have sanctioned counsel for fabricated authority. Park v. Kim, 91 F.4th 6
 The claim also arises under M.G.L. c. 93A, § 9 and 15 U.S.C. § 1692k. See Fed. R. Civ. P. 12(b)(6); Mass. R. Civ. P. 12(b)(6).
 
 Summary judgment is proper where no genuine dispute of material fact exists. Celotex Corp. v. Catrett, 477 U.S. 317, 322 (1986); see also Kourouvacilis v. General Motors Corp., 410 Mass. 706, 716 (1991). Defendant relies on Jones v. Acme Corp., 512 F.3rd 101, 104 (1st Cir. 2029).`;
-const STRIP_LEAD=/^(?:\s*(?:See also|See, e\.g\.,|See generally|See|Cf\.|But see|Accord|Compare|In|As in|Under|Defendant relies on|Plaintiff relies on|relies on|citing|quoting)\s+)+/;
+const STRIP_LEAD=/^(?:\s*(?:See also|See, e\.g\.,|See generally|See|Cf\.|But see|Accord|Compare|In(?! re\b)|As in|Under|Defendant relies on|Plaintiff relies on|relies on|citing|quoting|Again,?|Also,?|Later:?)\s+)+/;
 function findCaseName(text,idx){
   let win=text.slice(Math.max(0,idx-160),idx);
   const cut=Math.max(win.lastIndexOf(";"),win.lastIndexOf("\n"),win.lastIndexOf("("),win.lastIndexOf(")"));
@@ -2341,21 +2342,27 @@ function findCaseName(text,idx){
   if(!m)return "";
   let n=m[1];
   // drop leading sentence fragments ending in ". " before the first capital that starts "X v."
-  const parts=n.split(/(?<=[a-z]{2}\.)\s+(?=[A-Z])/); if(parts.length>1)n=parts[parts.length-1];
+  /* split only after a sentence ending in a lowercase word ("governs. Bell"), not after abbreviations ("Atl. Corp.") */
+  const parts=n.split(/(?<=(?:^|\s)[a-z][a-z'\-]*[a-z][.:])\s+(?=[A-Z])/); if(parts.length>1)n=parts[parts.length-1];
+  /* a lead-in ending in a comma ("Again, Smith v. Jones") */
+  const vi=n.search(/\sv\.\s/);if(vi>0){const left=n.slice(0,vi),c=left.lastIndexOf(", ");if(c>=0&&!/^(Inc|LLC|Ltd|Co|Corp|L\.P|P\.C|N\.A)\b/.test(left.slice(c+2)))n=n.slice(c+2)}
+  n=n.replace(/,\s*\d{1,4}\s+\S.*$/,""); /* "X v. Y, 451 Mass. 623" (parallel cite) -> "X v. Y" */
   return n.replace(STRIP_LEAD,"").trim();
 }
 function parseCitations(text){
-  const out=[];let m;CASE_RE.lastIndex=0;
+  const out=[];let m,prevEnd=-1;CASE_RE.lastIndex=0;
   while((m=CASE_RE.exec(text))){
     const [full,vol,repRaw,page]=m; const rep=REP_CANON[repRaw.replace(/\s+/g," ")]||REP_CANON[repRaw]||(Object.keys(REP_CANON).find(k=>k.replace(/\s/g,"")===repRaw.replace(/\s/g,"")));
     const canon=REP_CANON[rep]||rep;
     let end=m.index+full.length; const rest=text.slice(end);
-    const pin=rest.match(/^,\s*(\d[\d\-–,\s]*?\d|\d)(?=\s*\(|\s*[.;]|\s*$)/); let after=rest;
+    const pin=rest.match(/^,\s*(\d[\d\-–,\s]*?\d|\d)(?=\s*\(|\s*[.;]|\s*$|,\s*\d{1,4}\s+[A-Z])/); let after=rest;
     if(pin){after=rest.slice(pin[0].length);end+=pin[0].length}
     const par=after.match(/^\s*\(([^)]{0,60})\)/); if(par)end+=par[0].length;
     const name=findCaseName(text,m.index);
     const start=name?text.lastIndexOf(name,m.index):m.index;
-    out.push({kind:"Case",name,cite:text.slice(m.index,end).replace(/\s+/g," ").trim(),raw:text.slice(start,end),start,end,query:`"${vol} ${canon} ${page}"`});
+    const parallel=prevEnd>=0&&/^\s*,\s*$/.test(text.slice(prevEnd,m.index)); /* "451 Mass. 623, 885 N.E.2d 819" */
+    out.push({kind:"Case",name,cite:text.slice(m.index,end).replace(/\s+/g," ").trim(),raw:text.slice(start,end),start,end,query:`"${vol} ${canon} ${page}"`,key:vol+"|"+canon+"|"+page,parallel});
+    prevEnd=end;
   }
   // statutes
   const statRes=[[/\b(\d{1,2})\s+U\.?\s?S\.?\s?C\.?\s?(A\.?)?\s*(§{1,2})\s*([\w.\-()]+?)(?=[\s,;.)]|$)/g,"Federal statute"],
@@ -2373,8 +2380,8 @@ let lastParse=null;
 function runCites(){
   const text=$("#brief").value; const res=parseCitations(text); lastParse=res;
   /* the same citation repeated in the draft is tracked once */
-  const cases=res.items.filter(i=>i.kind==="Case").filter((c,k,arr)=>arr.findIndex(x=>x.cite===c.cite)===k),others=res.items.filter(i=>i.kind!=="Case").length;
-  const verified=cases.filter(c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j])).length;
+  const cases=groupCases(res.items),others=res.items.filter(i=>i.kind!=="Case").length;
+  const verified=cases.filter(c=>VCHECKS.every((v,j)=>verifyState[c.gk+"|"+j])).length;
   $("#cite-summary").innerHTML=`<div><b>${res.items.length}</b><span>Citations found</span></div><div><b>${cases.length}</b><span>Cases</span></div><div><b>${others}</b><span>Statutes and rules</span></div><div><b style="color:var(--ok)" id="cite-verified">${verified}/${cases.length}</b><span>Cases verified</span></div>`;
   // highlight
   let html="",pos=0;
@@ -2383,13 +2390,13 @@ function runCites(){
   html+=esc(text.slice(pos));
   $("#cite-hl").innerHTML=html||'<span class="muted">Nothing to show yet.</span>';
   const list=$("#cite-list");
-  $(".ct-tabs").hidden=!res.items.length;$("#ctn-list").textContent=res.items.length;$("#ctn-track").textContent=cases.length?cases.filter(c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j])).length+"/"+cases.length:"";
+  $(".ct-tabs").hidden=!res.items.length;$("#ctn-list").textContent=res.items.length;$("#ctn-track").textContent=cases.length?cases.filter(c=>VCHECKS.every((v,j)=>verifyState[c.gk+"|"+j])).length+"/"+cases.length:"";
   if(!res.items.length){$("#cite-track").innerHTML="";list.innerHTML='<div class="card muted">No citations found. Paste a draft with case, statute or rule citations and select Find citations.</div>';return}
   $("#cite-track").innerHTML=trackerHTML(cases)||'<p class="muted">No cases to track. Statutes and rules are listed under Citations.</p>';
   list.innerHTML=res.items.map((it,i)=>{const q=encodeURIComponent(it.query),k=kindCls(it.kind);
     return `<div class="cite-item ${k}"><div class="ch"><div style="min-width:0"><div class="ct">${esc(it.cite)}</div>${it.name?`<div class="cn">${esc(it.name)}</div>`:""}</div><span class="pill ${k}">${esc(it.kind)}</span></div>
     <div class="vlinks"><a href="https://1.next.westlaw.com/Link/Document/FullText?findType=Y&cite=${encodeURIComponent(it.query.replace(/"/g,""))}" target="_blank" rel="noopener">Westlaw ↗</a><a href="https://plus.lexis.com/" target="_blank" rel="noopener" data-copy="${esc(it.query.replace(/"/g,""))}">Lexis+ AI ↗</a><a href="https://www.courtlistener.com/?q=${q}" target="_blank" rel="noopener">CourtListener ↗</a></div>
-    ${it.kind==="Case"?`<div class="vchecks">${VCHECKS.map((v,j)=>`<label><input type="checkbox" id="vc-${i}-${j}" data-vk="${esc(it.cite+"|"+j)}" ${verifyState[it.cite+"|"+j]?"checked":""}>${v}</label>`).join("")}</div>`:""}</div>`}).join("");
+    ${it.kind==="Case"?`<div class="vchecks">${VCHECKS.map((v,j)=>`<label><input type="checkbox" id="vc-${i}-${j}" data-vk="${esc(it.gk+"|"+j)}" ${verifyState[it.gk+"|"+j]?"checked":""}>${v}</label>`).join("")}</div>`:""}</div>`}).join("");
   $$("[data-copy]").forEach(a=>a.addEventListener("click",()=>{const c=a.dataset.copy;const fail=()=>toast("Paste this citation into Lexis+ AI: "+c);try{navigator.clipboard?navigator.clipboard.writeText(c).then(()=>toast("Copied “"+c+"”. Paste it into Lexis+ AI."),fail):fail()}catch(e){fail()}}));
   bindVerify(cases);
 }
@@ -2397,30 +2404,48 @@ function runCites(){
 function initCiteTabs(){const tabs=$$(".ct-tabs [role=tab]");
   const sel=(t,f)=>{tabs.forEach(b=>{const on=b===t;b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1;$("#"+b.getAttribute("aria-controls")).hidden=!on});if(f)t.focus()};
   tabs.forEach((b,i)=>{b.addEventListener("click",()=>sel(b));b.addEventListener("keydown",e=>{let n=null;if(e.key==="ArrowRight")n=(i+1)%tabs.length;else if(e.key==="ArrowLeft")n=(i-1+tabs.length)%tabs.length;else if(e.key==="Home")n=0;else if(e.key==="End")n=tabs.length-1;if(n!==null){e.preventDefault();sel(tabs[n],true)}})})}
+/* One tracker row per case: the same case cited again (any pincite), its parallel citations, and
+   citations with the same case name are grouped. Each case item gets it.gk (its group key). */
+function groupCases(items){
+  /* names match on the first word of the first party plus the second party ("Bell Atl. Corp. v. Twombly" = "Bell Atlantic Corp. v. Twombly") */
+  const clean=t=>t.toLowerCase().replace(/\b(inc|co|corp|corporation|company|llc|ltd|the)\b\.?/g,"").replace(/[^a-z0-9]/g,"");
+  const norm=n=>{n=String(n||"");const m=n.split(/\sv\.\s/);if(m.length<2)return clean(n);return clean(m[0].split(/\s+/)[0])+"|"+clean(m.slice(1).join(" v. "))};
+  const groups=[];let last=null;
+  items.forEach(it=>{if(it.kind!=="Case")return;
+    const nm=norm(it.name);
+    let g=(it.parallel&&last)||groups.find(x=>x.keys.includes(it.key))||(nm&&groups.find(x=>x.names.includes(nm)));
+    if(!g){g={gk:"case:"+it.key,keys:[],names:[],cites:[],name:"",count:0};groups.push(g)}
+    if(!g.keys.includes(it.key)){g.keys.push(it.key);g.cites.push(it.cite)}
+    if(nm&&!g.names.includes(nm))g.names.push(nm);
+    if(!g.name&&it.name)g.name=it.name;
+    g.count++;it.gk=g.gk;last=g});
+  return groups.map(g=>({gk:g.gk,name:g.name,cite:g.cites.join(" · "),count:g.count}))}
 function kindCls(k){return k==="Case"?"k-case":k==="Rule"?"k-rule":"k-stat"}
 /* the tracker: one row per case, one column per check; its boxes and the cards' boxes stay in sync */
 function trackerHTML(cases){
   if(!cases.length)return "";
-  const st=c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j]);
+  const st=c=>VCHECKS.every((v,j)=>verifyState[c.gk+"|"+j]);
   return `<div class="vt-wrap"><table class="vt"><caption class="sr-only">Verification tracker: checks done for each case</caption>
     <thead><tr><th scope="col">Case</th>${VCHECKS.map(v=>`<th scope="col">${esc(v)}</th>`).join("")}<th scope="col">Status</th></tr></thead>
-    <tbody>${cases.map(c=>`<tr><td class="vt-c">${c.name?`<b>${esc(c.name)}</b><span>${esc(c.cite)}</span>`:`<b>${esc(c.cite)}</b>`}</td>${VCHECKS.map((v,j)=>`<td><input type="checkbox" data-vk="${esc(c.cite+"|"+j)}" aria-label="${esc(v)}: ${esc(c.name||c.cite)}" ${verifyState[c.cite+"|"+j]?"checked":""}></td>`).join("")}<td class="vt-s ${st(c)?"done":"open"}" data-vs="${esc(c.cite)}">${st(c)?"✓ Verified":"Open"}</td></tr>`).join("")}</tbody>
-    <tfoot><tr><td>Done</td>${VCHECKS.map((v,j)=>`<td data-vcount="${j}">${cases.filter(c=>verifyState[c.cite+"|"+j]).length}/${cases.length}</td>`).join("")}<td data-vcount="all">${cases.filter(st).length}/${cases.length}</td></tr></tfoot></table></div>`}
+    <tbody>${cases.map(c=>`<tr><td class="vt-c">${c.name?`<b>${esc(c.name)}</b><span>${esc(c.cite)}</span>`:`<b>${esc(c.cite)}</b>`}${c.count>1?`<span class="vt-n">Cited ${c.count} times</span>`:""}</td>${VCHECKS.map((v,j)=>`<td><input type="checkbox" data-vk="${esc(c.gk+"|"+j)}" aria-label="${esc(v)}: ${esc(c.name||c.cite)}" ${verifyState[c.gk+"|"+j]?"checked":""}></td>`).join("")}<td class="vt-s ${st(c)?"done":"open"}" data-vs="${esc(c.gk)}">${st(c)?"✓ Verified":"Open"}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td>Done</td>${VCHECKS.map((v,j)=>`<td data-vcount="${j}">${cases.filter(c=>verifyState[c.gk+"|"+j]).length}/${cases.length}</td>`).join("")}<td data-vcount="all">${cases.filter(st).length}/${cases.length}</td></tr></tfoot></table></div>`}
 function bindVerify(cases){
-  const st=c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j]);
+  const st=c=>VCHECKS.every((v,j)=>verifyState[c.gk+"|"+j]);
   $$("[data-vk]").forEach(c=>c.addEventListener("change",()=>{const k=c.dataset.vk;verifyState[k]=c.checked;
     $$("[data-vk]").forEach(x=>{if(x.dataset.vk===k)x.checked=c.checked});
     const v=cases.filter(st).length;$("#cite-verified").textContent=v+"/"+cases.length;
-    VCHECKS.forEach((x,j)=>{const t=$(`[data-vcount="${j}"]`);if(t)t.textContent=cases.filter(cc=>verifyState[cc.cite+"|"+j]).length+"/"+cases.length});
+    VCHECKS.forEach((x,j)=>{const t=$(`[data-vcount="${j}"]`);if(t)t.textContent=cases.filter(cc=>verifyState[cc.gk+"|"+j]).length+"/"+cases.length});
     const a=$('[data-vcount="all"]');if(a)a.textContent=v+"/"+cases.length;const tn=$("#ctn-track");if(tn)tn.textContent=v+"/"+cases.length;
-    $$("[data-vs]").forEach(td=>{const cc=cases.find(x=>x.cite===td.dataset.vs);const d=cc&&st(cc);td.textContent=d?"✓ Verified":"Open";td.classList.toggle("done",!!d);td.classList.toggle("open",!d)})}))}
+    $$("[data-vs]").forEach(td=>{const cc=cases.find(x=>x.gk===td.dataset.vs);const d=cc&&st(cc);td.textContent=d?"✓ Verified":"Open";td.classList.toggle("done",!!d);td.classList.toggle("open",!d)})}))}
 /* ---- Optional checklist exports: Excel, Google Sheets, CSV ---- */
 const EXCELJS_URL="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
 function loadScript(src){return new Promise((res,rej)=>{if(window.ExcelJS)return res();const s=document.createElement("script");s.src=src;s.onload=()=>res();s.onerror=()=>rej(new Error("load"));document.head.appendChild(s)})}
 const CHECK_HEADS=["Pulled & read","Pincite supports","Quote matches","Good law"];
 const SHEET_HEADS=["#","Type","Case name","Citation",...CHECK_HEADS,"Verified"];
 function citeRows(){
-  const rows=lastParse.items.map(it=>({kind:it.kind,name:it.name||"",cite:it.cite,checks:VCHECKS.map((v,j)=>!!verifyState[it.cite+"|"+j]),checklist:it.kind==="Case"}));
+  const cases=groupCases(lastParse.items),seen=new Set();
+  const rows=cases.map(c=>({kind:"Case",name:c.name||"",cite:c.cite,checks:VCHECKS.map((v,j)=>!!verifyState[c.gk+"|"+j]),checklist:true}))
+    .concat(lastParse.items.filter(it=>it.kind!=="Case"&&!seen.has(it.cite)&&seen.add(it.cite)).map(it=>({kind:it.kind,name:"",cite:it.cite,checks:[false,false,false,false],checklist:false})));
   return rows;
 }
 function haveCites(){if(!lastParse||!lastParse.items.length){toast("Check a draft first.");return false}return true}
