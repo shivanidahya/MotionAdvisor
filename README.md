@@ -22,7 +22,7 @@ Live site: <https://motionadvisor.vercel.app>
   - a one-option-at-a-time card view on phones
   - a PDF download
 - **How this works**: a plain-language explanation of the scoring; its tables are drawn straight from `config.js`.
-- **Citation Toolkit**: finds citations in a pasted or uploaded draft, flags problems, and tracks verification.
+- **Citation Toolkit**: pulls out every case, statute and rule citation in a pasted or uploaded draft so you can verify each one, and tracks verification (no format checking).
 - **Redaction Game**: practice removing identifying and confidential information.
 - **Motions 101**: what a motion is, its parts, its life cycle, and a library of 20 motions. Each motion has a "Start an assessment" button that pre-fills Stage 1.
 - **Rules & Sources**: every rule, opinion and case the site relies on.

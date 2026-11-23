@@ -1208,7 +1208,7 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
     <div class="band-head"><div><div class="eyebrow">The portal</div><h2>Four tools, one drafting decision</h2></div><p>The assessment reports whether and how to use AI. The other three tools help you build the skills: a citation checklist, learn what information is sensitive information, and learn which motion you are drafting.</p></div>
     <div class="feature-grid">
       <a class="feature" href="#advisor" data-start-assessment><span class="eyebrow">Assessment</span><h3>Drafting Advisor</h3><p>Answer a few questions about your motion and AI tool, and get a report on the risks and how to use AI safely.</p><div class="tags"><span class="tag">7 questions</span><span class="tag">Risk level</span><span class="tag">Your Report</span></div><span class="go">Start assessment →</span></a>
-      <a class="feature" href="#citations"><span class="eyebrow">Verification</span><h3>Citation Toolkit</h3><p>Paste your draft, and Motion Advisor will list every case and statute for you to verify.</p><div class="tags"><span class="tag">Bluebook checks</span><span class="tag">Fabrication flags</span><span class="tag">CSV export</span></div><span class="go">Check a draft →</span></a>
+      <a class="feature" href="#citations"><span class="eyebrow">Verification</span><h3>Citation Toolkit</h3><p>Paste your draft, and Motion Advisor will list every case and statute for you to verify.</p><div class="tags"><span class="tag">Every citation listed</span><span class="tag">Verification checklist</span><span class="tag">Excel, Sheets, PDF</span></div><span class="go">Check a draft →</span></a>
       <a class="feature" href="#redaction"><span class="eyebrow">Confidentiality</span><h3>Redaction Game</h3><p>Practice blacking out information that shouldn’t be filed or entered into an AI tool.</p><div class="tags"><span class="tag">3 rounds</span><span class="tag">Scored</span><span class="tag">Rule explanations</span></div><span class="go">Play a round →</span></a>
       <a class="feature" href="#motions"><span class="eyebrow">Learn</span><h3>Motions 101</h3><p>Learn what your motion is, its parts and how it moves through court, with a library of common motions.</p><div class="tags"><span class="tag">20 motions</span><span class="tag">Federal &amp; Mass.</span><span class="tag">Quiz</span></div><span class="go">Open the library →</span></a>
     </div>
@@ -1285,18 +1285,14 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
 <!-- ============ CITATIONS ============ -->
 <section class="view" id="v-citations" hidden>
   <div class="wrap">
-    <div class="page-head"><div><div class="eyebrow">Citation Toolkit</div><h1>Check every authority before you sign</h1><p>Paste a draft. The checker finds case, statute and rule citations, flags format problems and citations already exposed as AI fabrications, and gives you a checklist for each one. It cannot confirm a case exists. Use the links to pull and read every opinion. Westlaw opens the cited document directly; Lexis+ AI opens with the citation copied so you can paste it. Both need your firm’s subscription sign-in.</p></div></div>
-    <div class="tabs" role="tablist">
-      <button class="on" data-ctab="check" role="tab">Citation checker</button>
-      <button data-ctab="ref" role="tab">Format reference</button>
-    </div>
+    <div class="page-head"><div><div class="eyebrow">Citation Toolkit</div><h1>Check every authority before you sign</h1><p>Paste a draft. The toolkit pulls out every case, statute and rule citation and gives you a checklist for each one, so you can verify them. It doesn’t check citation format, and it cannot confirm a case exists. Use the links to pull and read every opinion. Westlaw opens the cited document directly; Lexis+ AI opens with the citation copied so you can paste it. Both need your firm’s subscription sign-in.</p></div></div>
     <div id="ctab-check">
       <div class="cite-shell">
         <div>
           <label for="brief" class="eyebrow">Draft text: paste it, upload a file, or drop one here</label>
           <textarea id="brief" class="brief" spellcheck="false"></textarea>
           <div class="cite-toolbar">
-            <button class="btn primary" id="cite-run">Check citations</button>
+            <button class="btn primary" id="cite-run">Find citations</button>
             <button class="btn" id="brief-upload" type="button">Upload a file</button>
             <input type="file" id="brief-file" hidden accept=".docx,.pdf,.txt,.md,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
             <button class="btn" id="cite-sample">Load sample draft</button>
@@ -1304,35 +1300,19 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
           </div>
           <p class="muted" id="brief-file-status" style="font-size:.84rem;margin-top:8px">Upload a Word (.docx), PDF or text file. It’s read in your browser and never uploaded anywhere.</p>
           <div style="margin-top:18px">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:8px"><span class="eyebrow">Highlighted draft</span><span class="hl-legend" aria-label="Highlight colors"><span class="pill bad">Error</span><span class="pill warn">Warning</span><span class="pill ok">Format OK</span><span class="pill verify">Verify</span><span class="pill short">Short form</span></span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:8px"><span class="eyebrow">Highlighted draft</span><span class="hl-legend" aria-label="Highlight colors"><span class="pill verify">Citation</span><span class="pill short">Short form (Id.)</span></span></div>
             <div class="highlighted" id="cite-hl"></div>
           </div>
+          <div class="rulebox" style="margin-top:14px"><b>Four checks no software replaces.</b> Read the opinion. Confirm the pincite supports your sentence. Compare every quotation word for word. Run KeyCite or Shepard’s for negative history.</div>
         </div>
         <div>
           <div class="summary-strip" id="cite-summary"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-            <span class="eyebrow">Authorities found</span>
+            <span class="eyebrow">Citations to verify</span>
             <div class="export-row" role="group" aria-label="Download the citation checklist"><span class="muted" style="font-size:.82rem">Optional checklist:</span><button class="btn sm" id="cite-xlsx">Excel (.xlsx)</button><a class="btn sm" id="cite-gsheet" href="https://sheets.new" target="_blank" rel="noopener">Google Sheets ↗</a><button class="btn sm" id="cite-csv">CSV</button><button class="btn sm" id="cite-pdf">PDF</button></div>
           </div>
           <p class="rulebox" id="gsheet-hint" hidden style="margin:0 0 10px"></p><textarea id="gsheet-tsv" class="brief" hidden readonly aria-label="Rows to paste into Google Sheets" style="min-height:110px;margin-bottom:10px"></textarea>
           <div id="cite-list"></div>
-        </div>
-      </div>
-    </div>
-    <div id="ctab-ref" hidden>
-      <div class="res-grid" style="margin-top:0">
-        <div class="card"><h3>Common reporters</h3><div class="scroll-x"><table class="ref-table"><thead><tr><th>Correct form</th><th>Court</th><th>Common mistakes</th></tr></thead><tbody id="ref-reporters"></tbody></table></div></div>
-        <div class="card"><h3>Citation patterns</h3>
-          <div class="scroll-x"><table class="ref-table"><thead><tr><th>Type</th><th>Pattern</th></tr></thead><tbody>
-            <tr><td>U.S. Supreme Court</td><td class="mono">Ashcroft v. Iqbal, 556 U.S. 662, 678 (2009)</td></tr>
-            <tr><td>Federal circuit</td><td class="mono">Park v. Kim, 91 F.4th 610, 615 (2d Cir. 2024)</td></tr>
-            <tr><td>Federal district</td><td class="mono">Mata v. Avianca, Inc., 678 F. Supp. 3d 443 (S.D.N.Y. 2023)</td></tr>
-            <tr><td>Mass. SJC</td><td class="mono">Iannacchino v. Ford Motor Co., 451 Mass. 623, 636 (2008)</td></tr>
-            <tr><td>Mass. statute</td><td class="mono">G. L. c. 93A, § 9</td></tr>
-            <tr><td>Federal statute</td><td class="mono">28 U.S.C. § 1404(a)</td></tr>
-            <tr><td>Short form</td><td class="mono">Iqbal, 556 U.S. at 679. · Id. at 680.</td></tr>
-          </tbody></table></div>
-          <div class="rulebox"><b>Four checks no software replaces.</b> Read the opinion. Confirm the pincite supports your sentence. Compare every quotation word for word. Run KeyCite or Shepard’s for negative history.</div>
         </div>
       </div>
     </div>
@@ -1423,7 +1403,7 @@ mark.sc-g-sensitive{background:var(--verify-bg)}mark.sc-g-sensitive .sc-lbl,.sc-
         <div class="about-sec"><h2>What the platform does</h2><ul>
           <li><b>AI Drafting Advisor.</b> A short assessment that calculates the risks of using AI on your motion and gives you a report, downloadable as a PDF, with the risks identified and suggestions for using AI safely.</li>
           <li><b>Compare Your Options.</b> An optional, advanced page that weighs five ways of using AI side by side, filled in from your answers.</li>
-          <li><b>Citation Toolkit.</b> Finds case, statute and rule citations in a pasted or uploaded draft, flags format problems and citations already exposed as AI fabrications, and tracks your verification. Export to Excel, Google Sheets, CSV or PDF.</li>
+          <li><b>Citation Toolkit.</b> Pulls out every case, statute and rule citation in a pasted or uploaded draft so you can verify each one, and tracks your verification. Export to Excel, Google Sheets, CSV or PDF.</li>
           <li><b>Redaction Game.</b> Three practice rounds on what must come out of a court filing or an AI prompt.</li>
           <li><b>Motions 101.</b> What a motion is, its parts, its life from draft to order, and a library of 20 common motions.</li>
         </ul></div>
@@ -2295,8 +2275,6 @@ const REP_CANON={},REP_INFO={};
 REPORTERS.forEach(([c,court,...bad])=>{REP_CANON[c]=c;REP_INFO[c]=court;bad.forEach(b=>REP_CANON[b]=c)});
 const repKeys=Object.keys(REP_CANON).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/ /g,"\\s?"));
 const CASE_RE=new RegExp("\\b(\\d{1,4})\\s+("+repKeys.join("|")+")\\s+(\\d{1,5})\\b","g");
-const FEDERAL_LOWER=["F.","F.2d","F.3d","F.4th","F. Supp.","F. Supp. 2d","F. Supp. 3d","F. App'x","B.R."];
-const KNOWN_FAKE={"925|F.3d|1339":"Varghese v. China Southern Airlines","905|F. Supp. 2d|121":"Petersen v. Iran Air","174|F.3d|366":"Miller v. United Airlines"};
 const SAMPLE=`Plaintiff's claim is timely. See Varghese v. China Southern Airlines Co., 925 F.3d 1339 (11th Cir. 2019).
 
 To survive a motion to dismiss, a complaint must state a plausible claim. Ashcroft v. Iqbal, 556 U.S. 662, 678 (2009). The standard is well settled. Bell Atlantic Corp. v. Twombly, 550 U.S. 544 (2007). Massachusetts applies the same standard. Iannacchino v. Ford Motor Co., 451 Mass. 623, 636 (2008).
@@ -2329,57 +2307,37 @@ function parseCitations(text){
     const par=after.match(/^\s*\(([^)]{0,60})\)/); if(par)end+=par[0].length;
     const name=findCaseName(text,m.index);
     const start=name?text.lastIndexOf(name,m.index):m.index;
-    const issues=[];
-    const key=vol+"|"+canon+"|"+page;
-    if(KNOWN_FAKE[key])issues.push(["bad",`Matches a citation exposed as AI-fabricated in Mata v. Avianca (${KNOWN_FAKE[key]}). Do not file.`]);
-    const typedRep=repRaw.replace(/\s+/g," ");
-    if(typedRep!==canon)issues.push(["bad",`Reporter written as “${repRaw}”. Correct form: “${canon}”.`]);
-    if(!name)issues.push(["warn","No case name found directly before the citation."]);
-    if(!par)issues.push(["bad","Missing year parenthetical."]);
-    else{
-      const yr=par[1].match(/\b(1[789]\d\d|20\d\d)\b/);
-      if(!yr)issues.push(["bad","Parenthetical has no year."]);
-      else if(+yr[1]>new Date().getFullYear())issues.push(["bad",`Year ${yr[1]} is in the future.`]);
-      const courtTxt=par[1].replace(/\b\d{4}\b/,"").trim();
-      if(FEDERAL_LOWER.includes(canon)&&!courtTxt)issues.push(["warn","Federal lower-court cite needs a court in the parenthetical, e.g. (1st Cir. 2008) or (D. Mass. 2015)."]);
-      if((canon==="U.S."||canon==="Mass.")&&courtTxt)issues.push(["info",`${canon} reports identify the court, so the parenthetical needs only the year.`]);
-    }
-    if(!pin)issues.push(["warn","No pinpoint page. Add one if the cite supports a specific proposition or quotation."]);
-    out.push({kind:"Case",name,cite:`${vol} ${canon} ${page}`+(pin?", "+pin[1].trim():"")+(par?` (${par[1]})`:""),raw:text.slice(start,end),start,end,query:`"${vol} ${canon} ${page}"`,issues});
+    out.push({kind:"Case",name,cite:text.slice(m.index,end).replace(/\s+/g," ").trim(),raw:text.slice(start,end),start,end,query:`"${vol} ${canon} ${page}"`});
   }
   // statutes
-  const statRes=[[/\b(\d{1,2})\s+U\.?\s?S\.?\s?C\.?\s?(A\.?)?\s*(§{1,2})\s*([\w.\-()]+?)(?=[\s,;.)]|$)/g,"Federal statute",m=>{const iss=[];if(!/^\d+ U\.S\.C\. §/.test(m[0]))iss.push(["warn","Use the form “15 U.S.C. § 1692k”."]);return iss}],
-   [/\b(?:G\.\s?L\.|M\.\s?G\.\s?L\.?\s?A?\.?)\s*c\.\s*(\d+[A-Z]?)\s*,?\s*(§{1,2})\s*([\w.\-]+?)(?=[\s,;.)]|$)/g,"Mass. statute",m=>{const iss=[];if(/^M/.test(m[0]))iss.push(["info","Massachusetts courts cite statutes as “G. L. c. 93A, § 9”."]);return iss}]];
-  statRes.forEach(([re,kind,chk])=>{let s;re.lastIndex=0;while((s=re.exec(text))){const iss=chk(s);iss.push(["info","Confirm the section is current and quote the version in effect for your facts."]);out.push({kind,name:"",cite:s[0].trim(),raw:s[0],start:s.index,end:s.index+s[0].length,query:`"${s[0].trim()}"`,issues:iss})}});
+  const statRes=[[/\b(\d{1,2})\s+U\.?\s?S\.?\s?C\.?\s?(A\.?)?\s*(§{1,2})\s*([\w.\-()]+?)(?=[\s,;.)]|$)/g,"Federal statute"],
+   [/\b(?:G\.\s?L\.|M\.\s?G\.\s?L\.?\s?A?\.?)\s*c\.\s*(\d+[A-Z]?)\s*,?\s*(§{1,2})\s*([\w.\-]+?)(?=[\s,;.)]|$)/g,"Mass. statute"]];
+  statRes.forEach(([re,kind])=>{let s;re.lastIndex=0;while((s=re.exec(text))){out.push({kind,name:"",cite:s[0].trim(),raw:s[0],start:s.index,end:s.index+s[0].length,query:`"${s[0].trim()}"`})}});
   const ruleRe=/\b(Fed\.\s?R\.\s?(?:Civ|Crim|Evid|App)\.\s?(?:P\.\s?)?\d+(?:\([a-zA-Z0-9]+\))*|Mass\.\s?R\.\s?(?:Civ|Crim|App)\.\s?P\.\s?\d+(?:\([a-zA-Z0-9]+\))*|Superior Court Rule \d+[A-Z]?|SJC Rule \d:\d+|Local Rule \d+(?:\.\d+)*)/g;
-  let r;ruleRe.lastIndex=0;while((r=ruleRe.exec(text))){out.push({kind:"Rule",name:"",cite:r[0],raw:r[0],start:r.index,end:r.index+r[0].length,query:`"${r[0]}"`,issues:[["info","Check the current text, including recent amendments and local variations."]]})}
+  let r;ruleRe.lastIndex=0;while((r=ruleRe.exec(text))){out.push({kind:"Rule",name:"",cite:r[0],raw:r[0],start:r.index,end:r.index+r[0].length,query:`"${r[0]}"`})}
   out.sort((a,b)=>a.start-b.start);
   const idPos=[...text.matchAll(/\bId\.(?:\s+at\s+\d+)?/g)].map(m=>[m.index,m.index+m[0].length]);
   return {items:out,ids:idPos.length,idPos};
 }
-function sevOf(it){if(it.issues.some(i=>i[0]==="bad"))return "bad";if(it.issues.some(i=>i[0]==="warn"))return "warn";return it.kind==="Case"?"ok":"info"}
 const verifyState={};
 const VCHECKS=["Pulled & read","Pincite supports","Quote matches","Good law"];
 let lastParse=null;
 function runCites(){
   const text=$("#brief").value; const res=parseCitations(text); lastParse=res;
-  const cases=res.items.filter(i=>i.kind==="Case");
-  const bad=res.items.filter(i=>sevOf(i)==="bad").length, warn=res.items.filter(i=>sevOf(i)==="warn").length;
+  const cases=res.items.filter(i=>i.kind==="Case"),others=res.items.length-cases.length;
   const verified=cases.filter(c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j])).length;
-  $("#cite-summary").innerHTML=`<div><b>${res.items.length}</b><span>Authorities</span></div><div><b style="color:var(--bad)">${bad}</b><span>Errors</span></div><div><b style="color:var(--warn-text)">${warn}</b><span>Warnings</span></div><div><b style="color:var(--ok)" id="cite-verified">${verified}/${cases.length}</b><span>Cases verified</span></div>`;
+  $("#cite-summary").innerHTML=`<div><b>${res.items.length}</b><span>Citations found</span></div><div><b>${cases.length}</b><span>Cases</span></div><div><b>${others}</b><span>Statutes and rules</span></div><div><b style="color:var(--ok)" id="cite-verified">${verified}/${cases.length}</b><span>Cases verified</span></div>`;
   // highlight
   let html="",pos=0;
-  const marks=res.items.map(it=>({start:it.start,end:it.end,cls:({bad:"bad",warn:"warn",info:"verify",ok:"ok"})[sevOf(it)]||"ok",title:it.kind})).concat(res.idPos.map(p=>({start:p[0],end:p[1],cls:"short",title:"Short form"}))).sort((a,b)=>a.start-b.start);
+  const marks=res.items.map(it=>({start:it.start,end:it.end,cls:"verify",title:it.kind})).concat(res.idPos.map(p=>({start:p[0],end:p[1],cls:"short",title:"Short form"}))).sort((a,b)=>a.start-b.start);
   marks.forEach(mk=>{if(mk.start<pos)return;html+=esc(text.slice(pos,mk.start));html+=`<mark class="${mk.cls}" title="${esc(mk.title)}">${esc(text.slice(mk.start,mk.end))}</mark>`;pos=mk.end});
   html+=esc(text.slice(pos));
   $("#cite-hl").innerHTML=html||'<span class="muted">Nothing to show yet.</span>';
   const list=$("#cite-list");
-  if(!res.items.length){list.innerHTML='<div class="card muted">No citations found. Paste a draft with case, statute or rule citations and select Check citations.</div>';return}
+  if(!res.items.length){list.innerHTML='<div class="card muted">No citations found. Paste a draft with case, statute or rule citations and select Find citations.</div>';return}
   list.innerHTML=(res.ids?`<div class="cite-item sev-short"><div class="ch"><span class="ct">Id. × ${res.ids}</span><span class="pill short">Short form</span></div><ul class="issues"><li class="info">Each “Id.” must refer to the immediately preceding authority. Re-check after moving or deleting any sentence.</li></ul></div>`:"")+
-  res.items.map((it,i)=>{const s=sevOf(it);const label={bad:"Error",warn:"Warning",ok:"Format OK",info:"Verify"}[s];
-    const q=encodeURIComponent(it.query);
-    return `<div class="cite-item sev-${s}"><div class="ch"><div style="min-width:0"><div class="ct">${esc(it.cite)}</div>${it.name?`<div class="cn">${esc(it.name)}</div>`:`<div class="cn">${esc(it.kind)}</div>`}</div><span class="pill ${s==="info"?"verify":s}">${label}</span></div>
-    <ul class="issues">${it.issues.length?it.issues.map(([lv,t])=>`<li class="${lv}">${esc(t)}</li>`).join(""):'<li class="info">No format problems found. Verify the substance below.</li>'}</ul>
+  res.items.map((it,i)=>{const q=encodeURIComponent(it.query);
+    return `<div class="cite-item sev-verify"><div class="ch"><div style="min-width:0"><div class="ct">${esc(it.cite)}</div>${it.name?`<div class="cn">${esc(it.name)}</div>`:""}</div><span class="pill verify">${esc(it.kind)}</span></div>
     <div class="vlinks"><a href="https://1.next.westlaw.com/Link/Document/FullText?findType=Y&cite=${encodeURIComponent(it.query.replace(/"/g,""))}" target="_blank" rel="noopener">Westlaw ↗</a><a href="https://plus.lexis.com/" target="_blank" rel="noopener" data-copy="${esc(it.query.replace(/"/g,""))}">Lexis+ AI ↗</a><a href="https://www.courtlistener.com/?q=${q}" target="_blank" rel="noopener">CourtListener ↗</a></div>
     ${it.kind==="Case"?`<div class="vchecks">${VCHECKS.map((v,j)=>`<label><input type="checkbox" id="vc-${i}-${j}" data-vk="${esc(it.cite+"|"+j)}" ${verifyState[it.cite+"|"+j]?"checked":""}>${v}</label>`).join("")}</div>`:""}</div>`}).join("");
   $$("[data-copy]").forEach(a=>a.addEventListener("click",()=>{const c=a.dataset.copy;const fail=()=>toast("Paste this citation into Lexis+ AI: "+c);try{navigator.clipboard?navigator.clipboard.writeText(c).then(()=>toast("Copied “"+c+"”. Paste it into Lexis+ AI."),fail):fail()}catch(e){fail()}}));
@@ -2389,10 +2347,10 @@ function runCites(){
 const EXCELJS_URL="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
 function loadScript(src){return new Promise((res,rej)=>{if(window.ExcelJS)return res();const s=document.createElement("script");s.src=src;s.onload=()=>res();s.onerror=()=>rej(new Error("load"));document.head.appendChild(s)})}
 const CHECK_HEADS=["Pulled & read","Pincite supports","Quote matches","Good law"];
-const SHEET_HEADS=["#","Type","Case name","Citation","Status","Issues found",...CHECK_HEADS,"Verified"];
+const SHEET_HEADS=["#","Type","Case name","Citation",...CHECK_HEADS,"Verified"];
 function citeRows(){
-  const rows=lastParse.items.map(it=>({kind:it.kind,name:it.name||"",cite:it.cite,status:{bad:"Error",warn:"Warning",ok:"Format OK",info:"Verify"}[sevOf(it)],issues:it.issues.map(x=>x[1]).join(" "),checks:VCHECKS.map((v,j)=>!!verifyState[it.cite+"|"+j]),checklist:true}));
-  if(lastParse.ids)rows.push({kind:"Short form",name:"",cite:"Id. × "+lastParse.ids,status:"Short form",issues:"Each Id. must refer to the immediately preceding authority.",checks:[false,false,false,false],checklist:false});
+  const rows=lastParse.items.map(it=>({kind:it.kind,name:it.name||"",cite:it.cite,checks:VCHECKS.map((v,j)=>!!verifyState[it.cite+"|"+j]),checklist:it.kind==="Case"}));
+  if(lastParse.ids)rows.push({kind:"Short form",name:"",cite:"Id. × "+lastParse.ids+" (each must refer to the immediately preceding authority)",checks:[false,false,false,false],checklist:false});
   return rows;
 }
 function haveCites(){if(!lastParse||!lastParse.items.length){toast("Check a draft first.");return false}return true}
@@ -2401,16 +2359,16 @@ function exportCsv(){
   if(!haveCites())return;
   const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
   const out=[SHEET_HEADS];
-  citeRows().forEach((r,i)=>out.push([i+1,r.kind,r.name,r.cite,r.status,r.issues,...r.checks.map(c=>r.checklist?(c?"Yes":"No"):"N/A"),r.checklist?(r.checks.every(Boolean)?"Verified":"Open"):"N/A"]));
+  citeRows().forEach((r,i)=>out.push([i+1,r.kind,r.name,r.cite,...r.checks.map(c=>r.checklist?(c?"Yes":"No"):"N/A"),r.checklist?(r.checks.every(Boolean)?"Verified":"Open"):"N/A"]));
   saveFile("citation-checklist-"+stamp()+".csv",out.map(r=>r.map(q).join(",")).join("\r\n"));
 }
 function exportGsheet(e){
   if(!haveCites()){e.preventDefault();return}
   const clean=s=>String(s).replace(/[\t\r\n]+/g," ");
   const lines=[SHEET_HEADS.join("\t")];
-  citeRows().forEach((r,i)=>{const n=i+2;lines.push([i+1,r.kind,r.name,r.cite,r.status,r.issues,...r.checks.map(c=>r.checklist?(c?"TRUE":"FALSE"):""),r.checklist?`=IF(AND(G${n},H${n},I${n},J${n}),"Verified","Open")`:""].map(clean).join("\t"))});
+  citeRows().forEach((r,i)=>{const n=i+2;lines.push([i+1,r.kind,r.name,r.cite,...r.checks.map(c=>r.checklist?(c?"TRUE":"FALSE"):""),r.checklist?`=IF(AND(E${n},F${n},G${n},H${n}),"Verified","Open")`:""].map(clean).join("\t"))});
   const tsv=lines.join("\n"),hint=$("#gsheet-hint"),box=$("#gsheet-tsv");
-  const how="In the new Google Sheet, click cell A1 and paste. Then select columns G to J and choose Insert › Checkbox to turn TRUE/FALSE into checkboxes. Column K shows Verified once all four are checked.";
+  const how="In the new Google Sheet, click cell A1 and paste. Then select columns E to H and choose Insert › Checkbox to turn TRUE/FALSE into checkboxes. Column I shows Verified once all four are checked.";
   const ok=()=>{hint.innerHTML="<b>Rows copied.</b> "+esc(how);hint.hidden=false;box.hidden=true};
   const fail=()=>{hint.innerHTML="<b>Copy the rows below</b> (they’re selected). "+esc(how);hint.hidden=false;box.value=tsv;box.hidden=false;box.focus();box.select()};
   try{navigator.clipboard?navigator.clipboard.writeText(tsv).then(ok,fail):fail()}catch(err){fail()}
@@ -2421,25 +2379,23 @@ function exportPdf(){
   const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:"pt",format:"letter",orientation:"landscape"});
   const W=792,H=612,M=40,LH=10.5;
   const teal=[47,94,99],ink=[35,56,59],mute=[107,94,78],rule=[214,201,166];
-  const SC={"Error":[192,56,44],"Warning":[160,74,12],"Verify":[6,80,91],"Short form":[107,84,145],"Format OK":[85,107,47]};
-  const cols=[["#",22],["Citation",230],["Status",62],["Issues found",190],["Pulled & read",52],["Pincite supports",52],["Quote matches",52],["Good law",52]];
+  const cols=[["#",22],["Citation",360],["Type",104],["Pulled & read",56],["Pincite supports",56],["Quote matches",56],["Good law",58]];
   const rows=citeRows();
-  const errs=rows.filter(r=>r.status==="Error").length,warns=rows.filter(r=>r.status==="Warning").length;
   let y=M;
   doc.setFont("times","bold");doc.setFontSize(20);doc.setTextColor(...ink);doc.text("Citation Verification Checklist",M,y+18);
   doc.setFont("helvetica","normal");doc.setFontSize(9.5);doc.setTextColor(...mute);
-  doc.text("Motion Advisor · Generated "+new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})+" · "+lastParse.items.length+" authorities · "+errs+" errors · "+warns+" warnings",M,y+34);
+  doc.text("Motion Advisor · Generated "+new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})+" · "+lastParse.items.length+" citations",M,y+34);
   doc.text("Tick each box by hand once that check is done. Boxes already ticked on screen are printed as checked.",M,y+47);
   y+=60;
   const header=()=>{doc.setFillColor(...teal);doc.rect(M,y,W-2*M,30,"F");doc.setFont("helvetica","bold");doc.setFontSize(8.5);doc.setTextColor(255,255,255);let x=M;
-    cols.forEach(([h,w],i)=>{const ls=doc.splitTextToSize(h,w-6);ls.forEach((l,k)=>doc.text(l,i>=4?x+w/2:x+4,y+12+k*10,{align:i>=4?"center":"left"}));x+=w});y+=30};
+    cols.forEach(([h,w],i)=>{const ls=doc.splitTextToSize(h,w-6);ls.forEach((l,k)=>doc.text(l,i>=3?x+w/2:x+4,y+12+k*10,{align:i>=3?"center":"left"}));x+=w});y+=30};
   header();
   rows.forEach((r,i)=>{
     doc.setFontSize(8.5);
     doc.setFont("courier","normal");const citeL=doc.splitTextToSize(r.cite,cols[1][1]-8);
     doc.setFont("helvetica","italic");const nameL=r.name?doc.splitTextToSize(r.name,cols[1][1]-8):[];
-    doc.setFont("helvetica","normal");const issL=doc.splitTextToSize(r.issues||"—",cols[3][1]-8);
-    const h=Math.max(30,Math.max(citeL.length+nameL.length,issL.length)*LH+12);
+
+    const h=Math.max(30,(citeL.length+nameL.length)*LH+12);
     if(y+h>H-46){doc.addPage();y=M;header()}
     if(i%2===1){doc.setFillColor(251,247,234);doc.rect(M,y,W-2*M,h,"F")}
     doc.setDrawColor(...rule);doc.setLineWidth(0.5);doc.line(M,y+h,W-M,y+h);
@@ -2447,9 +2403,8 @@ function exportPdf(){
     doc.setFont("helvetica","normal");doc.setTextColor(...mute);doc.text(String(i+1),x+4,y+14);x+=cols[0][1];
     doc.setFont("courier","normal");doc.setTextColor(...ink);citeL.forEach((l,k)=>doc.text(l,x+4,y+14+k*LH));
     doc.setFont("helvetica","italic");doc.setTextColor(...mute);nameL.forEach((l,k)=>doc.text(l,x+4,y+14+(citeL.length+k)*LH));x+=cols[1][1];
-    doc.setFont("helvetica","bold");doc.setTextColor(...(SC[r.status]||ink));doc.text(r.status,x+4,y+14);x+=cols[2][1];
-    doc.setFont("helvetica","normal");doc.setTextColor(...ink);issL.forEach((l,k)=>doc.text(l,x+4,y+14+k*LH));x+=cols[3][1];
-    for(let j=0;j<4;j++){const w=cols[4+j][1],cx=x+w/2,bx=cx-6,by=y+6;
+    doc.setFont("helvetica","normal");doc.setTextColor(...ink);doc.text(r.kind,x+4,y+14);x+=cols[2][1];
+    for(let j=0;j<4;j++){const w=cols[3+j][1],cx=x+w/2,bx=cx-6,by=y+6;
       if(r.checklist){doc.setDrawColor(...ink);doc.setLineWidth(0.9);doc.rect(bx,by,12,12);
         if(r.checks[j]){doc.setDrawColor(85,107,47);doc.setLineWidth(1.6);doc.line(bx+2.5,by+6.5,bx+5,by+9.5);doc.line(bx+5,by+9.5,bx+10,by+2.5)}
         doc.setLineWidth(0.5)}
@@ -2474,34 +2429,30 @@ async function exportXlsx(){
     await loadScript(EXCELJS_URL);
     const wb=new window.ExcelJS.Workbook();wb.creator="Motion Advisor";wb.created=new Date();
     const ws=wb.addWorksheet("Citation check",{views:[{state:"frozen",ySplit:1}]});
-    ws.columns=[{header:"#",key:"n",width:5},{header:"Type",key:"kind",width:14},{header:"Case name",key:"name",width:34},{header:"Citation",key:"cite",width:34},{header:"Status",key:"status",width:12},{header:"Issues found",key:"issues",width:60},{header:CHECK_HEADS[0],key:"c0",width:14},{header:CHECK_HEADS[1],key:"c1",width:16},{header:CHECK_HEADS[2],key:"c2",width:15},{header:CHECK_HEADS[3],key:"c3",width:12},{header:"Verified",key:"v",width:12},{header:"Notes",key:"notes",width:36}];
+    ws.columns=[{header:"#",key:"n",width:5},{header:"Type",key:"kind",width:14},{header:"Case name",key:"name",width:34},{header:"Citation",key:"cite",width:34},{header:CHECK_HEADS[0],key:"c0",width:14},{header:CHECK_HEADS[1],key:"c1",width:16},{header:CHECK_HEADS[2],key:"c2",width:15},{header:CHECK_HEADS[3],key:"c3",width:12},{header:"Verified",key:"v",width:12},{header:"Notes",key:"notes",width:36}];
     const head=ws.getRow(1);head.height=22;head.eachCell(c=>{c.font={bold:true,color:{argb:"FFFFFFFF"}};c.fill={type:"pattern",pattern:"solid",fgColor:{argb:"FF2F5E63"}};c.alignment={vertical:"middle",wrapText:true}});
-    const ST={"Error":["FFF9DFDA","FFC0382C"],"Warning":["FFFBE6D3","FFA04A0C"],"Verify":["FFD9ECEE","FF06505B"],"Short form":["FFEEE8F5","FF6B5491"],"Format OK":["FFE9EDD9","FF556B2F"]};
     const rows=citeRows();
-    rows.forEach((r,i)=>{const n=i+2;const row=ws.addRow({n:i+1,kind:r.kind,name:r.name,cite:r.cite,status:r.status,issues:r.issues});
+    rows.forEach((r,i)=>{const n=i+2;const row=ws.addRow({n:i+1,kind:r.kind,name:r.name,cite:r.cite});
       row.alignment={vertical:"top",wrapText:true};
       row.getCell("cite").font={name:"Consolas"};
-      const s=ST[r.status];if(s){const c=row.getCell("status");c.fill={type:"pattern",pattern:"solid",fgColor:{argb:s[0]}};c.font={bold:true,color:{argb:s[1]}}}
       ["c0","c1","c2","c3"].forEach((k,j)=>{const c=row.getCell(k);c.alignment={horizontal:"center",vertical:"top"};
         if(r.checklist){c.value=r.checks[j]?"Yes":"No";c.dataValidation={type:"list",allowBlank:false,formulae:['"Yes,No"'],showErrorMessage:true,errorTitle:"Yes or No",error:"Choose Yes or No."}}else c.value="N/A"});
       const v=row.getCell("v");v.alignment={horizontal:"center",vertical:"top"};
-      v.value=r.checklist?{formula:`IF(COUNTIF(G${n}:J${n},"Yes")=4,"Verified","Open")`,result:r.checks.every(Boolean)?"Verified":"Open"}:"N/A";
+      v.value=r.checklist?{formula:`IF(COUNTIF(E${n}:H${n},"Yes")=4,"Verified","Open")`,result:r.checks.every(Boolean)?"Verified":"Open"}:"N/A";
     });
     const last=rows.length+1;
-    ws.autoFilter={from:"A1",to:"L1"};
-    ws.addConditionalFormatting({ref:`G2:J${last}`,rules:[{type:"cellIs",operator:"equal",formulae:['"Yes"'],style:{fill:{type:"pattern",pattern:"solid",bgColor:{argb:"FFE9EDD9"}},font:{color:{argb:"FF556B2F"},bold:true}}}]});
-    ws.addConditionalFormatting({ref:`K2:K${last}`,rules:[{type:"cellIs",operator:"equal",formulae:['"Verified"'],style:{fill:{type:"pattern",pattern:"solid",bgColor:{argb:"FFE9EDD9"}},font:{color:{argb:"FF556B2F"},bold:true}}}]});
+    ws.autoFilter={from:"A1",to:"J1"};
+    ws.addConditionalFormatting({ref:`E2:H${last}`,rules:[{type:"cellIs",operator:"equal",formulae:['"Yes"'],style:{fill:{type:"pattern",pattern:"solid",bgColor:{argb:"FFE9EDD9"}},font:{color:{argb:"FF556B2F"},bold:true}}}]});
+    ws.addConditionalFormatting({ref:`I2:I${last}`,rules:[{type:"cellIs",operator:"equal",formulae:['"Verified"'],style:{fill:{type:"pattern",pattern:"solid",bgColor:{argb:"FFE9EDD9"}},font:{color:{argb:"FF556B2F"},bold:true}}}]});
     const sm=wb.addWorksheet("Summary");sm.columns=[{width:34},{width:80}];
     const cnt=(col,crit)=>`COUNTIF('Citation check'!${col}2:${col}${last},"${crit}")`;
     [["Motion Advisor citation checklist",""],["Generated",new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})],["",""],
      ["Authorities found",{formula:`COUNTIF('Citation check'!B2:B${last},"<>Short form")`,result:lastParse.items.length}],
-     ["Errors",{formula:cnt("E","Error"),result:rows.filter(r=>r.status==="Error").length}],
-     ["Warnings",{formula:cnt("E","Warning"),result:rows.filter(r=>r.status==="Warning").length}],
-     ["Verified (all four checks Yes)",{formula:cnt("K","Verified"),result:rows.filter(r=>r.checklist&&r.checks.every(Boolean)).length}],
+     ["Verified (all four checks Yes)",{formula:cnt("I","Verified"),result:rows.filter(r=>r.checklist&&r.checks.every(Boolean)).length}],
      ["",""],["How to use","On the Citation check sheet, set each check to Yes once it is done. A row shows Verified when all four checks are Yes."],
-     ["Not legal advice","This checklist finds and formats citations. It cannot confirm that a case exists or is good law. The signing attorney must read and verify every authority."]].forEach(d=>sm.addRow(d));
+     ["Not legal advice","This checklist lists the citations in your draft. It cannot confirm that a case exists or is good law. The signing attorney must read and verify every authority."]].forEach(d=>sm.addRow(d));
     sm.getRow(1).font={bold:true,size:14,color:{argb:"FF2F5E63"}};
-    [4,5,6,7,9,10].forEach(r=>{sm.getCell("A"+r).font={bold:true}});
+    [4,5,7,8].forEach(r=>{sm.getCell("A"+r).font={bold:true}});
     sm.getColumn(2).alignment={wrapText:true,vertical:"top"};
     const buf=await wb.xlsx.writeBuffer();
     await saveFile("citation-checklist-"+stamp()+".xlsx",new Blob([buf]));
@@ -2555,8 +2506,8 @@ function initCites(){
   $("#cite-csv").addEventListener("click",exportCsv);
   $("#cite-pdf").addEventListener("click",exportPdf);
   $("#cite-gsheet").addEventListener("click",exportGsheet);
-  $$("[data-ctab]").forEach(b=>b.addEventListener("click",()=>{$$("[data-ctab]").forEach(x=>x.classList.toggle("on",x===b));$("#ctab-check").hidden=b.dataset.ctab!=="check";$("#ctab-ref").hidden=b.dataset.ctab!=="ref"}));
-  $("#ref-reporters").innerHTML=REPORTERS.slice(0,18).map(([c,court,...bad])=>`<tr><td class="mono">${esc(c)}</td><td>${esc(court)}</td><td class="mono muted">${bad.map(esc).join(", ")||"—"}</td></tr>`).join("");
+
+
   runCites();
 }
 
@@ -2879,7 +2830,7 @@ const RULES=[
  {risk:["ok","AI drafts must still meet Rule 9A’s filing and service procedure; the risk is procedural, not ethical."],g:"court",id:"sup-9a",short:"Superior Court Rule 9A",title:"Civil motions (Massachusetts Superior Court)",cite:"Mass. Superior Court Rule 9A",says:"Sets the service-first process for civil motions: serve the motion, receive any opposition, then file the whole package. Summary judgment motions need a consolidated statement of facts.",used:"Motions 101: what a motion is, the life of a motion and summary judgment.",link:"https://www.mass.gov/superior-court-rules/superior-court-rule-9a-civil-motions",linkLabel:"Superior Court Rule 9A",aliases:["rule 9a","9a","superior court rule 9a"]},
  {risk:["ok","AI drafts must still include the conferral certificate and meet the memorandum requirements."],g:"court",id:"dmass-7-1",short:"D. Mass. Local Rule 7.1",title:"Motion practice (federal court in Massachusetts)",cite:"D. Mass. Local Rule 7.1",says:"Before filing most motions, confer with opposing counsel and certify that you did. The rule also sets requirements for supporting memoranda.",used:"Motions 101: parts of a motion; AI Drafting Advisor, the Compliance factor.",link:"https://www.mad.uscourts.gov/general/pdf/local-rules/Combined%20Local%20Rules.pdf",linkLabel:"D. Mass. Local Rules (PDF)",aliases:["local rule 7.1","7.1","d. mass. local rule 7.1","l.r. 7.1"]},
  {risk:["warn","Some judges require disclosure or certification of AI use, and a few restrict AI-drafted filings."],g:"court",id:"standing-orders",short:"Judges’ AI standing orders",title:"Standing orders and session procedures on AI",cite:"Individual judges’ standing orders, session procedures and court AI policies",says:"A growing number of judges require lawyers to disclose or certify AI use in filings, and a few restrict AI-drafted filings. These orders differ by judge and change often, so check the assigned judge’s page and the court’s website before every filing.",used:"AI Drafting Advisor: the court-restriction gate, the Compliance factor, the disclosure slider and the first suggestion in every report.",link:null,linkLabel:"",aliases:["standing order","standing orders","judge order","ai disclosure","disclosure order","certification"]},
- {risk:["bad","Six ChatGPT-invented cases led to a $5,000 sanction: the leading warning against unverified AI citations."],g:"cases",id:"mata",short:"Mata v. Avianca",title:"Mata v. Avianca, Inc.",cite:"678 F. Supp. 3d 443 (S.D.N.Y. 2023)",says:"Lawyers were sanctioned $5,000 after filing a brief that cited six nonexistent cases generated by ChatGPT.",used:"Citation Toolkit, fabricated-case flags; the AI Drafting Advisor’s citation-verification gate and Accuracy factor; the home page timeline.",link:"https://www.courtlistener.com/?q=%22678+F.+Supp.+3d+443%22",linkLabel:"Find on CourtListener",aliases:["mata","mata v. avianca","avianca"]},
+ {risk:["bad","Six ChatGPT-invented cases led to a $5,000 sanction: the leading warning against unverified AI citations."],g:"cases",id:"mata",short:"Mata v. Avianca",title:"Mata v. Avianca, Inc.",cite:"678 F. Supp. 3d 443 (S.D.N.Y. 2023)",says:"Lawyers were sanctioned $5,000 after filing a brief that cited six nonexistent cases generated by ChatGPT.",used:"Citation Toolkit sample draft; the AI Drafting Advisor’s citation-verification gate and Accuracy factor; the home page timeline.",link:"https://www.courtlistener.com/?q=%22678+F.+Supp.+3d+443%22",linkLabel:"Find on CourtListener",aliases:["mata","mata v. avianca","avianca"]},
  {risk:["bad","Citing a nonexistent AI-generated case led to a grievance referral by the Second Circuit."],g:"cases",id:"park",short:"Park v. Kim",title:"Park v. Kim",cite:"91 F.4th 610 (2d Cir. 2024)",says:"The Second Circuit referred counsel to its grievance panel for citing a case that does not exist.",used:"Citation Toolkit; the home page timeline.",link:"https://www.courtlistener.com/?q=%2291+F.4th+610%22",linkLabel:"Find on CourtListener",aliases:["park v. kim","park"]},
  {risk:["bad","A Massachusetts court sanctioned counsel $2,000 for fictitious AI-generated citations."],g:"cases",id:"smith",short:"Smith v. Farwell",title:"Smith v. Farwell",cite:"Mass. Super. Ct. (Norfolk) 2024",says:"A Massachusetts Superior Court judge sanctioned counsel $2,000 for fictitious AI-generated citations in opposition memoranda.",used:"AI Drafting Advisor: the citation-verification gate; the home page timeline.",link:"https://www.msba.org/site/content/News-and-Publications/News/General-News/Massachusetts_Lawyer-Sanctioned_for_AI_Generated-Fictitious_Cases.aspx",linkLabel:"Read a summary",aliases:["smith v. farwell","farwell"]}
 ];
@@ -2898,12 +2849,12 @@ const INDEX=[
  {k:"tool",label:"AI Drafting Advisor",sub:"Assess the risks of using AI on your motion",aliases:["advisor","assessment","questionnaire","risk report","report"],go:()=>location.hash="#advisor"},
  {k:"tool",label:"Compare Your Options",sub:"Optional: weigh ways of using AI side by side",aliases:["compare","choice matrix","matrix","choiceboxing","weights","options"],go:()=>location.hash="#compare"},
  {k:"tool",label:"How the advisor works",sub:"Questions, hard stops, risk points and your report",aliases:["how this works","method","risk level","hard stops","risk points"],go:()=>location.hash="#method"},
- {k:"tool",label:"Citation Toolkit",sub:"Check citations and flag fabricated cases",go:()=>location.hash="#citations"},
+ {k:"tool",label:"Citation Toolkit",sub:"Pull out every citation to verify",go:()=>location.hash="#citations"},
  {k:"tool",label:"Redaction Game",sub:"Practice finding sensitive information",go:()=>location.hash="#redaction"},
  ...RULES.map(r=>({k:"rule",rid:r.id,label:r.short+": "+r.title,sub:r.cite,risk:r.risk||null,aliases:r.aliases,go:()=>openRule(r.id)})),
  {k:"tool",label:"Rules & Sources",sub:"Every rule, opinion and case behind the site",aliases:["rules","sources"],go:()=>location.hash="#rules"},
  {k:"tool",label:"About Motion Advisor",sub:"What this is and where the law comes from",aliases:["about","what is this"],go:()=>location.hash="#about"},
- {k:"rule",label:"Bluebook reporter abbreviations",sub:"Citation format reference",go:()=>{location.hash="#citations";setTimeout(()=>$('[data-ctab="ref"]').click(),30)}}
+
 ];
 function openMotion(i,fromSearch){
   mState.stage="All";mState.q="";mState.open=i;mState.hit=fromSearch?i:null;location.hash="#motions";
