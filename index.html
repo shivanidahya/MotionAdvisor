@@ -474,8 +474,9 @@ header.top::after,footer.site::before{content:"";display:block;height:8px;backgr
 .vt th,.vt td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
 .vt th:first-child,.vt td:first-child{text-align:left}
 .vt thead th{font-family:var(--f-ui);font-weight:600;color:var(--ink-2);background:var(--sunk);font-size:.78rem}
-.vt td.vt-c{font-family:var(--f-mono);font-size:.8rem;min-width:150px}
-.vt td.vt-c span{display:block;font-family:var(--f-body);color:var(--muted);font-size:.76rem}
+.vt td.vt-c{min-width:170px}
+.vt td.vt-c b{display:block;font-weight:600;font-size:.88rem;color:var(--ink)}
+.vt td.vt-c span{display:block;margin-top:2px;font-family:var(--f-mono);color:var(--muted);font-size:.74rem}
 .vt input{width:18px;height:18px;accent-color:var(--ok);cursor:pointer}
 .vt .vt-s{font-family:var(--f-ui);font-weight:600;font-size:.78rem;white-space:nowrap}
 .vt .vt-s.done{color:var(--ok)}.vt .vt-s.open{color:var(--muted)}
@@ -2403,7 +2404,7 @@ function trackerHTML(cases){
   const st=c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j]);
   return `<div class="vt-wrap"><table class="vt"><caption class="sr-only">Verification tracker: checks done for each case</caption>
     <thead><tr><th scope="col">Case</th>${VCHECKS.map(v=>`<th scope="col">${esc(v)}</th>`).join("")}<th scope="col">Status</th></tr></thead>
-    <tbody>${cases.map(c=>`<tr><td class="vt-c">${esc(c.cite)}${c.name?`<span>${esc(c.name)}</span>`:""}</td>${VCHECKS.map((v,j)=>`<td><input type="checkbox" data-vk="${esc(c.cite+"|"+j)}" aria-label="${esc(v)}: ${esc(c.name||c.cite)}" ${verifyState[c.cite+"|"+j]?"checked":""}></td>`).join("")}<td class="vt-s ${st(c)?"done":"open"}" data-vs="${esc(c.cite)}">${st(c)?"✓ Verified":"Open"}</td></tr>`).join("")}</tbody>
+    <tbody>${cases.map(c=>`<tr><td class="vt-c">${c.name?`<b>${esc(c.name)}</b><span>${esc(c.cite)}</span>`:`<b>${esc(c.cite)}</b>`}</td>${VCHECKS.map((v,j)=>`<td><input type="checkbox" data-vk="${esc(c.cite+"|"+j)}" aria-label="${esc(v)}: ${esc(c.name||c.cite)}" ${verifyState[c.cite+"|"+j]?"checked":""}></td>`).join("")}<td class="vt-s ${st(c)?"done":"open"}" data-vs="${esc(c.cite)}">${st(c)?"✓ Verified":"Open"}</td></tr>`).join("")}</tbody>
     <tfoot><tr><td>Done</td>${VCHECKS.map((v,j)=>`<td data-vcount="${j}">${cases.filter(c=>verifyState[c.cite+"|"+j]).length}/${cases.length}</td>`).join("")}<td data-vcount="all">${cases.filter(st).length}/${cases.length}</td></tr></tfoot></table></div>`}
 function bindVerify(cases){
   const st=c=>VCHECKS.every((v,j)=>verifyState[c.cite+"|"+j]);
